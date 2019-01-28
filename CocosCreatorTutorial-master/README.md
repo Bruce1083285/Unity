@@ -1,3 +1,3 @@
 # CocosCreatorTutorial
 CocosCreator教程demo集合
-# 弹窗demo
+@ 弹窗demo
