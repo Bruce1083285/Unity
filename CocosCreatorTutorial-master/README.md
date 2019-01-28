@@ -16,13 +16,14 @@ CocosCreator教程demo集合
 ## 下拉列表视图 demo
 ## 通知中心 demo
 ## PersistRootNode demo
-## 贝塞尔曲线demo
-## 贝塞尔曲线demo
-## 贝塞尔曲线demo
-## 贝塞尔曲线demo
-## 贝塞尔曲线demo
-## 贝塞尔曲线demo
-## 贝塞尔曲线demo
-## 贝塞尔曲线demo
-## 贝塞尔曲线demo
-## 贝塞尔曲线demo
+## 登录客户端 demo
+## 扫码 demo
+## ProtoBuf demo
+## 横幅公告 demo
+## 屏幕截图 demo
+## 滚动视窗 demo
+## 单触发器 demo
+## 触摸事件 demo
+## 轮盘 demo
+## WebSocket demo
+## 微信游戏登录 demo
