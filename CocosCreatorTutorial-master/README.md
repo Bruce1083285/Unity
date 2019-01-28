@@ -1,4 +1,3 @@
 # CocosCreatorTutorial
 CocosCreator教程demo集合
-弹窗demo
-asd
+# 弹窗demo
