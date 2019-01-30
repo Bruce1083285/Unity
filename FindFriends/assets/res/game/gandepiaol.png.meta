@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "ed0c62f1-1b56-4d70-9b8f-163e3eac9f90",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "gandepiaol": {
+      "ver": "1.0.3",
+      "uuid": "62d39b46-7419-41f6-a2f5-cd534df05521",
+      "rawTextureUuid": "ed0c62f1-1b56-4d70-9b8f-163e3eac9f90",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 389,
+      "height": 95,
+      "rawWidth": 389,
+      "rawHeight": 95,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
