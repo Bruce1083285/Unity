@@ -1,0 +1,81 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "warter",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.5,
+  "sample": 60,
+  "speed": 0.1,
+  "wrapMode": "22",
+  "curveData": {
+    "paths": {
+      "down": {
+        "props": {
+          "position": [
+            {
+              "frame": 0,
+              "value": [
+                -675,
+                420
+              ],
+              "motionPath": [
+                [
+                  -263.5,
+                  464.8,
+                  -667.7,
+                  464.8,
+                  -165.2,
+                  464.8
+                ],
+                [
+                  60,
+                  409.5,
+                  -60.6,
+                  412.3,
+                  187.4,
+                  406.5
+                ],
+                [
+                  469.8,
+                  463.1,
+                  340.1,
+                  462.5,
+                  837.5,
+                  464.7
+                ]
+              ]
+            },
+            {
+              "frame": 0.5,
+              "value": [
+                827,
+                420
+              ]
+            }
+          ]
+        }
+      },
+      "water_2": {
+        "props": {
+          "position": [
+            {
+              "frame": 0,
+              "value": [
+                670,
+                43
+              ]
+            },
+            {
+              "frame": 0.5,
+              "value": [
+                -902,
+                40
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": []
+}

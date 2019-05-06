@@ -1,0 +1,31 @@
+{
+  "ver": "2.2.0",
+  "uuid": "68876592-b042-47a4-9b1f-973a1e7e2513",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "subMetas": {
+    "Invincible": {
+      "ver": "1.0.3",
+      "uuid": "b276e2a2-888b-4147-b51f-64f708f2b9aa",
+      "rawTextureUuid": "68876592-b042-47a4-9b1f-973a1e7e2513",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 1.5,
+      "trimX": 0,
+      "trimY": 5,
+      "width": 98,
+      "height": 85,
+      "rawWidth": 98,
+      "rawHeight": 98,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

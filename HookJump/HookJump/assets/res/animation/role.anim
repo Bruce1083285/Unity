@@ -1,0 +1,47 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "role",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.3333333333333333,
+  "sample": 60,
+  "speed": 0.3,
+  "wrapMode": "22",
+  "curveData": {
+    "paths": {
+      "role": {
+        "props": {
+          "x": [
+            {
+              "frame": 0,
+              "value": -2.3
+            },
+            {
+              "frame": 0.3333333333333333,
+              "value": 1.6
+            }
+          ],
+          "scale": [
+            {
+              "frame": 0,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.9,
+                "y": 1.9
+              }
+            },
+            {
+              "frame": 0.3333333333333333,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 2,
+                "y": 2
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": []
+}

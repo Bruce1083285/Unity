@@ -1,0 +1,35 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "HorseRaceLamp",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.8333333333333334,
+  "sample": 30,
+  "speed": 0.1,
+  "wrapMode": "2",
+  "curveData": {
+    "paths": {
+      "label": {
+        "props": {
+          "x": [
+            {
+              "frame": 0,
+              "value": 412
+            },
+            {
+              "frame": 0.8333333333333334,
+              "value": -940
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": [
+    {
+      "frame": 0.8333333333333334,
+      "func": "Play",
+      "params": []
+    }
+  ]
+}

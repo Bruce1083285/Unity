@@ -1,0 +1,235 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "cloud",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 1.15,
+  "sample": 60,
+  "speed": 0.1,
+  "wrapMode": "22",
+  "curveData": {
+    "paths": {
+      "cloud_1": {
+        "props": {
+          "position": [
+            {
+              "frame": 0,
+              "value": [
+                -551,
+                190
+              ],
+              "motionPath": []
+            },
+            {
+              "frame": 0.4666666666666667,
+              "value": [
+                575,
+                271
+              ]
+            }
+          ],
+          "opacity": [
+            {
+              "frame": 0.06666666666666667,
+              "value": 100
+            },
+            {
+              "frame": 0.25,
+              "value": 200
+            },
+            {
+              "frame": 0.4166666666666667,
+              "value": 255
+            }
+          ]
+        }
+      },
+      "cloud_2": {
+        "props": {
+          "position": [
+            {
+              "frame": 0.1,
+              "value": [
+                524,
+                323
+              ],
+              "motionPath": []
+            },
+            {
+              "frame": 0.9166666666666666,
+              "value": [
+                -490,
+                354
+              ]
+            }
+          ],
+          "opacity": [
+            {
+              "frame": 0.11666666666666667,
+              "value": 255
+            },
+            {
+              "frame": 0.9,
+              "value": 20
+            }
+          ]
+        }
+      },
+      "cloud_3": {
+        "props": {
+          "position": [
+            {
+              "frame": 0.016666666666666666,
+              "value": [
+                -593,
+                508
+              ]
+            },
+            {
+              "frame": 0.7166666666666667,
+              "value": [
+                565,
+                499
+              ]
+            }
+          ],
+          "scale": [
+            {
+              "frame": 0.1,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.9,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.25,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.8,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.38333333333333336,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.9,
+                "y": 0.9
+              }
+            },
+            {
+              "frame": 0.4666666666666667,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 0.9
+              }
+            },
+            {
+              "frame": 0.6,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.7,
+                "y": 0.7
+              }
+            },
+            {
+              "frame": 0.7,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            }
+          ]
+        }
+      },
+      "cloud_4": {
+        "props": {
+          "position": [
+            {
+              "frame": 0.08333333333333333,
+              "value": [
+                599,
+                590
+              ]
+            },
+            {
+              "frame": 1.15,
+              "value": [
+                -530,
+                513
+              ]
+            }
+          ],
+          "scale": [
+            {
+              "frame": 0.16666666666666666,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.23333333333333334,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.7,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.3,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.7,
+                "y": 0.7
+              }
+            },
+            {
+              "frame": 1.0333333333333334,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.7,
+                "y": 1
+              }
+            },
+            {
+              "frame": 1.1166666666666667,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            }
+          ],
+          "opacity": [
+            {
+              "frame": 0.2,
+              "value": 255
+            },
+            {
+              "frame": 0.26666666666666666,
+              "value": 100
+            },
+            {
+              "frame": 1,
+              "value": 150
+            },
+            {
+              "frame": 1.0666666666666667,
+              "value": 50
+            },
+            {
+              "frame": 1.1166666666666667,
+              "value": 255
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": []
+}
