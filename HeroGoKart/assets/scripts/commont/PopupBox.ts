@@ -17,11 +17,11 @@ export class PopupBox {
     private constructor() { }
 
     /**
-     * 通用购买弹出
+     * 通用弹框--->弹出
      * @param hint 弹出框
      * @function callback 回调函数
      */
-    public static CommontBuyPopup(hint: cc.Node, callback: Function) {
+    public static CommontPopup(hint: cc.Node, callback: Function) {
         hint.active = true;
         let box = hint.getChildByName("Box");
         let scale_value = box.getScale();
@@ -34,14 +34,14 @@ export class PopupBox {
     }
 
     /**
-     * 通用购买收回
+     * 通用弹框--->收回
      * @param hint 弹出框
      * @function callback 回调函数
      */
-    public static CommontBuyBack(hint: cc.Node, callback: Function) {
+    public static CommontBack(hint: cc.Node, callback: Function) {
         let box = hint.getChildByName("Box");
         let Act_scale_1 = cc.scaleTo(0.1, 1.2);
-        let Act_scale_2 = cc.scaleTo(0.5, 0);
+        let Act_scale_2 = cc.scaleTo(0.2, 0);
         let Act_callback = () => {
             hint.active = false;
             callback();

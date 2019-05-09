@@ -1,7 +1,7 @@
-import EventCenter from "../../commont/EventCenter";
 import { EventType, CacheType } from "../../commont/Enum";
-import Cache from "../../commont/Cache";
-import PopupBox from "../../commont/PopupBox";
+import { EventCenter } from "../../commont/EventCenter";
+import { Cache } from "../../commont/Cache";
+import { PopupBox } from "../../commont/PopupBox";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -19,6 +19,16 @@ const { ccclass, property } = cc._decorator;
 export default class ShopRole extends cc.Component {
 
     /**
+     * @property [Array]角色名字
+     */
+    @property([cc.SpriteFrame])
+    private Role_Names: cc.SpriteFrame[] = [];
+    /**
+     * @property [Array]角色皮肤
+     */
+    @property([cc.SpriteFrame])
+    private Role_Skins: cc.SpriteFrame[] = [];
+    /**
      * @property 购买提示框
      */
     private HintBox_Buy: cc.Node = null;
@@ -26,7 +36,10 @@ export default class ShopRole extends cc.Component {
      * @property 金币提示框
      */
     private HintBox_Coin: cc.Node = null;
-
+    /**
+     * @property 购买成功提示框
+     */
+    private HintBox_Yes: cc.Node = null;
     /**
      * @property 金币Label
      */
@@ -56,6 +69,9 @@ export default class ShopRole extends cc.Component {
      * 初始化
      */
     Init() {
+        //购买成功提示框
+        this.HintBox_Yes = this.node.getChildByName("HintBox_Yes");
+        this.HintBox_Yes.active = false;
         //金币购买提示框
         this.HintBox_Buy = this.node.getChildByName("HintBox_Buy");
         this.HintBox_Buy.active = false;
@@ -63,12 +79,14 @@ export default class ShopRole extends cc.Component {
         this.HintBox_Coin = this.HintBox_Buy.getChildByName("HintBox_Coin");
         this.HintBox_Coin.active = false;
         this.Label_Coin = this.node.getChildByName("Current_Coin").getChildByName("label").getComponent(cc.Label);
-        this.Label_Coin.string = this.GetCoinCache();
         this.Commoditys = this.node.getChildByName("Shop").children;
-        this.HaveCommodityIDs = ["1"];
-        this.Current_Role_ID = this.GetCurrentRoleID();
         this.IsClick = true;
 
+        this.Label_Coin.string = this.GetCoinCache();
+        this.HaveCommodityIDs = this.GetHaveCommodityIDs();
+        this.Current_Role_ID = this.GetCurrentRoleID();
+
+        this.AddListenter();
         this.SetCommoditysStatus(this.Commoditys, this.HaveCommodityIDs, this.Current_Role_ID);
         this.AddButton(this.Commoditys);
     }
@@ -88,6 +106,24 @@ export default class ShopRole extends cc.Component {
     }
 
     /**
+    * 添加监听
+    */
+    private AddListenter() {
+        //商城--->角色
+        EventCenter.AddListenter(EventType.Coin_Amount, () => {
+            this.UpdateCoin();
+        }, "ShopRole");
+    }
+
+    /**
+     * 移除监听
+     */
+    private RemoveListenter() {
+        //商城--->角色
+        EventCenter.RemoveListenter(EventType.Coin_Amount, "ShopRole");
+    }
+
+    /**
      * 按钮点击
      * @param lv 
      * @param click 点击参数
@@ -96,8 +132,10 @@ export default class ShopRole extends cc.Component {
         if (!this.IsClick) {
             return;
         }
+        this.SetIsClick(false);
         switch (click) {
             case "back":
+                this.SetIsClick(true);
                 EventCenter.Broadcast(EventType.ShopColse_Role);
                 break;
             case "yes":
@@ -105,6 +143,9 @@ export default class ShopRole extends cc.Component {
                 break;
             case "no":
                 this.No();
+                break;
+            case "hintbox_yes_close":
+                this.HintBoxYesClose();
                 break;
             default:
                 break;
@@ -122,17 +163,77 @@ export default class ShopRole extends cc.Component {
         if (!isBuy) {
             //金币不足弹窗
             PopupBox.CommontCoinPopup(this.HintBox_Coin);
+            this.SetIsClick(true);
+        } else {
+            PopupBox.CommontBack(this.HintBox_Buy, () => {
+                // this.SetIsClick(true);
+            });
+
+            this.SetHintBoxYes(this.HintBox_Yes, this.Role_Skins, this.Role_Names, this.ReadyToBuy_ID);
+            PopupBox.CommontPopup(this.HintBox_Yes, () => {
+                this.SetIsClick(true);
+            });
         }
+    }
+
+    /**
+     * 设置购买成功提示框
+     * @param hint 提示框
+     * @param role_skins [Array]角色皮肤
+     * @param role_names [Array]角色名字
+     * @param readyTobuy_ID 准备购买的角色ID
+     */
+    private SetHintBoxYes(hint: cc.Node, role_skins: cc.SpriteFrame[], role_names: cc.SpriteFrame[], readyTobuy_ID: string) {
+        //角色皮肤
+        let role_skin: cc.SpriteFrame = null;
+        for (let i = 0; i < role_skins.length; i++) {
+            let role_skin_id = role_skins[i].name
+            if (role_skin_id === readyTobuy_ID) {
+                role_skin = role_skins[i];
+                break;
+            }
+        }
+        let role_sprite = hint.getChildByName("Box").getChildByName("role").getComponent(cc.Sprite);
+        role_sprite.spriteFrame = role_skin;
+
+        //角色名字
+        let role_name: cc.SpriteFrame = null;
+        for (let i = 0; i < role_names.length; i++) {
+            let role_name_id = role_names[i].name
+            let cha = role_name_id.charAt(0);
+            if (cha === readyTobuy_ID) {
+                role_name = role_names[i];
+                break;
+            }
+        }
+        let name_sprite = hint.getChildByName("Box").getChildByName("name").getComponent(cc.Sprite);
+        name_sprite.spriteFrame = role_name;
     }
 
     /**
      * No
      */
     private No() {
-        this.SetIsClick(false);
-        PopupBox.CommontBuyBack(this.HintBox_Buy, () => {
+        PopupBox.CommontBack(this.HintBox_Buy, () => {
             this.SetIsClick(true);
         });
+    }
+
+    /**
+     * 关闭购买成功提示框
+     */
+    private HintBoxYesClose() {
+        PopupBox.CommontBack(this.HintBox_Yes, () => {
+            this.SetIsClick(true);
+        });
+    }
+
+    /**
+     * 设置是否可以点击
+     * @param isClick 是否点击
+     */
+    private SetIsClick(isClick: boolean) {
+        this.IsClick = isClick;
     }
 
     /**
@@ -141,8 +242,6 @@ export default class ShopRole extends cc.Component {
      * @param click 点击参数
      */
     private CommodityButtonClick(lv: any, click: string) {
-        this.SetIsClick(false);
-        console.log(click);
         for (let i = 0; i < this.Commoditys.length; i++) {
             let commodity = this.Commoditys[i];
             if (commodity.name === click) {
@@ -151,7 +250,7 @@ export default class ShopRole extends cc.Component {
                 if (isBuy) {
                     //购买商品
                     //弹窗
-                    PopupBox.CommontBuyPopup(this.HintBox_Buy, () => {
+                    PopupBox.CommontPopup(this.HintBox_Buy, () => {
                         this.SetIsClick(true);
                     });
                     this.ReadyToBuy_ID = click;
@@ -181,10 +280,14 @@ export default class ShopRole extends cc.Component {
                 let price_value = parseInt(price_str);
                 if (coin_value >= price_value) {
                     havecommodityIDs.push(commodity.name);
+                    let have_str = havecommodityIDs.toString();
+                    Cache.SetCache(CacheType.HaveCommodity_RoleIDs, have_str);
+
                     commodity.getChildByName("Coin").active = false;
                     let value = coin_value - price_value;
                     //缓存金币值
                     Cache.SetCache(CacheType.Coin_Amount, value + "");
+                    EventCenter.Broadcast(EventType.Coin_Amount);
                     return true;
                 }
                 return false;
@@ -201,11 +304,16 @@ export default class ShopRole extends cc.Component {
     private SelectCommodity(commoditys: cc.Node[], select_id: string): string {
         for (let i = 0; i < commoditys.length; i++) {
             let commodity = commoditys[i];
+            let inUse = commodity.getChildByName("InUse");
             if (commodity.name === select_id) {
-                commodity.getChildByName("InUse").active = true;
-                return commodity.name;
+                inUse.active = true;
+            } else {
+                inUse.active = false;
             }
         }
+
+        Cache.SetCache(CacheType.Current_Role_ID, select_id);
+        return select_id;
     }
 
     /**
@@ -235,14 +343,6 @@ export default class ShopRole extends cc.Component {
     }
 
     /**
-     * 设置是否可以点击
-     * @param isClick 是否点击
-     */
-    private SetIsClick(isClick: boolean) {
-        this.IsClick = isClick;
-    }
-
-    /**
      * 设置商品状态
      * @param commoditys [Array]商品
      * @param havecommodityIDs [Array]已购买商品ID
@@ -256,13 +356,14 @@ export default class ShopRole extends cc.Component {
                 //金币条件
                 let coin = commodity.getChildByName("Coin");
 
-                if (commodity.name === havecommodityIDs[i]) {
+                if (commodity.name === havecommodityIDs[j]) {
                     let isopen = false;
                     if (commodity.name === current_role_id) {
                         isopen = true;
                     }
                     inUse.active = isopen;
                     coin.active = false;
+                    break;
                 } else {
                     inUse.active = false;
                     coin.active = true;
@@ -296,5 +397,38 @@ export default class ShopRole extends cc.Component {
         }
 
         return value;
+    }
+
+    /**
+     * 获取已购买商品ID
+     * @returns 已购买商品ID
+     */
+    private GetHaveCommodityIDs(): string[] {
+        let arr: string[] = [];
+        let have_str = Cache.GetCache(CacheType.HaveCommodity_RoleIDs);
+
+        if (!have_str) {
+            arr = ["1"]
+            return arr;
+        }
+
+        for (let i = 0; i < have_str.length; i++) {
+            let cha = have_str.charAt(i);
+            if (cha != ",") {
+                let ind = arr.indexOf(cha);
+                if (ind === -1) {
+                    arr.push(cha);
+                }
+            }
+        }
+        return arr;
+    }
+
+    /**
+     * 更新金币
+     */
+    private UpdateCoin() {
+        let value = Cache.GetCache(CacheType.Coin_Amount);
+        this.Label_Coin.string = value;
     }
 }

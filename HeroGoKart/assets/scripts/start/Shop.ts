@@ -1,6 +1,7 @@
 import ShopRole from "./shop/ShopRole";
 import { EventType } from "../commont/Enum";
-import EventCenter from "../commont/EventCenter";
+import { EventCenter } from "../commont/EventCenter";
+import ShopCar from "./shop/ShopCar";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -21,16 +22,25 @@ export default class Shop extends cc.Component {
      * @property 商城--->角色类
      */
     private Shop_Role: ShopRole = null;
+    /**
+     * @property 商城--->汽车类
+     */
+    private Shop_Car: ShopCar = null;
 
     /**
      * 初始化
      */
     Init() {
         this.Shop_Role = this.node.getChildByName("Shop_Role").getComponent(ShopRole);
+        this.Shop_Car = this.node.getChildByName("Shop_Car").getComponent(ShopCar);
 
         this.Shop_Role.Init();
+        this.Shop_Car.Init();
 
+        this.Show(this.node);
         this.ShopRoleClose(this.Shop_Role);
+        this.ShopCarClose(this.Shop_Car);
+
         this.AddListenter();
     }
 
@@ -39,25 +49,38 @@ export default class Shop extends cc.Component {
      * 添加监听
      */
     private AddListenter() {
-        //添加事件监听
+        //商城--->角色
         EventCenter.AddListenter(EventType.ShopShow_Role, () => {
             // this.Show(this.node);
             this.ShopRoleShow(this.Shop_Role);
         }, "ShopRole");
-
         EventCenter.AddListenter(EventType.ShopColse_Role, () => {
             // this.Close(this.node);
             this.ShopRoleClose(this.Shop_Role);
         }, "ShopRole");
+
+        //商城--->汽车
+        EventCenter.AddListenter(EventType.ShopShow_Car, () => {
+            // this.Show(this.node);
+            this.ShopCarShow(this.Shop_Car);
+        }, "ShopCar");
+        EventCenter.AddListenter(EventType.ShopColse_Car, () => {
+            // this.Close(this.node);
+            this.ShopCarClose(this.Shop_Car);
+        }, "ShopCar");
     }
 
     /**
      * 移除监听
      */
     private RemoveListenter() {
-        //移除事件监听
+        //商城--->角色
         EventCenter.RemoveListenter(EventType.ShopShow_Role, "ShopRole");
         EventCenter.RemoveListenter(EventType.ShopColse_Role, "ShopRole");
+
+        //商城--->汽车
+        EventCenter.RemoveListenter(EventType.ShopShow_Car, "ShopCar");
+        EventCenter.RemoveListenter(EventType.ShopColse_Car, "ShopCar");
     }
 
     /**
@@ -90,5 +113,21 @@ export default class Shop extends cc.Component {
      */
     private ShopRoleClose(shop_role: ShopRole) {
         shop_role.Close();
+    }
+
+    /**
+     * 显示商城--->汽车
+     * @param shop_car 商城--->汽车类
+     */
+    private ShopCarShow(shop_car: ShopCar) {
+        shop_car.Show();
+    }
+
+    /**
+     * 关闭商城--->汽车
+     * @param shop_car 商城--->汽车类
+     */
+    private ShopCarClose(shop_car: ShopCar) {
+        shop_car.Close();
     }
 }

@@ -1,6 +1,7 @@
-import EventCenter from "./commont/EventCenter";
-import { EventType } from "./commont/Enum";
+import { EventType, CacheType } from "./commont/Enum";
 import Shop from "./start/Shop";
+import { EventCenter } from "./commont/EventCenter";
+import { Cache } from "./commont/Cache";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -26,11 +27,23 @@ export default class Start extends cc.Component {
      * 初始化
      */
     Init() {
+        this.Test();
+
         this.Shop = this.node.getChildByName("Shop").getComponent(Shop);
 
         this.Shop.Init();
-        
+
         this.Show(this.node);
+    }
+
+    /**
+     * 测试
+     */
+    private Test() {
+        //测试
+        Cache.RemoveCache(CacheType.HaveCommodity_RoleIDs);
+        Cache.RemoveCache(CacheType.HaveCommodity_CarIDs);
+        Cache.SetCache(CacheType.Coin_Amount, "1000");
     }
 
     /**
@@ -47,10 +60,37 @@ export default class Start extends cc.Component {
                 EventCenter.Broadcast(EventType.ShopShow_Role);
                 break;
             case "car_shop":
+                EventCenter.Broadcast(EventType.ShopShow_Car);
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 添加监听
+     */
+    private AddListenter() {
+        //显示
+        EventCenter.AddListenter(EventType.Page_StartShow, () => {
+            this.Show(this.node);
+        }, "Start");
+
+        //关闭
+        EventCenter.AddListenter(EventType.Page_StartClose, () => {
+            this.Close(this.node);
+        }, "Start");
+    }
+
+    /**
+     * 添加监听
+     */
+    private RemoveListenter() {
+        //显示
+        EventCenter.RemoveListenter(EventType.Page_StartShow, "Start");
+
+        //关闭
+        EventCenter.RemoveListenter(EventType.Page_StartClose, "Start");
     }
 
     /**

@@ -21,9 +21,9 @@ export default class Main extends cc.Component {
     private Start: Start = null;
 
     onLoad() {
-        this.Start = this.node.getChildByName("Page_Start").getComponent(Start);
+        // this.Start = this.node.getChildByName("Page_Start").getComponent(Start);
         
-        this.Start.Init();
+        // this.Start.Init();
     }
 
     start() {
