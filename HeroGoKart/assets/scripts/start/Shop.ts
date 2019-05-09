@@ -30,6 +30,7 @@ export default class Shop extends cc.Component {
 
         this.Shop_Role.Init();
 
+        this.ShopRoleClose(this.Shop_Role);
         this.AddListenter();
     }
 
@@ -40,12 +41,12 @@ export default class Shop extends cc.Component {
     private AddListenter() {
         //添加事件监听
         EventCenter.AddListenter(EventType.ShopShow_Role, () => {
-            this.Show(this.node);
+            // this.Show(this.node);
             this.ShopRoleShow(this.Shop_Role);
         }, "ShopRole");
 
         EventCenter.AddListenter(EventType.ShopColse_Role, () => {
-            this.Close(this.node);
+            // this.Close(this.node);
             this.ShopRoleClose(this.Shop_Role);
         }, "ShopRole");
     }
