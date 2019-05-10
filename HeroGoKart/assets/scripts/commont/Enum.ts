@@ -18,6 +18,12 @@ export enum EventType {
     Page_StartShow,
     /**首页关闭 */
     Page_StartClose,
+    /**游戏页显示 */
+    Page_GameShow,
+    /**游戏页关闭 */
+    Page_GameClose,
+    /**设置当前赛道 */
+    Game_SetCurrentPath,
 }
 
 /**@enum 缓存类型 */
