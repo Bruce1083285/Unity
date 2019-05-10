@@ -1,0 +1,7 @@
+{
+  "ver": "1.0.0",
+  "uuid": "3483995a-0e3b-4278-b15d-c512ced6c17d",
+  "atlasJson": "{\"SubTexture\":[{\"width\":350,\"y\":1,\"height\":334,\"name\":\"kadingcheboluochediying\",\"x\":1},{\"width\":232,\"y\":337,\"height\":20,\"name\":\"重复项目文件夹/kadingchezisechechelungan\",\"x\":231},{\"width\":66,\"y\":85,\"height\":88,\"name\":\"kadingcheboluocheluntai\",\"x\":353},{\"width\":56,\"y\":151,\"height\":28,\"name\":\"kadingcheboluochelunwen\",\"x\":421},{\"width\":56,\"y\":175,\"height\":28,\"name\":\"kadingcheboluochechelun2\",\"x\":353},{\"width\":52,\"y\":85,\"height\":64,\"name\":\"kadingcheboluochepaiqiguqan\",\"x\":421},{\"width\":228,\"y\":337,\"height\":270,\"name\":\"kadingcheboluochecheshen\",\"x\":1},{\"width\":122,\"y\":1,\"height\":82,\"name\":\"kadingcheboluocheweiqiguan\",\"x\":353}],\"name\":\"skeleton_47\",\"imagePath\":\"texture.png\"}",
+  "texture": "d7b8771f-caa2-4d59-a033-d51784749584",
+  "subMetas": {}
+}

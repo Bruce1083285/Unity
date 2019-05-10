@@ -135,8 +135,7 @@ export default class ShopRole extends cc.Component {
         this.SetIsClick(false);
         switch (click) {
             case "back":
-                this.SetIsClick(true);
-                EventCenter.Broadcast(EventType.ShopColse_Role);
+                this.Back();
                 break;
             case "yes":
                 this.Yes();
@@ -150,6 +149,15 @@ export default class ShopRole extends cc.Component {
             default:
                 break;
         }
+    }
+
+    /**
+     * 返回
+     */
+    private Back() {
+        //返回首页
+        this.SetIsClick(true);
+        EventCenter.Broadcast(EventType.ShopColse_Role);
     }
 
     /**

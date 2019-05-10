@@ -135,8 +135,7 @@ export default class NewClass extends cc.Component {
         this.SetIsClick(false);
         switch (click) {
             case "back":
-                this.SetIsClick(true);
-                EventCenter.Broadcast(EventType.ShopColse_Car);
+                this.Back();
                 break;
             case "yes":
                 this.Yes();
@@ -153,8 +152,17 @@ export default class NewClass extends cc.Component {
     }
 
     /**
-     * Yes
+     * 返回
      */
+    private Back() {
+        //返回首页
+        this.SetIsClick(true);
+        EventCenter.Broadcast(EventType.ShopColse_Car);
+    }
+
+    /**
+      * Yes
+      */
     private Yes() {
         let value = Cache.GetCache(CacheType.Coin_Amount);
         let coin_num = parseInt(value);

@@ -54,17 +54,39 @@ export default class Start extends cc.Component {
     private ButtonClick(lv: any, click: string) {
         switch (click) {
             case "play":
-                this.Close(this.node);
+                this.Play();
                 break;
             case "role_shop":
-                EventCenter.Broadcast(EventType.ShopShow_Role);
+                this.OpenRoleShop();
                 break;
             case "car_shop":
-                EventCenter.Broadcast(EventType.ShopShow_Car);
+                this.OpenCarShop();
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 开始游戏
+     */
+    private Play() {
+        //进入关卡页
+        this.Close(this.node);
+    }
+
+    /**
+     * 开启商城--->角色
+     */
+    private OpenRoleShop() {
+        EventCenter.Broadcast(EventType.ShopShow_Role);
+    }
+
+    /**
+     * 开启商城--->汽车
+     */
+    private OpenCarShop() {
+        EventCenter.Broadcast(EventType.ShopShow_Car);
     }
 
     /**

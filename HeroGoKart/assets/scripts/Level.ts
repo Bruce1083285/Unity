@@ -22,7 +22,7 @@ export default class Level extends cc.Component {
     private Levels: cc.Node[] = [];
 
     onLoad() {
-        this.Init();
+        // this.Init();
     }
 
     /**
@@ -43,6 +43,7 @@ export default class Level extends cc.Component {
     private ButtonClick(lv: any, click: string) {
         switch (click) {
             case "back":
+                this.Back();
                 break;
             case "":
                 break;
@@ -54,12 +55,20 @@ export default class Level extends cc.Component {
     }
 
     /**
+     * 返回
+     */
+    private Back() {
+        //返回首页
+    }
+
+    /**
      * 关卡按钮点击
      * @param lv 
      * @param click 点击参数
      */
     private LevelButtonClick(lv: any, click: string) {
         console.log(click);
+        //更新游戏背景
 
     }
 
