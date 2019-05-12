@@ -217,18 +217,18 @@
     "_enabled": true,
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_armatureName": "kadingcheF1hong",
-    "_animationName": "a1",
+    "_armatureName": "kadingcheguanjunche",
+    "_animationName": "",
     "playTimes": 0,
     "premultipliedAlpha": false,
     "_N$dragonAsset": {
-      "__uuid__": "b691b582-ef2c-47a0-8864-0656c5b39257"
+      "__uuid__": "e0cc0c6f-b1a6-47ba-b342-873cdd8ead0a"
     },
     "_N$dragonAtlasAsset": {
-      "__uuid__": "4e9752f5-23a4-43a1-be05-df2442c8746c"
+      "__uuid__": "0ffb2d1c-529f-408c-88a5-d95aeca82ed9"
     },
     "_N$_defaultArmatureIndex": 0,
-    "_N$_animationIndex": 1,
+    "_N$_animationIndex": 0,
     "_N$timeScale": 1,
     "_N$debugBones": false,
     "_id": ""
@@ -391,18 +391,18 @@
     "_enabled": true,
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_armatureName": "kadingchexiongda",
-    "_animationName": "a1",
+    "_armatureName": "kadingchexiyangyang",
+    "_animationName": "",
     "playTimes": 0,
     "premultipliedAlpha": false,
     "_N$dragonAsset": {
-      "__uuid__": "29d54599-7851-42d8-952c-1342a1efdebc"
+      "__uuid__": "dc201d66-41cf-4bab-8903-ec9f4df06d05"
     },
     "_N$dragonAtlasAsset": {
-      "__uuid__": "7a516620-8ee3-42fd-a4ae-277b81aedf52"
+      "__uuid__": "cddf065f-87a8-4f07-8435-207618d88d6b"
     },
     "_N$_defaultArmatureIndex": 0,
-    "_N$_animationIndex": 1,
+    "_N$_animationIndex": 0,
     "_N$timeScale": 1,
     "_N$debugBones": false,
     "_id": ""

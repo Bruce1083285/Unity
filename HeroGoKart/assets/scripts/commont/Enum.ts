@@ -24,6 +24,8 @@ export enum EventType {
     Page_GameClose,
     /**设置当前赛道 */
     Game_SetCurrentPath,
+    /**设置当前玩家皮肤 */
+    Game_SetCurrentPlayerSkin,
 }
 
 /**@enum 缓存类型 */
@@ -38,4 +40,41 @@ export enum CacheType {
     Current_Car_ID = "Current_Car_ID",
     /**已购买商品--->汽车ID */
     HaveCommodity_CarIDs = "HaveCommodity_CarIDs",
+}
+
+/**@enum 龙骨动画名称--->角色 */
+export enum DragonBonesAnimation_Role {
+    /**默认动画 */
+    a1 = "a1",
+    a2 = "a2",
+    a3 = "a3",
+    a4 = "a4",
+    a5 = "a5",
+    a6 = "a6",
+    a7 = "a7",
+    a8 = "a8",
+    a9 = "a9",
+    a10 = "a10",
+    a11 = "a11",
+}
+
+/**@enum 龙骨动画名称--->汽车 */
+export enum DragonBonesAnimation_Car {
+    /**默认动画 */
+    a1 = "a1",
+    a2 = "a2",
+    a3 = "a3",
+    a4 = "a4",
+    a5 = "a5",
+    a6 = "a6",
+    a7 = "a7",
+    a8 = "a8",
+}
+
+/**@enum 龙骨动画执行次数 */
+export enum DragonBonesAnimation_PlayTimes {
+    /**使用配置文件中的默认值 */
+    Default_Value = -1,
+    /**无限循环，大于0表示循环次数 */
+    Loop = 0,
 }

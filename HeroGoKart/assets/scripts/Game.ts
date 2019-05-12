@@ -1,5 +1,6 @@
 import { EventCenter } from "./commont/EventCenter";
-import { EventType } from "./commont/Enum";
+import { EventType, CacheType, DragonBonesAnimation_Role, DragonBonesAnimation_PlayTimes, DragonBonesAnimation_Car } from "./commont/Enum";
+import { Cache } from "./commont/Cache";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -97,6 +98,22 @@ export default class Game extends cc.Component {
      */
     private Current_PathSkin: cc.SpriteFrame = null;
     /**
+     * @property 当前玩家--->角色龙骨资源
+     */
+    private Current_Player_RoleAsset: dragonBones.DragonBonesAsset = null;
+    /**
+     * @property 当前玩家--->角色图集
+     */
+    private Current_Player_RoleAtlasAsset: dragonBones.DragonBonesAtlasAsset = null;
+    /**
+     * @property 当前玩家--->汽车龙骨资源
+     */
+    private Current_Player_CarAsset: dragonBones.DragonBonesAsset = null;
+    /**
+     * @property 当前玩家--->汽车图集
+     */
+    private Current_Player_CarAtlasAsset: dragonBones.DragonBonesAtlasAsset = null;
+    /**
      * @property 跑道起点对象池
      */
     private Pool_PathStart: cc.NodePool = null;
@@ -116,6 +133,10 @@ export default class Game extends cc.Component {
     * @property 问号对象池
     */
     private Pool_Question: cc.NodePool = null;
+    /**
+     * @property [Array]问号
+     */
+    private Questions: cc.Node[] = [];
 
     onLoad() {
         this.Init();
@@ -140,9 +161,6 @@ export default class Game extends cc.Component {
         this.Area_Path = this.node.getChildByName("Area_Path");
 
         this.SetPathStart(this.Pool_PathStart, this.BG);
-        this.SetPlayer(this.Area_Path, this.Pre_Player);
-        this.SetAI(this.Pool_AI, this.Area_Path);
-        this.SetRolePos(this.Area_Path);
 
         this.Test();
     }
@@ -151,9 +169,18 @@ export default class Game extends cc.Component {
      * 测试
      */
     private Test() {
-        let a = this.Player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
-        a.dragonAsset
-        this.SetCurrentPath("3");
+        console.log(this.BonesAtlasAsset_Role[3].name);
+        Cache.SetCache(CacheType.Current_Role_ID, "3");
+        Cache.SetCache(CacheType.Current_Car_ID, "6");
+
+        // this.SetCurrentPlayerSkin();
+        // this.SetPlayer(this.Area_Path, this.Pre_Player);
+        // this.SetAI(this.Pool_AI, this.Area_Path);
+        // this.SetRolePos(this.Area_Path);
+        this.Questions = this.GetQuestion(this.Pool_Question, this.Area_Path);
+        console.log(this.Questions);
+
+        this.SetCurrentPathSkin("3");
         this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin);
         this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin);
         this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
@@ -190,8 +217,9 @@ export default class Game extends cc.Component {
         //显示
         EventCenter.AddListenter(EventType.Page_GameShow, () => {
             this.Show(this.node);
-            this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
-            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin);
+
+            this.SetAI(this.Pool_AI, this.Area_Path);
+            this.SetRolePos(this.Area_Path);
         }, "Game");
 
         //关闭
@@ -201,7 +229,15 @@ export default class Game extends cc.Component {
 
         //设置当前跑道
         EventCenter.AddListenter(EventType.Game_SetCurrentPath, (path_ID) => {
-            this.SetCurrentPath(path_ID);
+            this.SetCurrentPathSkin(path_ID);
+            this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
+            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin);
+        }, "Game");
+
+        //设置当前玩家
+        EventCenter.AddListenter(EventType.Game_SetCurrentPlayerSkin, () => {
+            this.SetCurrentPlayerSkin();
+            this.SetPlayer(this.Area_Path, this.Pre_Player);
         }, "Game");
     }
 
@@ -307,7 +343,73 @@ export default class Game extends cc.Component {
      */
     private SetPlayer(parent: cc.Node, pre_player: cc.Prefab) {
         let player = cc.instantiate(pre_player);
+
+        //角色
+        let display_role = player.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
+        this.SetPlayerDragonBones(display_role, this.Current_Player_RoleAsset, this.Current_Player_RoleAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop);
+
+        //汽车
+        let display_car = player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+        this.SetPlayerDragonBones(display_car, this.Current_Player_CarAsset, this.Current_Player_CarAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop);
+
+
         parent.addChild(player);
+    }
+
+    /**
+     * 设置玩家龙骨属性
+     * @param display 龙骨组件
+     * @param asset 龙骨资源
+     * @param atlasAsset 龙骨图集
+     * @param animation_vlaue 龙骨动画名称
+     * @param animation_PlayTimes_value 龙骨动画播放次数
+     */
+    private SetPlayerDragonBones(display: dragonBones.ArmatureDisplay, asset: dragonBones.DragonBonesAsset, atlasAsset: dragonBones.DragonBonesAtlasAsset, animation_vlaue: any, animation_PlayTimes_value: DragonBonesAnimation_PlayTimes) {
+        console.log("组件龙骨资源");
+        console.log(display.dragonAsset);
+        console.log("参数龙骨资源");
+        console.log(asset);
+        let a = display.buildArmature(asset.name, display.node);
+        console.log(a);
+
+        display.dragonAsset.dragonBonesJson = asset.dragonBonesJson;
+        display.dragonAtlasAsset.atlasJson = atlasAsset.atlasJson;
+        display.animationName = animation_vlaue;
+        display.playTimes = animation_PlayTimes_value;
+    }
+
+    /**
+     * 设置玩家当前皮肤
+     */
+    private SetCurrentPlayerSkin() {
+        //当前角色皮肤
+        let skinid_Role = Cache.GetCache(CacheType.Current_Role_ID);
+        //角色龙骨
+        for (let i = 0; i < this.BonesAsset_Role.length; i++) {
+            let asset = this.BonesAsset_Role[i];
+            let atlasAsset = this.BonesAtlasAsset_Role[i];
+            let cha = asset.name.charAt(0);
+            if (cha === skinid_Role) {
+                this.Current_Player_RoleAsset = asset;
+                this.Current_Player_RoleAtlasAsset = atlasAsset;
+                break;
+            }
+        }
+
+        //当前汽车皮肤
+        let skinid_Car = Cache.GetCache(CacheType.Current_Car_ID);
+        //汽车龙骨
+        for (let i = 0; i < this.BonesAsset_Car.length; i++) {
+            let asset = this.BonesAsset_Car[i];
+            let atlasAsset = this.BonesAtlasAsset_Car[i];
+            let cha = asset.name.charAt(0);
+            if (cha === skinid_Car) {
+                this.Current_Player_CarAsset = asset;
+                this.Current_Player_CarAtlasAsset = atlasAsset;
+                break;
+            }
+        }
+
     }
 
     /**
@@ -316,6 +418,9 @@ export default class Game extends cc.Component {
     * @param parent 父节点
     */
     private SetAI(pool: cc.NodePool, parent: cc.Node) {
+        let arr_Role: number[] = [];
+        let arr_Car: number[] = [];
+
         for (let i = 0; i < 3; i++) {
             let AI = pool.get();
             if (!AI) {
@@ -323,8 +428,55 @@ export default class Game extends cc.Component {
                 AI = pool.get();
             }
 
+            //角色
+            for (let j = 0; j < this.BonesAsset_Role.length; j++) {
+                let display_role = AI.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
+                let istrue = this.SetAIDragonBones(display_role, this.BonesAsset_Role, this.BonesAtlasAsset_Role, DragonBonesAnimation_Role.a1, DragonBonesAnimation_PlayTimes.Loop, arr_Role);
+                if (istrue) {
+                    break;
+                }
+                j--;
+            }
+
+            //汽车
+            for (let j = 0; j < this.BonesAsset_Car.length; j++) {
+                let display_car = AI.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+                let istrue = this.SetAIDragonBones(display_car, this.BonesAsset_Car, this.BonesAtlasAsset_Car, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, arr_Car);
+                if (istrue) {
+                    break;
+                }
+                j--;
+            }
+
             parent.addChild(AI);
         }
+    }
+
+    /**
+     * 设置AI龙骨属性
+     * @param display 龙骨组件
+     * @param bonesAssets [Array]龙骨资源
+     * @param bonesAtlasAssets [Array]龙骨图集
+     * @param animation_value 龙骨动画名称
+     * @param animation_PlayTimes_value 龙骨动画播放次数
+     * @param arr [Array]记录是否重复
+     * @returns 是否设置成功
+     */
+    private SetAIDragonBones(display: dragonBones.ArmatureDisplay, bonesAssets: dragonBones.DragonBonesAsset[], bonesAtlasAssets: dragonBones.DragonBonesAtlasAsset[], animation_value: any, animation_PlayTimes_value: DragonBonesAnimation_PlayTimes, arr: number[]): boolean {
+        let ran = Math.floor(Math.random() * bonesAssets.length)
+        let ind = arr.indexOf(ran);
+        if (ind === -1) {
+            let asset = bonesAssets[ran];
+            let atlasAsset = bonesAtlasAssets[ran];
+            display.dragonAsset.dragonBonesJson = asset.dragonBonesJson;
+            display.dragonAtlasAsset.atlasJson = atlasAsset.atlasJson;
+            display.animationName = animation_value;
+            display.playTimes = animation_PlayTimes_value;
+
+            arr.push(ran);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -353,7 +505,7 @@ export default class Game extends cc.Component {
      * 设置当前赛道
      * @param PathId 赛道ID
      */
-    private SetCurrentPath(path_ID: String) {
+    private SetCurrentPathSkin(path_ID: String) {
         for (let i = 0; i < this.Skin_Paths.length; i++) {
             let skin_id = this.Skin_Paths[i];
             if (path_ID === skin_id.name) {
@@ -370,5 +522,32 @@ export default class Game extends cc.Component {
     private UpdatePathStart(current_pathSkin: cc.SpriteFrame, path: cc.Node) {
         let sprite_path = path.getChildByName("bg").getComponent(cc.Sprite);
         sprite_path.spriteFrame = current_pathSkin;
+    }
+
+    /**
+     * 获取问号
+     * @param pool 对象池
+     * @param parent 父节点
+     */
+    private GetQuestion(pool: cc.NodePool, parent: cc.Node): cc.Node[] {
+        let arr = [];
+        let ques_x: number = 150;
+        let size_Hight = parent.getContentSize().height;
+        let ran_y = Math.floor(Math.random() * (size_Hight - size_Hight / 2) + size_Hight / 2);
+
+        for (let i = 0; i < 4; i++) {
+            let question = pool.get();
+            if (!question) {
+                this.SetPool(this.Pool_Question, this.Pool_InitCount, this.Pre_Question);
+                question = pool.get();
+            }
+
+            parent.addChild(question);
+            question.setPosition(i * ques_x + ques_x / 2, ran_y);
+
+            arr.push(question);
+        }
+
+        return arr;
     }
 }

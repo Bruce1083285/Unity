@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.34230892038509503,
-      "y": 0.34230892038509503,
+      "x": 0.33662868075900637,
+      "y": 0.33662868075900637,
       "z": 1
     },
     "_quat": {
@@ -6762,56 +6762,13 @@
     ],
     "BonesAsset_Role": [
       {
-        "__uuid__": "bc0a0238-1660-4aa4-965e-81dc43279f8a"
-      },
-      {
-        "__uuid__": "d745466c-0e86-453f-bc2d-001d3c09d9c4"
-      },
-      {
-        "__uuid__": "27a0a457-9708-4fab-8f4f-a9c27e200d45"
-      },
-      {
-        "__uuid__": "29d54599-7851-42d8-952c-1342a1efdebc"
-      },
-      {
-        "__uuid__": "dc201d66-41cf-4bab-8903-ec9f4df06d05"
-      }
-    ],
-    "BonesAtlasAsset_Role": [
-      {
-        "__uuid__": "88deb7e0-5585-409c-b739-3737eaad5d8d"
-      },
-      {
-        "__uuid__": "45672cb2-cc3a-4cab-b52d-271bbb7de64c"
-      },
-      {
-        "__uuid__": "85790914-2d2e-4f12-a0d4-0795007f457c"
-      },
-      {
-        "__uuid__": "7a516620-8ee3-42fd-a4ae-277b81aedf52"
-      },
-      {
-        "__uuid__": "cddf065f-87a8-4f07-8435-207618d88d6b"
-      }
-    ],
-    "BonesAsset_Car": [
-      {
-        "__uuid__": "b691b582-ef2c-47a0-8864-0656c5b39257"
-      },
-      {
-        "__uuid__": "a18e561b-dd3e-42c0-b443-0338a808a2f7"
-      },
-      {
-        "__uuid__": "41f27c2e-0eaf-4eb4-a083-91c239aaedba"
-      },
-      {
-        "__uuid__": "b80cfd5c-5ef0-41c7-9320-b1627eb322b1"
+        "__uuid__": "e0cc0c6f-b1a6-47ba-b342-873cdd8ead0a"
       },
       {
         "__uuid__": "ce66f479-69b9-4da5-bb7e-ba399f762468"
       },
       {
-        "__uuid__": "e0cc0c6f-b1a6-47ba-b342-873cdd8ead0a"
+        "__uuid__": "b691b582-ef2c-47a0-8864-0656c5b39257"
       },
       {
         "__uuid__": "63cdb1ec-668e-4154-9e2c-544cf934926e"
@@ -6820,30 +6777,73 @@
         "__uuid__": "e2509546-dcbd-4057-86c6-310262840c18"
       }
     ],
+    "BonesAtlasAsset_Role": [
+      {
+        "__uuid__": "cddf065f-87a8-4f07-8435-207618d88d6b"
+      },
+      {
+        "__uuid__": "7a516620-8ee3-42fd-a4ae-277b81aedf52"
+      },
+      {
+        "__uuid__": "45672cb2-cc3a-4cab-b52d-271bbb7de64c"
+      },
+      {
+        "__uuid__": "88deb7e0-5585-409c-b739-3737eaad5d8d"
+      },
+      {
+        "__uuid__": "85790914-2d2e-4f12-a0d4-0795007f457c"
+      }
+    ],
+    "BonesAsset_Car": [
+      {
+        "__uuid__": "e0cc0c6f-b1a6-47ba-b342-873cdd8ead0a"
+      },
+      {
+        "__uuid__": "ce66f479-69b9-4da5-bb7e-ba399f762468"
+      },
+      {
+        "__uuid__": "b691b582-ef2c-47a0-8864-0656c5b39257"
+      },
+      {
+        "__uuid__": "63cdb1ec-668e-4154-9e2c-544cf934926e"
+      },
+      {
+        "__uuid__": "e2509546-dcbd-4057-86c6-310262840c18"
+      },
+      {
+        "__uuid__": "b80cfd5c-5ef0-41c7-9320-b1627eb322b1"
+      },
+      {
+        "__uuid__": "a18e561b-dd3e-42c0-b443-0338a808a2f7"
+      },
+      {
+        "__uuid__": "41f27c2e-0eaf-4eb4-a083-91c239aaedba"
+      }
+    ],
     "BonesAtlasAsset_Car": [
       {
-        "__uuid__": "4e9752f5-23a4-43a1-be05-df2442c8746c"
-      },
-      {
-        "__uuid__": "bb46bd80-cffb-48ea-be16-5bf5a614e2c4"
-      },
-      {
-        "__uuid__": "0859c482-8a8b-4ae4-af55-d991d376be68"
-      },
-      {
-        "__uuid__": "3483995a-0e3b-4278-b15d-c512ced6c17d"
+        "__uuid__": "0ffb2d1c-529f-408c-88a5-d95aeca82ed9"
       },
       {
         "__uuid__": "756fdbc5-6151-412f-8e66-55c01892ab06"
       },
       {
-        "__uuid__": "0ffb2d1c-529f-408c-88a5-d95aeca82ed9"
+        "__uuid__": "4e9752f5-23a4-43a1-be05-df2442c8746c"
       },
       {
         "__uuid__": "2d7278e6-ffcb-4f69-8c37-773f532abec2"
       },
       {
         "__uuid__": "4b42b608-0033-4a2f-8784-b11ff2336933"
+      },
+      {
+        "__uuid__": "3483995a-0e3b-4278-b15d-c512ced6c17d"
+      },
+      {
+        "__uuid__": "bb46bd80-cffb-48ea-be16-5bf5a614e2c4"
+      },
+      {
+        "__uuid__": "0859c482-8a8b-4ae4-af55-d991d376be68"
       }
     ],
     "_id": "90yTCMUs1PlaG3lBZShRzF"
