@@ -45,10 +45,15 @@ export default class Game extends cc.Component {
     @property(cc.Prefab)
     private Pre_AI: cc.Prefab = null;
     /**
-     * @property 问好预制体
+     * @property 问号预制体
      */
     @property(cc.Prefab)
     private Pre_Question: cc.Prefab = null;
+    /**
+     * @property 道具预制体
+     */
+    @property(cc.Prefab)
+    private Pre_Prop: cc.Prefab = null;
     /**
      * @property 对象池初始化次数
      */
@@ -98,7 +103,7 @@ export default class Game extends cc.Component {
     /**
      * @property 玩家
      */
-    private Player: cc.Node = null;
+    public Player: cc.Node = null;
     /**
      * @property 左键
      */
@@ -152,6 +157,10 @@ export default class Game extends cc.Component {
     */
     private Pool_Question: cc.NodePool = null;
     /**
+     * @property 道具对象池
+     */
+    public Pool_Prop: cc.NodePool = null;
+    /**
      * @property 水平移动值   -1：左  0：不变  1：右
      */
     public Horizontal: number = 0;
@@ -172,9 +181,13 @@ export default class Game extends cc.Component {
      */
     private Speed_Max: number = 120;
     /**
+     * @property 是否开始游戏
+     */
+    public IsGameStart = false;
+    /**
      * @property [Array]问号
      */
-    private Questions: cc.Node[] = [];
+    private Questions: cc.Node[][] = [];
     /**
      * @property 速度条
      */
@@ -225,6 +238,8 @@ export default class Game extends cc.Component {
         this.SetPool(this.Pool_AI, this.Pool_InitCount, this.Pre_AI);
         this.Pool_Question = new cc.NodePool();
         this.SetPool(this.Pool_Question, this.Pool_InitCount, this.Pre_Question);
+        this.Pool_Prop = new cc.NodePool();
+        this.SetPool(this.Pool_Prop, this.Pool_InitCount, this.Pre_Prop);
 
         let manager = cc.director.getCollisionManager();
         manager.enabled = true;
@@ -271,7 +286,7 @@ export default class Game extends cc.Component {
             arr[i].runAction(cc.moveBy(20, 0, -10000));
         }
         for (let i = 0; i < 5; i++) {
-            this.GetQuestion(this.Pool_Question, this.Area_Path);
+            this.SetQuestion(this.Pool_Question, this.Area_Path);
         }
     }
 
@@ -302,6 +317,7 @@ export default class Game extends cc.Component {
         //显示
         EventCenter.AddListenter(EventType.Page_GameShow, () => {
             this.Show(this.node);
+            this.IsGameStart = true;
         }, "Game");
 
         //关闭
@@ -314,6 +330,8 @@ export default class Game extends cc.Component {
 
             //测试
             this.Player = this.Area_Path.getChildByName("Player");
+
+            this.SetQuestion(this.Pool_Question, this.Area_Path);
 
             this.SetCurrentPathSkin(path_ID);
             this.SetPathStart(this.Pool_PathStart, this.BG);
@@ -339,6 +357,11 @@ export default class Game extends cc.Component {
         //设置速度等级
         EventCenter.AddListenter(EventType.Game_SetSpeedBar, (speed_level) => {
             this.SetSpeedBar(speed_level);
+        }, "Game");
+
+        //设置道具对象池
+        EventCenter.AddListenter(EventType.Game_SetPoolProp, () => {
+            this.SetPool(this.Pool_Prop, this.Pool_InitCount, this.Pre_Prop);
         }, "Game");
     }
 
@@ -697,7 +720,7 @@ export default class Game extends cc.Component {
         let ball = path.getChildByName("ball");
 
         let size_Hight = path.getContentSize().height;
-        let progres_y = this.Player.position.y / this.Journey;
+        let progres_y = this.Player.position.y / (this.Journey - 2400);
         ball.setPosition(ball.position.x, ball.position.y + progres_y);
     }
 
@@ -721,7 +744,7 @@ export default class Game extends cc.Component {
         this.Journey = max_Y_node.position.y + size_Hight / 2;
         for (let i = 0; i < arr.length; i++) {
             let path = arr[i];
-            let act_Move = cc.moveBy(50, 0, - this.Journey);
+            let act_Move = cc.moveBy(20, 0, -this.Journey);
             let act_callback = () => {
                 //对象池回收
             }
@@ -732,29 +755,29 @@ export default class Game extends cc.Component {
     }
 
     /**
-     * 获取问号
+     * 设置问号
      * @param pool 对象池
      * @param parent 父节点
      */
-    private GetQuestion(pool: cc.NodePool, parent: cc.Node): cc.Node[] {
-        let arr = [];
+    private SetQuestion(pool: cc.NodePool, parent: cc.Node) {
+        let arr: cc.Node[] = [];
         let ques_x: number = 150;
-        let size_Hight = parent.getContentSize().height;
-        this.Question_Space += 50;
 
-        for (let i = 0; i < 4; i++) {
-            let question = pool.get();
-            if (!question) {
-                this.SetPool(this.Pool_Question, this.Pool_InitCount, this.Pre_Question);
-                question = pool.get();
+        for (let j = 0; j < 10; j++) {
+            this.Question_Space += 100;
+            for (let i = 0; i < 4; i++) {
+                let question = pool.get();
+                if (!question) {
+                    this.SetPool(this.Pool_Question, this.Pool_InitCount, this.Pre_Question);
+                    question = pool.get();
+                }
+
+                parent.addChild(question);
+                question.setPosition(i * ques_x + ques_x / 2, 500 + this.Question_Space);
+
+                arr.push(question);
             }
-
-            parent.addChild(question);
-            question.setPosition(i * ques_x + ques_x / 2, 500 + this.Question_Space);
-
-            arr.push(question);
+            this.Questions.push(arr);
         }
-
-        return arr;
     }
 }

@@ -30,6 +30,8 @@ export enum EventType {
     Game_ExtractProp,
     /**设置速度条 */
     Game_SetSpeedBar,
+    /**设置道具对象池 */
+    Game_SetPoolProp,
 }
 
 /**@enum 缓存类型 */

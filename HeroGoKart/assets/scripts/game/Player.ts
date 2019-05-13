@@ -23,11 +23,15 @@ export default class Player extends cc.Component {
     /**
      * @property 移动速度
      */
-    private Speed: number = 0;
+    public Speed: number = 0;
     /**
      * @property 速度最大值
      */
     private Speed_Max: number = 120;
+    /**
+     * @property 灵敏度
+     */
+    public Horizontal_Sensitivity: number = 100;
     /**
      * @property 游戏类
      */
@@ -38,13 +42,13 @@ export default class Player extends cc.Component {
     }
 
     update(dt) {
-        if (!this.Game) {
+        if (!this.Game || !this.Game.IsGameStart) {
             return;
         }
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
         //水平移动
-        let x = this.node.position.x + this.Speed_Horizontal * 100 * dt * this.Game.Horizontal;
+        let x = this.node.position.x + this.Speed_Horizontal * 100 * this.Horizontal_Sensitivity * this.Game.Horizontal;
         this.node.setPosition(x, y);
     }
 

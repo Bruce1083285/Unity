@@ -1,5 +1,13 @@
 import { EventCenter } from "../commont/EventCenter";
 import { EventType } from "../commont/Enum";
+import { PropUseing } from "./PropUseing";
+import Game from "../Game";
+import { BananaSkin } from "./propUseing/BananaSkin";
+import { ClownGift } from "./propUseing/ClownGift";
+import { WaterPolo } from "./propUseing/WaterPolo";
+import { Frozen } from "./propUseing/Frozen";
+import { Protection } from "./propUseing/Protection";
+import { SpeedUp } from "./propUseing/SpeedUp";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -22,6 +30,34 @@ export default class PropBox extends cc.Component {
     @property([cc.SpriteFrame])
     private Fra_InitiativeProp: cc.SpriteFrame[] = [];
     /**
+     * @property 游戏类
+     */
+    private Game: Game = null;
+    /**
+     * @property 香蕉皮
+     */
+    private BananaSkin: PropUseing = null;
+    /**
+     * @property 小丑礼包
+     */
+    private ClownGift: PropUseing = null;
+    /**
+     * @property 水球
+     */
+    private WaterPolo: PropUseing = null;
+    /**
+     * @property 冰冻
+     */
+    private Frozen: PropUseing = null;
+    /**
+     * @property 保护罩
+     */
+    private Protection: PropUseing = null;
+    /**
+     * @property 加速
+     */
+    private SpeedUp: PropUseing = null;
+    /**
      * @property 道具盒子
      */
     private Props: cc.Node[] = [];
@@ -30,6 +66,14 @@ export default class PropBox extends cc.Component {
      * 初始化
      */
     Init() {
+        this.Game = this.node.parent.getComponent(Game);
+        this.BananaSkin = new BananaSkin(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.ClownGift = new ClownGift(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.WaterPolo = new WaterPolo(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.Frozen = new Frozen(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.Protection = new Protection(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.SpeedUp = new SpeedUp(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+
         this.Props = this.node.getChildByName("Prop").children;
 
         this.AddListenter();
@@ -42,6 +86,7 @@ export default class PropBox extends cc.Component {
     * @param click 点击参数
     */
     private PropButtonClick(lv: any, click: string) {
+        this.Extract();
         let prop: cc.Node = null;
         for (let i = 0; i < this.Props.length; i++) {
             prop = this.Props[i];
@@ -50,12 +95,43 @@ export default class PropBox extends cc.Component {
             }
         }
 
-        let fra = prop.getComponent(cc.Sprite).spriteFrame;
+        let fra = prop.getComponent(cc.Sprite);
         if (!fra) {
             return;
         }
 
         //使用道具
+        let prop_name = fra.spriteFrame.name;
+        switch (prop_name) {
+            case "1":
+                //香蕉皮
+                this.BananaSkin.Useing(this.Game.Player, prop_name);
+                break;
+            case "2":
+                break;
+            case "3":
+                //小丑礼包
+                this.ClownGift.Useing(this.Game.Player, prop_name);
+                break;
+            case "4":
+                //水球
+                this.WaterPolo.Useing(this.Game.Player, prop_name);
+                break;
+            case "5":
+                //冰冻
+                this.Frozen.Useing(this.Game.Player, prop_name);
+                break;
+            case "6":
+                //保护罩
+                this.Protection.Useing(this.Game.Player, prop_name);
+                break;
+            case "7":
+                //加速
+                this.SpeedUp.Useing(this.Game.Player, prop_name);
+                break;
+            default:
+                break;
+        }
     }
 
     /**

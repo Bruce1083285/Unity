@@ -18,13 +18,11 @@ export default class AI extends cc.Component {
     /**
       * @property 水平移动速度
       */
-    @property
     private Speed_Horizontal: number = 1;
     /**
      * @property 移动速度
      */
-    @property
-    private Speed: number = 0.1;
+    public Speed: number = 0.1;
     /**
      * @property 游戏类
      */
