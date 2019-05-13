@@ -1,6 +1,4 @@
 import Game from "../Game";
-import { EventCenter } from "../commont/EventCenter";
-import { EventType } from "../commont/Enum";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -15,36 +13,40 @@ import { EventType } from "../commont/Enum";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class Player extends cc.Component {
+export default class AI extends cc.Component {
+
     /**
-     * @property 水平移动速度
-     */
+      * @property 水平移动速度
+      */
+    @property
     private Speed_Horizontal: number = 1;
     /**
      * @property 移动速度
      */
-    private Speed: number = 0;
-    /**
-     * @property 速度最大值
-     */
-    private Speed_Max: number = 120;
+    @property
+    private Speed: number = 0.1;
     /**
      * @property 游戏类
      */
     private Game: Game = null;
+    /**
+     * @property 水平移动值   -1：左  0：不变  1：右
+     */
+    private Horizontal: number = 0;
 
     onLoad() {
         this.Init();
     }
 
+    start() {
+
+    }
+
     update(dt) {
-        if (!this.Game) {
-            return;
-        }
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
         //水平移动
-        let x = this.node.position.x + this.Speed_Horizontal * 100 * dt * this.Game.Horizontal;
+        let x = this.node.position.x + this.Speed_Horizontal * 100 * dt * this.Horizontal;
         this.node.setPosition(x, y);
     }
 
@@ -63,13 +65,6 @@ export default class Player extends cc.Component {
     private UpdateSpeed() {
         let callback = () => {
             this.Speed += 20;
-            if (this.Speed >= this.Speed_Max) {
-                this.Speed = this.Speed_Max;
-            }
-            if (this.Speed % 20 === 0) {
-                let num = this.Speed / 20;
-                EventCenter.BroadcastOne<number>(EventType.Game_SetSpeedBar, num);
-            }
         }
         this.schedule(callback, 1);
     }
@@ -82,32 +77,8 @@ export default class Player extends cc.Component {
     private onCollisionEnter(other, self) {
         let target: cc.Node = other.node;
         let self_node: cc.Node = self.node;
-        let group = target.group;
-        switch (group) {
-            case "wall":
-                this.CollisionWall(this.Game);
-                break;
-            case "question":
-                this.CollisionQuestion(target);
-                break;
-            default:
-                break;
+        if (target.group === "wall") {
+            this.Horizontal = 0;
         }
-    }
-
-    /**
-     * 碰撞到围墙
-     */
-    private CollisionWall(game: Game) {
-        game.Horizontal = 0;
-    }
-
-    /**
-     * 碰撞到问号
-     * @param target 问号节点
-     */
-    private CollisionQuestion(target: cc.Node) {
-        target.active = false;
-        EventCenter.Broadcast(EventType.Game_ExtractProp);
     }
 }

@@ -1,6 +1,8 @@
 import { EventCenter } from "./commont/EventCenter";
 import { EventType, CacheType, DragonBonesAnimation_Role, DragonBonesAnimation_PlayTimes, DragonBonesAnimation_Car } from "./commont/Enum";
 import { Cache } from "./commont/Cache";
+import PropBox from "./game/PropBox";
+import Player from "./game/Player";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -78,6 +80,10 @@ export default class Game extends cc.Component {
     @property([dragonBones.DragonBonesAtlasAsset])
     private BonesAtlasAsset_Car: dragonBones.DragonBonesAtlasAsset[] = [];
     /**
+     * @property 道具盒子类
+     */
+    private Prop_Box: PropBox = null
+    /**
      * @property 背景
      */
     private BG: cc.Node = null;
@@ -93,6 +99,18 @@ export default class Game extends cc.Component {
      * @property 玩家
      */
     private Player: cc.Node = null;
+    /**
+     * @property 左键
+     */
+    private But_Left: cc.Node = null;
+    /**
+    * @property 右键
+    */
+    private But_Right: cc.Node = null;
+    /**
+     * @property 进度条
+     */
+    private Bar_Progres: cc.Node = null;
     /**
      * @property 当前赛道皮肤
      */
@@ -134,12 +152,63 @@ export default class Game extends cc.Component {
     */
     private Pool_Question: cc.NodePool = null;
     /**
+     * @property 水平移动值   -1：左  0：不变  1：右
+     */
+    public Horizontal: number = 0;
+    /**
+     * @property 问号间距
+     */
+    private Question_Space: number = 0;
+    /**
+     * @property 行程
+     */
+    private Journey: number = 0;
+    /**
+     * @property 移动速度值
+     */
+    private Speed: number = 0;
+    /**
+     * @property 最大速度值
+     */
+    private Speed_Max: number = 120;
+    /**
      * @property [Array]问号
      */
     private Questions: cc.Node[] = [];
+    /**
+     * @property 速度条
+     */
+    private Bar_Speeds: cc.Node[] = [];
+    /**
+     * 龙骨骨架--->汽车
+     */
+    private Armature_Car = {
+        "1": "kadingcheguanjunche",
+        "2": "kadingchefeidieche",
+        "3": "kadingcheF1hong",
+        "4": "kadingchehanbaoche",
+        "5": "kadingcheziseche",
+        "6": "kadingcheboluoche",
+        "7": "kadingcheF1lan",
+        "8": "kadingcheboheche",
+    }
 
-    onLoad() {
-        this.Init();
+    /**
+    * 龙骨骨架--->角色
+    */
+    private Armature_Role = {
+        "1": "kadingchexiyangyang",
+        "2": "kadingchexiongda",
+        "3": "kadingcheguangtouqiang",
+        "4": "kadingchebakeduizhang",
+        "5": "kadingchewukong",
+    }
+
+    update(dt) {
+        if (this.Player) {
+            //进度条
+            this.UpdateProgresBar();
+        }
     }
 
     /**
@@ -157,18 +226,30 @@ export default class Game extends cc.Component {
         this.Pool_Question = new cc.NodePool();
         this.SetPool(this.Pool_Question, this.Pool_InitCount, this.Pre_Question);
 
+        let manager = cc.director.getCollisionManager();
+        manager.enabled = true;
+        // manager.enabledDebugDraw = true;
         this.BG = this.node.getChildByName("BG");
         this.Area_Path = this.node.getChildByName("Area_Path");
+        this.But_Left = this.node.getChildByName("But_Directions").getChildByName("but_Left");
+        this.But_Right = this.node.getChildByName("But_Directions").getChildByName("but_Right");
+        this.Bar_Speeds = this.node.getChildByName("SpeedBar").getChildByName("Progress").children;
+        this.Bar_Progres = this.node.getChildByName("ProgressBar");
 
-        this.SetPathStart(this.Pool_PathStart, this.BG);
+        this.Prop_Box = this.node.getChildByName("Box_Prop").getComponent(PropBox);
+        this.Prop_Box.Init();
 
-        this.Test();
+        this.AddListenter();
+        this.TouchOn();
+
+        // this.Test();
     }
 
     /**
      * 测试
      */
     private Test() {
+
         console.log(this.BonesAtlasAsset_Role[3].name);
         Cache.SetCache(CacheType.Current_Role_ID, "3");
         Cache.SetCache(CacheType.Current_Car_ID, "6");
@@ -177,16 +258,20 @@ export default class Game extends cc.Component {
         // this.SetPlayer(this.Area_Path, this.Pre_Player);
         // this.SetAI(this.Pool_AI, this.Area_Path);
         // this.SetRolePos(this.Area_Path);
-        this.Questions = this.GetQuestion(this.Pool_Question, this.Area_Path);
+        // this.Questions = this.GetQuestion(this.Pool_Question, this.Area_Path);
         console.log(this.Questions);
 
         this.SetCurrentPathSkin("3");
-        this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin);
-        this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin);
+        this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 3);
+        this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
+        this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
         this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
         let arr = this.BG.children;
         for (let i = 0; i < arr.length; i++) {
-            arr[i].runAction(cc.moveBy(10, 0, -5000));
+            arr[i].runAction(cc.moveBy(20, 0, -10000));
+        }
+        for (let i = 0; i < 5; i++) {
+            this.GetQuestion(this.Pool_Question, this.Area_Path);
         }
     }
 
@@ -217,9 +302,6 @@ export default class Game extends cc.Component {
         //显示
         EventCenter.AddListenter(EventType.Page_GameShow, () => {
             this.Show(this.node);
-
-            this.SetAI(this.Pool_AI, this.Area_Path);
-            this.SetRolePos(this.Area_Path);
         }, "Game");
 
         //关闭
@@ -229,15 +311,34 @@ export default class Game extends cc.Component {
 
         //设置当前跑道
         EventCenter.AddListenter(EventType.Game_SetCurrentPath, (path_ID) => {
+
+            //测试
+            this.Player = this.Area_Path.getChildByName("Player");
+
             this.SetCurrentPathSkin(path_ID);
+            this.SetPathStart(this.Pool_PathStart, this.BG);
             this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
-            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin);
+
+            let ran = Math.floor(Math.random() * 3 + 2);
+            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, ran);
+
+            this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
+            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
+            // this.UpdateSpeed();
+            this.RunPathMove(this.BG);
         }, "Game");
 
         //设置当前玩家
         EventCenter.AddListenter(EventType.Game_SetCurrentPlayerSkin, () => {
             this.SetCurrentPlayerSkin();
             this.SetPlayer(this.Area_Path, this.Pre_Player);
+            this.SetAI(this.Pool_AI, this.Area_Path);
+            this.SetRolePos(this.Area_Path);
+        }, "Game");
+
+        //设置速度等级
+        EventCenter.AddListenter(EventType.Game_SetSpeedBar, (speed_level) => {
+            this.SetSpeedBar(speed_level);
         }, "Game");
     }
 
@@ -270,6 +371,55 @@ export default class Game extends cc.Component {
      */
     private Close(close_node: cc.Node) {
         close_node.active = false;
+    }
+
+    /**
+     * 设置速度条
+     * @param speed_level 速度等级
+     */
+    private SetSpeedBar(speed_level: number) {
+        for (let i = 0; i < this.Bar_Speeds.length; i++) {
+            let speed = this.Bar_Speeds[i];
+            let speed_value = parseInt(speed.name);
+            if (speed_value <= speed_level) {
+                speed.active = true;
+            }
+        }
+    }
+
+    /**
+     * 事件注册
+     */
+    private TouchOn() {
+        this.But_Left.on(cc.Node.EventType.TOUCH_START, this.LeftStart, this);
+        this.But_Left.on(cc.Node.EventType.TOUCH_END, this.TouchEnd, this);
+
+        this.But_Right.on(cc.Node.EventType.TOUCH_START, this.RightStart, this);
+        this.But_Right.on(cc.Node.EventType.TOUCH_END, this.TouchEnd, this);
+    }
+
+    /**
+     * 左键触摸开始
+     * @param event 触摸信息
+     */
+    private LeftStart(event) {
+        this.Horizontal = -1;
+    }
+
+    /**
+     * 触摸结束
+     * @param event 触摸信息
+     */
+    private TouchEnd(event) {
+        this, this.Horizontal = 0;
+    }
+
+    /**
+     * 右键触摸开始
+     * @param event 触摸信息
+     */
+    private RightStart(event) {
+        this.Horizontal = 1;
     }
 
     /**
@@ -309,8 +459,8 @@ export default class Game extends cc.Component {
      * @param pre_Path 赛道预制体
      * @param current_pathSkin 当前赛道皮肤
      */
-    private SetPath(pool: cc.NodePool, parent: cc.Node, pre_Path: cc.Prefab, current_pathSkin: cc.SpriteFrame) {
-        for (let i = 0; i < 2; i++) {
+    private SetPath(pool: cc.NodePool, parent: cc.Node, pre_Path: cc.Prefab, current_pathSkin: cc.SpriteFrame, path_num: number) {
+        for (let i = 0; i < path_num; i++) {
             let path = pool.get();
             if (!path) {
                 this.SetPool(pool, this.Pool_InitCount, pre_Path);
@@ -319,16 +469,16 @@ export default class Game extends cc.Component {
 
             let arr = parent.children;
             let maxY_Node: cc.Node = arr[0];
-            for (let i = 0; i < arr.length; i++) {
+            for (let j = 0; j < arr.length; j++) {
                 let max_y = maxY_Node.position.y;
-                let arr_y = arr[i].position.y;
+                let arr_y = arr[j].position.y;
                 if (max_y < arr_y) {
-                    maxY_Node = arr[i];
+                    maxY_Node = arr[j];
                 }
             }
             let size_y = maxY_Node.getContentSize().height;
             let x = maxY_Node.position.x;
-            let y = maxY_Node.position.y + size_y / 2;
+            let y = maxY_Node.position.y + size_y;
 
             parent.addChild(path);
             path.getChildByName("bg").getComponent(cc.Sprite).spriteFrame = current_pathSkin;
@@ -346,13 +496,13 @@ export default class Game extends cc.Component {
 
         //角色
         let display_role = player.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
-        this.SetPlayerDragonBones(display_role, this.Current_Player_RoleAsset, this.Current_Player_RoleAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop);
+        this.SetPlayerDragonBones(display_role, this.Current_Player_RoleAsset, this.Current_Player_RoleAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Role);
 
         //汽车
         let display_car = player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
-        this.SetPlayerDragonBones(display_car, this.Current_Player_CarAsset, this.Current_Player_CarAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop);
+        this.SetPlayerDragonBones(display_car, this.Current_Player_CarAsset, this.Current_Player_CarAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Car);
 
-
+        player.getComponent(Player).Init();
         parent.addChild(player);
     }
 
@@ -364,16 +514,18 @@ export default class Game extends cc.Component {
      * @param animation_vlaue 龙骨动画名称
      * @param animation_PlayTimes_value 龙骨动画播放次数
      */
-    private SetPlayerDragonBones(display: dragonBones.ArmatureDisplay, asset: dragonBones.DragonBonesAsset, atlasAsset: dragonBones.DragonBonesAtlasAsset, animation_vlaue: any, animation_PlayTimes_value: DragonBonesAnimation_PlayTimes) {
+    private SetPlayerDragonBones(display: dragonBones.ArmatureDisplay, asset: dragonBones.DragonBonesAsset, atlasAsset: dragonBones.DragonBonesAtlasAsset, animation_vlaue: any, animation_PlayTimes_value: DragonBonesAnimation_PlayTimes, obj_Armature: {}) {
         console.log("组件龙骨资源");
         console.log(display.dragonAsset);
         console.log("参数龙骨资源");
         console.log(asset);
-        let a = display.buildArmature(asset.name, display.node);
+        let a = display.armature();
         console.log(a);
 
         display.dragonAsset.dragonBonesJson = asset.dragonBonesJson;
         display.dragonAtlasAsset.atlasJson = atlasAsset.atlasJson;
+        let name = obj_Armature[atlasAsset.name]
+        display.armatureName = name;
         display.animationName = animation_vlaue;
         display.playTimes = animation_PlayTimes_value;
     }
@@ -525,6 +677,61 @@ export default class Game extends cc.Component {
     }
 
     /**
+     * 更新速度值
+     */
+    private UpdateSpeed() {
+        let callback = () => {
+            this.Speed += 20;
+            if (this.Speed >= this.Speed_Max) {
+                this.Speed = this.Speed_Max;
+            }
+        }
+        this.schedule(callback, 1);
+    }
+
+    /**
+   * 设置进度条
+   */
+    private UpdateProgresBar() {
+        let path = this.Bar_Progres.getChildByName("Path");
+        let ball = path.getChildByName("ball");
+
+        let size_Hight = path.getContentSize().height;
+        let progres_y = this.Player.position.y / this.Journey;
+        ball.setPosition(ball.position.x, ball.position.y + progres_y);
+    }
+
+    /**
+     * 执行跑道移动
+     * @param parent 跑道所在父节点
+     */
+    private RunPathMove(parent: cc.Node) {
+        let arr = parent.children;
+        let max_Y_node = arr[0];
+        for (let i = 0; i < arr.length; i++) {
+            let path = arr[i];
+            let max_y = max_Y_node.position.y;
+            let path_y = path.position.y;
+            if (max_y < path_y) {
+                max_Y_node = path;
+            }
+        }
+
+        let size_Hight = max_Y_node.getContentSize().height;
+        this.Journey = max_Y_node.position.y + size_Hight / 2;
+        for (let i = 0; i < arr.length; i++) {
+            let path = arr[i];
+            let act_Move = cc.moveBy(50, 0, - this.Journey);
+            let act_callback = () => {
+                //对象池回收
+            }
+            let act_Seq = cc.sequence(act_Move, cc.callFunc(act_callback));
+            path.runAction(act_Seq);
+        }
+
+    }
+
+    /**
      * 获取问号
      * @param pool 对象池
      * @param parent 父节点
@@ -533,7 +740,7 @@ export default class Game extends cc.Component {
         let arr = [];
         let ques_x: number = 150;
         let size_Hight = parent.getContentSize().height;
-        let ran_y = Math.floor(Math.random() * (size_Hight - size_Hight / 2) + size_Hight / 2);
+        this.Question_Space += 50;
 
         for (let i = 0; i < 4; i++) {
             let question = pool.get();
@@ -543,7 +750,7 @@ export default class Game extends cc.Component {
             }
 
             parent.addChild(question);
-            question.setPosition(i * ques_x + ques_x / 2, ran_y);
+            question.setPosition(i * ques_x + ques_x / 2, 500 + this.Question_Space);
 
             arr.push(question);
         }

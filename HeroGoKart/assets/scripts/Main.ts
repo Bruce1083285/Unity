@@ -1,4 +1,6 @@
 import Start from "./Start";
+import Level from "./Level";
+import Game from "./Game";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -19,11 +21,23 @@ export default class Main extends cc.Component {
      * @property 首页类
      */
     private Start: Start = null;
+    /**
+     * @property 关卡类
+     */
+    private Level: Level = null;
+    /**
+     * @property 游戏类
+     */
+    private Game: Game = null;
 
     onLoad() {
-        // this.Start = this.node.getChildByName("Page_Start").getComponent(Start);
-        
-        // this.Start.Init();
+        this.Start = this.node.getChildByName("Page_Start").getComponent(Start);
+        this.Level = this.node.getChildByName("Page_Level").getComponent(Level);
+        this.Game = this.node.getChildByName("Page_Game").getComponent(Game);
+
+        this.Start.Init();
+        this.Level.Init();
+        this.Game.Init();
     }
 
     start() {

@@ -1,15 +1,15 @@
 import { Prop } from "../Prop";
 
 /**
- * @class 水球
+ * @class 油漆
  */
-export class WaterPolo extends Prop {
+export class OilPaint extends Prop {
 
     /**
-      * 道具效果
-      * @param target 被影响目标
-      * @param target_class 被影响目标所属类型
-      */
+     * 道具效果
+     * @param target 被影响目标
+     * @param target_class 被影响目标所属类型
+     */
     public Effect(target: cc.Node, target_Class: any) {
         this.EffectRealize(target, target_Class);
     }
@@ -18,19 +18,17 @@ export class WaterPolo extends Prop {
      * 效果实现
      * @param target 被影响目标
      * @param target_class 被影响目标所属类型
+     * @param value_Speed 速度值
      */
     private EffectRealize(target: cc.Node, target_Class: any) {
-        let target_Speed = target_Class.Speed;
-        //修改目标移动速度
-        target_Class.Speed = 0;
+        //左右按钮禁用
 
-        let act_dt = cc.delayTime(2);
-        let act_callback = () => {
-            //重置速度值
+        let target_Speed = target_Class.Speed;
+        target_Class.Speed = target_Speed * 0.5;
+
+        let callback = () => {
             target_Class.Speed = target_Speed;
         }
-        let act_seq = cc.sequence(act_dt, cc.callFunc(act_callback));
-
-        target.runAction(act_seq);
+        setTimeout(callback, 2000);
     }
 }

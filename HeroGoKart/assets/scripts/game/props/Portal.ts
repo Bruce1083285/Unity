@@ -1,9 +1,9 @@
 import { Prop } from "../Prop";
 
 /**
- * @class 水球
+ * @class 传送门
  */
-export class WaterPolo extends Prop {
+export class Portal extends Prop {
 
     /**
       * 道具效果
@@ -18,19 +18,9 @@ export class WaterPolo extends Prop {
      * 效果实现
      * @param target 被影响目标
      * @param target_class 被影响目标所属类型
+     * @param value_Speed 速度值
      */
     private EffectRealize(target: cc.Node, target_Class: any) {
-        let target_Speed = target_Class.Speed;
-        //修改目标移动速度
-        target_Class.Speed = 0;
-
-        let act_dt = cc.delayTime(2);
-        let act_callback = () => {
-            //重置速度值
-            target_Class.Speed = target_Speed;
-        }
-        let act_seq = cc.sequence(act_dt, cc.callFunc(act_callback));
-
-        target.runAction(act_seq);
+        target.setPosition(target.position.x, target.position.y + 30);
     }
 }

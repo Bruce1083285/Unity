@@ -27,7 +27,7 @@ export default class Start extends cc.Component {
      * 初始化
      */
     Init() {
-        this.Test();
+        // this.Test();
 
         this.Shop = this.node.getChildByName("Shop").getComponent(Shop);
 
@@ -73,6 +73,7 @@ export default class Start extends cc.Component {
     private Play() {
         //进入关卡页
         this.Close(this.node);
+        EventCenter.Broadcast(EventType.Page_LevelShow);
     }
 
     /**

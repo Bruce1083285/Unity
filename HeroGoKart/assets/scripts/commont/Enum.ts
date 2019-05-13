@@ -26,6 +26,10 @@ export enum EventType {
     Game_SetCurrentPath,
     /**设置当前玩家皮肤 */
     Game_SetCurrentPlayerSkin,
+    /**抽取道具 */
+    Game_ExtractProp,
+    /**设置速度条 */
+    Game_SetSpeedBar,
 }
 
 /**@enum 缓存类型 */
