@@ -505,10 +505,10 @@ export default class Game extends cc.Component {
                 prop = pool.get();
             }
 
-            let name=prop.name;
-            let cha=name.charAt(name.length-1);
-            let num=parseInt(cha);
-            if(!num){
+            let name = prop.name;
+            // let cha=name.charAt(name.length-1);
+            // let num=parseInt(cha);
+            if (name !== "TimeBomb") {
                 i--;
                 continue;
             }

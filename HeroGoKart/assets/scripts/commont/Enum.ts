@@ -107,6 +107,8 @@ export enum Prop_Passive {
     Water = "Water",
     /**定时炸弹 */
     TimeBomb = "TimeBomb",
+    /**油漆 */
+    Paint = "Paint",
     /**金币--->1 */
     Coin_1 = "Coin_1",
     /**金币--->2 */

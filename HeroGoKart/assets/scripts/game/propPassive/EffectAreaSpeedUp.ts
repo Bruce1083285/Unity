@@ -1,11 +1,11 @@
 import { PropPassive } from "../PropPassive";
-import { Cache } from "../../commont/Cache";
-import { CacheType } from "../../commont/Enum";
+import AI from "../AI";
+import Player from "../Player";
 
 /**
- * @class 金币影响效果
+ * @class 加速带效果
  */
-export class EffectCoin extends PropPassive {
+export class EffectAreaSpeedUp extends PropPassive {
 
     /**
      * 构造函数
@@ -30,10 +30,17 @@ export class EffectCoin extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        prop.active = false;
-        let coin = Cache.GetCache(CacheType.Coin_Amount);
-        let num = parseInt(coin);
-        let sum = num + 1;
-        Cache.SetCache(CacheType.Coin_Amount, sum + "");
+        let type_C = null;
+        if (role.name === "AI") {
+            type_C = role.getComponent(AI);
+        } else if (role.name === "Player") {
+            type_C = role.getComponent(Player);
+        }
+        let speed_Value = type_C.Speed;
+        type_C.Speed = 1000;
+        let callback = () => {
+            type_C.Speed = speed_Value;
+        }
+        setTimeout(callback, 2000);
     }
 }

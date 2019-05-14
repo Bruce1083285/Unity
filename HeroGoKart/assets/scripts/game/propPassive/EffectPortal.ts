@@ -1,11 +1,9 @@
 import { PropPassive } from "../PropPassive";
-import { Cache } from "../../commont/Cache";
-import { CacheType } from "../../commont/Enum";
 
 /**
- * @class 金币影响效果
+ * @class 传送门效果
  */
-export class EffectCoin extends PropPassive {
+export class EffectPortal extends PropPassive {
 
     /**
      * 构造函数
@@ -30,10 +28,14 @@ export class EffectCoin extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        prop.active = false;
-        let coin = Cache.GetCache(CacheType.Coin_Amount);
-        let num = parseInt(coin);
-        let sum = num + 1;
-        Cache.SetCache(CacheType.Coin_Amount, sum + "");
+        role.setPosition(role.position.x, role.position.y + 500);
+
+        let dragon = prop.getComponent(dragonBones.ArmatureDisplay);
+        dragon.playAnimation("a3", 1);
+
+        let callback = () => {
+            this.Pool_PassiveProp.put(prop);
+        }
+        setTimeout(callback, 1000);
     }
 }
