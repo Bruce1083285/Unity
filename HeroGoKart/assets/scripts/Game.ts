@@ -155,7 +155,7 @@ export default class Game extends cc.Component {
     /**
     * @property 问号对象池
     */
-    private Pool_Question: cc.NodePool = null;
+    public Pool_Question: cc.NodePool = null;
     /**
      * @property 道具对象池
      */
@@ -285,7 +285,7 @@ export default class Game extends cc.Component {
         for (let i = 0; i < arr.length; i++) {
             arr[i].runAction(cc.moveBy(20, 0, -10000));
         }
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 1; i++) {
             this.SetQuestion(this.Pool_Question, this.Area_Path);
         }
     }
@@ -525,7 +525,7 @@ export default class Game extends cc.Component {
         let display_car = player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
         this.SetPlayerDragonBones(display_car, this.Current_Player_CarAsset, this.Current_Player_CarAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Car);
 
-        player.getComponent(Player).Init();
+        // player.getComponent(Player).Init();
         parent.addChild(player);
     }
 
@@ -545,10 +545,8 @@ export default class Game extends cc.Component {
         let a = display.armature();
         console.log(a);
 
-        display.dragonAsset.dragonBonesJson = asset.dragonBonesJson;
-        display.dragonAtlasAsset.atlasJson = atlasAsset.atlasJson;
-        let name = obj_Armature[atlasAsset.name]
-        display.armatureName = name;
+        display.dragonAsset = asset;
+        display.dragonAtlasAsset = atlasAsset;
         display.animationName = animation_vlaue;
         display.playTimes = animation_PlayTimes_value;
     }
@@ -763,7 +761,7 @@ export default class Game extends cc.Component {
         let arr: cc.Node[] = [];
         let ques_x: number = 150;
 
-        for (let j = 0; j < 10; j++) {
+        for (let j = 0; j < 1; j++) {
             this.Question_Space += 100;
             for (let i = 0; i < 4; i++) {
                 let question = pool.get();

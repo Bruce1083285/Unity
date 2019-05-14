@@ -2,17 +2,20 @@ import { EventCenter } from "../../commont/EventCenter";
 import { EventType } from "../../commont/Enum";
 import { PropUseing } from "../PropUseing";
 
+
+
 /**
  * @class 香蕉皮
  */
 export class BananaSkin extends PropUseing {
+
     /**
       * 构造函数
       * @param prop_skins [Array]道具皮肤
       * @param pool_prop 道具对象池
       */
     constructor(prop_skins: cc.SpriteFrame[], pool_prop: cc.NodePool) {
-        super(prop_skins,pool_prop);
+        super(prop_skins, pool_prop);
     }
 
     /**
@@ -31,6 +34,9 @@ export class BananaSkin extends PropUseing {
      * @param skin_id 皮肤ID
      */
     public SetProp(role: cc.Node, skin_id: string) {
+        let box_Collider = role.getComponent(cc.BoxCollider);
+        box_Collider.enabled = false;
+
         let skin: cc.SpriteFrame = null;
         for (let i = 0; i < this.Prop_Skins.length; i++) {
             let prop_ID = this.Prop_Skins[i];
@@ -53,6 +59,10 @@ export class BananaSkin extends PropUseing {
         prop.setPosition(role.position);
 
         let act_Move = cc.moveBy(0.3, 0, -100);
-        prop.runAction(act_Move);
+        let callback = () => {
+            box_Collider.enabled = true;
+        }
+        let act_Seq = cc.sequence(act_Move, cc.callFunc(callback));
+        prop.runAction(act_Seq);
     }
 }

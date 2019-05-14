@@ -1,9 +1,9 @@
-import { PropUseing } from "../PropUseing";
+
 import { EventCenter } from "../../commont/EventCenter";
 import { EventType } from "../../commont/Enum";
 import AI from "../AI";
 import Player from "../Player";
-
+import { PropUseing } from "../PropUseing";
 /**
  * @class 吸铁石
  */
@@ -80,9 +80,9 @@ export class Magnet extends PropUseing {
         let role_Class = null;
         let role_name = role.name;
         if (role_name === "AI") {
-            role_Class = ran_node.getComponent(AI);
+            role_Class = role.getComponent(AI);
         } else if (role_name === "Player") {
-            role_Class = ran_node.getComponent(Player);
+            role_Class = role.getComponent(Player);
         }
         let role_Speed_value = role_Class.Speed;
         role_Class.Speed = role_Speed_value + role_Speed_value * 0.3;

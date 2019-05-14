@@ -59,8 +59,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 111,
-      "y": 182,
+      "x": 95,
+      "y": 282,
       "z": 0
     },
     "_scale": {
@@ -540,8 +540,6 @@
       "__id__": 1
     },
     "_enabled": true,
-    "Speed_Horizontal": 50,
-    "Speed": 50,
     "_id": ""
   },
   {

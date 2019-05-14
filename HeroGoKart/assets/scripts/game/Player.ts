@@ -1,6 +1,10 @@
 import Game from "../Game";
 import { EventCenter } from "../commont/EventCenter";
 import { EventType } from "../commont/Enum";
+import { PropEffect } from "./PropEffect";
+import { EffectBananaSkin } from "./propeffect/EffectBananaSkin";
+import { EffectBomb } from "./propeffect/EffectBomb";
+import { EffectClownGift } from "./propeffect/EffectClownGift";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -33,9 +37,25 @@ export default class Player extends cc.Component {
      */
     public Horizontal_Sensitivity: number = 100;
     /**
+     * @property 保护罩是否开启
+     */
+    public IsOpen_Pretection: boolean = false;
+    /**
      * @property 游戏类
      */
     private Game: Game = null;
+    /**
+     * @property 香蕉皮效果
+     */
+    private BananaSkin: PropEffect = null;
+    /**
+     * @property 炸弹效果
+     */
+    private Bomb: PropEffect = null;
+    /**
+     * @property 小丑礼包
+     */
+    private ClownGift: PropEffect = null;
 
     onLoad() {
         this.Init();
@@ -57,6 +77,11 @@ export default class Player extends cc.Component {
      */
     Init() {
         this.Game = this.node.parent.parent.getComponent(Game);
+
+        //道具效果
+        this.BananaSkin = new EffectBananaSkin(this.Game.Pool_Prop);
+        this.Bomb = new EffectBomb(this.Game.Pool_Prop);
+        this.ClownGift = new EffectClownGift(this.Game.Pool_Prop);
 
         this.UpdateSpeed();
     }
@@ -94,6 +119,9 @@ export default class Player extends cc.Component {
             case "question":
                 this.CollisionQuestion(target);
                 break;
+            case "prop":
+                this.CollisionProp(target, self_node);
+                break;
             default:
                 break;
         }
@@ -111,7 +139,31 @@ export default class Player extends cc.Component {
      * @param target 问号节点
      */
     private CollisionQuestion(target: cc.Node) {
-        target.active = false;
+        this.Game.Pool_Question.put(target);
         EventCenter.Broadcast(EventType.Game_ExtractProp);
+    }
+
+    /**
+     * 碰撞到道具
+     * @param target 道具节点
+     */
+    private CollisionProp(target: cc.Node, self: cc.Node) {
+        let name = target.getChildByName("prop").getComponent(cc.Sprite).spriteFrame.name;
+        switch (name) {
+            case "1":
+                //香蕉皮效果
+                this.BananaSkin.Effect(self, target);
+                break;
+            case "2":
+                //炸弹效果
+                this.Bomb.Effect(self, target);
+                break;
+            case "3":
+                //小丑礼包
+                this.ClownGift.Effect(self, target);
+                break;
+            default:
+                break;
+        }
     }
 }

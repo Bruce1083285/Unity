@@ -1,8 +1,9 @@
-import { PropUseing } from "../PropUseing";
+
 import { EventCenter } from "../../commont/EventCenter";
 import { EventType } from "../../commont/Enum";
 import AI from "../AI";
 import Player from "../Player";
+import { PropUseing } from "../PropUseing";
 
 /**
  * @class 水球

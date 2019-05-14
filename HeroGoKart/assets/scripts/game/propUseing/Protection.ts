@@ -1,8 +1,10 @@
-import { PropUseing } from "../PropUseing";
+
 import { EventCenter } from "../../commont/EventCenter";
 import { EventType } from "../../commont/Enum";
 import AI from "../AI";
 import Player from "../Player";
+import { PropUseing } from "../PropUseing";
+
 
 /**
  * @class 保护罩
@@ -56,6 +58,7 @@ export class Protection extends PropUseing {
             type_Class = role.getComponent(Player);
         }
         //保护罩开启
+        type_Class.IsOpen_Pretection = true;
 
         let callback = () => {
             this.Pool_Prop.put(prop);

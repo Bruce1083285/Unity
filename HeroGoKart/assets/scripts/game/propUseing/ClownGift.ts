@@ -2,6 +2,8 @@ import { EventCenter } from "../../commont/EventCenter";
 import { EventType } from "../../commont/Enum";
 import { PropUseing } from "../PropUseing";
 
+
+
 /**
  * @class 小丑礼包
  */
@@ -32,7 +34,10 @@ export class ClownGift extends PropUseing {
      * @param prop_skins [Array]道具皮肤
      * @param skin_id 皮肤ID
      */
-    public SetProp(target: cc.Node, skin_id: string) {
+    public SetProp(role: cc.Node, skin_id: string) {
+        let box_Collider = role.getComponent(cc.BoxCollider);
+        box_Collider.enabled = false;
+
         let skin: cc.SpriteFrame = null;
         for (let i = 0; i < this.Prop_Skins.length; i++) {
             let prop = this.Prop_Skins[i];
@@ -50,14 +55,19 @@ export class ClownGift extends PropUseing {
         let sprite = prop.getChildByName("prop").getComponent(cc.Sprite);
         sprite.spriteFrame = skin;
 
-        let parent = target.parent;
+        let parent = role.parent;
         parent.addChild(prop);
-        prop.setPosition(target.position);
+        prop.setPosition(role.position);
 
-        let y = Math.floor(Math.random() * 500 + target.position.y);
+        let y = Math.floor(Math.random() * 500 + role.position.y);
         let size_Width = parent.getContentSize().width;
         let x = Math.floor(Math.random() * (size_Width - 100));
+
         let act_Move = cc.moveBy(0.3, x, y);
-        prop.runAction(act_Move);
+        let callback = () => {
+            box_Collider.enabled = true;
+        }
+        let act_Seq = cc.sequence(act_Move, cc.callFunc(callback));
+        prop.runAction(act_Seq);
     }
 }

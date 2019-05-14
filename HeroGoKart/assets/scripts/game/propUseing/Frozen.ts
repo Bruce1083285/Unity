@@ -1,8 +1,9 @@
-import { PropUseing } from "../PropUseing";
+
 import AI from "../AI";
 import Player from "../Player";
 import { EventCenter } from "../../commont/EventCenter";
 import { EventType } from "../../commont/Enum";
+import { PropUseing } from "../PropUseing";
 
 /**
  * @class 冰冻

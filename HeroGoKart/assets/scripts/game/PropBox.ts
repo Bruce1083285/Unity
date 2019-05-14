@@ -3,11 +3,14 @@ import { EventType } from "../commont/Enum";
 import { PropUseing } from "./PropUseing";
 import Game from "../Game";
 import { BananaSkin } from "./propUseing/BananaSkin";
-import { ClownGift } from "./propUseing/ClownGift";
+import { Bomb } from "./propUseing/Bomb";
 import { WaterPolo } from "./propUseing/WaterPolo";
 import { Frozen } from "./propUseing/Frozen";
 import { Protection } from "./propUseing/Protection";
 import { SpeedUp } from "./propUseing/SpeedUp";
+import { ClownGift } from "./propUseing/ClownGift";
+import { Magnet } from "./propUseing/Magnet";
+import { Lightning } from "./propUseing/Lightning";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -38,6 +41,10 @@ export default class PropBox extends cc.Component {
      */
     private BananaSkin: PropUseing = null;
     /**
+     * @property 炸弹
+     */
+    private Bomb: PropUseing = null;
+    /**
      * @property 小丑礼包
      */
     private ClownGift: PropUseing = null;
@@ -58,6 +65,14 @@ export default class PropBox extends cc.Component {
      */
     private SpeedUp: PropUseing = null;
     /**
+     * @property 吸铁石
+     */
+    private Mangnet: PropUseing = null;
+    /**
+     * @property 雷击
+     */
+    private Lightning: PropUseing = null;
+    /**
      * @property 道具盒子
      */
     private Props: cc.Node[] = [];
@@ -68,11 +83,14 @@ export default class PropBox extends cc.Component {
     Init() {
         this.Game = this.node.parent.getComponent(Game);
         this.BananaSkin = new BananaSkin(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.Bomb = new Bomb(this.Fra_InitiativeProp, this.Game.Pool_Prop);
         this.ClownGift = new ClownGift(this.Fra_InitiativeProp, this.Game.Pool_Prop);
         this.WaterPolo = new WaterPolo(this.Fra_InitiativeProp, this.Game.Pool_Prop);
         this.Frozen = new Frozen(this.Fra_InitiativeProp, this.Game.Pool_Prop);
         this.Protection = new Protection(this.Fra_InitiativeProp, this.Game.Pool_Prop);
         this.SpeedUp = new SpeedUp(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.Mangnet = new Magnet(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.Lightning = new Lightning(this.Fra_InitiativeProp, this.Game.Pool_Prop);
 
         this.Props = this.node.getChildByName("Prop").children;
 
@@ -108,6 +126,8 @@ export default class PropBox extends cc.Component {
                 this.BananaSkin.Useing(this.Game.Player, prop_name);
                 break;
             case "2":
+                //炸弹
+                this.Bomb.Useing(this.Game.Player, prop_name);
                 break;
             case "3":
                 //小丑礼包
@@ -128,6 +148,14 @@ export default class PropBox extends cc.Component {
             case "7":
                 //加速
                 this.SpeedUp.Useing(this.Game.Player, prop_name);
+                break;
+            case "8":
+                //吸铁石
+                this.Mangnet.Useing(this.Game.Player, prop_name);
+                break;
+            case "9":
+                //雷击
+                this.Lightning.Useing(this.Game.Player, prop_name);
                 break;
             default:
                 break;
