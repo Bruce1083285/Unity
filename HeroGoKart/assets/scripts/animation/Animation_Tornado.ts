@@ -1,3 +1,5 @@
+import { GameManage } from "../commont/GameManager";
+
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
@@ -30,6 +32,14 @@ export default class Animation_Coin extends cc.Component {
      * @property 回调函数
      */
     private CallBack: Function = null;
+    /**
+     * @property 水平移动值
+     */
+    private Horizontal: number = 1;
+    /**
+     * @property 速度值
+     */
+    private Speed: number = 100;
 
     onLoad() {
         this.Init();
@@ -40,14 +50,18 @@ export default class Animation_Coin extends cc.Component {
     }
 
     update(dt) {
-
+        if (!GameManage.Instance.IsGameStart) {
+            return;
+        }
+        let x = this.node.position.x + this.Speed * this.Horizontal * dt;
+        this.node.setPosition(x, this.node.y);
     }
 
     /**
      * 初始化
      */
     Init() {
-        this.Sprite_Coin = this.node.getChildByName("coin").getComponent(cc.Sprite)
+        this.Sprite_Coin = this.node.getChildByName("img").getComponent(cc.Sprite)
 
         this.CallBack = () => {
             this.Play(this.Sprite_Coin, this.Coin_Skins)
@@ -65,6 +79,26 @@ export default class Animation_Coin extends cc.Component {
         this.Index++;
         if (this.Index >= this.Coin_Skins.length) {
             this.Index = 0;
+        }
+    }
+
+    /**
+    * 碰撞开始
+    * @param other 被碰撞目标
+    * @param self 自身
+    */
+    private onCollisionEnter(other, self) {
+        let target: cc.Node = other.node;
+        let self_node: cc.Node = self.node;
+        let group = target.group;
+        if (group === "wall") {
+            let world_pos = self_node.parent.convertToWorldSpaceAR(self_node.position);
+            let world_Size = cc.winSize.width;
+            if (world_pos.x > world_Size / 2) {
+                this.Horizontal = -1;
+            } else {
+                this.Horizontal = 1;
+            }
         }
     }
 }

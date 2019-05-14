@@ -1,8 +1,9 @@
 import { EventCenter } from "./commont/EventCenter";
-import { EventType, CacheType, DragonBonesAnimation_Role, DragonBonesAnimation_PlayTimes, DragonBonesAnimation_Car } from "./commont/Enum";
+import { EventType, CacheType, DragonBonesAnimation_Role, DragonBonesAnimation_PlayTimes, DragonBonesAnimation_Car, Prop_Passive } from "./commont/Enum";
 import { Cache } from "./commont/Cache";
 import PropBox from "./game/PropBox";
 import Player from "./game/Player";
+import { GameManage } from "./commont/GameManager";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -59,6 +60,11 @@ export default class Game extends cc.Component {
      */
     @property
     private Pool_InitCount: number = 5;
+    /**
+     * @property [Array]被动道具预制体
+     */
+    @property([cc.Prefab])
+    private Pre_PassiveProps: cc.Prefab[] = [];
     /**
      * @property [Array]赛道皮肤
      */
@@ -161,6 +167,10 @@ export default class Game extends cc.Component {
      */
     public Pool_Prop: cc.NodePool = null;
     /**
+     * @property 被动道具对象池
+     */
+    public Pool_PassiveProps: cc.NodePool = null;
+    /**
      * @property 水平移动值   -1：左  0：不变  1：右
      */
     public Horizontal: number = 0;
@@ -180,10 +190,6 @@ export default class Game extends cc.Component {
      * @property 最大速度值
      */
     private Speed_Max: number = 120;
-    /**
-     * @property 是否开始游戏
-     */
-    public IsGameStart = false;
     /**
      * @property [Array]问号
      */
@@ -240,6 +246,8 @@ export default class Game extends cc.Component {
         this.SetPool(this.Pool_Question, this.Pool_InitCount, this.Pre_Question);
         this.Pool_Prop = new cc.NodePool();
         this.SetPool(this.Pool_Prop, this.Pool_InitCount, this.Pre_Prop);
+        this.Pool_PassiveProps = new cc.NodePool();
+        this.SetPoolPassive(this.Pre_PassiveProps, this.Pool_PassiveProps);
 
         let manager = cc.director.getCollisionManager();
         manager.enabled = true;
@@ -281,10 +289,11 @@ export default class Game extends cc.Component {
         this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
         this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
         this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
-        let arr = this.BG.children;
-        for (let i = 0; i < arr.length; i++) {
-            arr[i].runAction(cc.moveBy(20, 0, -10000));
-        }
+        // let arr = this.BG.children;
+        // for (let i = 0; i < arr.length; i++) {
+        //     arr[i].runAction(cc.moveBy(20, 0, -10000));
+        // }
+        // this.BG.runAction(cc.moveBy(20, 0, -10000));
         for (let i = 0; i < 1; i++) {
             this.SetQuestion(this.Pool_Question, this.Area_Path);
         }
@@ -317,7 +326,7 @@ export default class Game extends cc.Component {
         //显示
         EventCenter.AddListenter(EventType.Page_GameShow, () => {
             this.Show(this.node);
-            this.IsGameStart = true;
+            GameManage.Instance.IsGameStart = true;
         }, "Game");
 
         //关闭
@@ -342,8 +351,11 @@ export default class Game extends cc.Component {
 
             this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
+
             // this.UpdateSpeed();
-            this.RunPathMove(this.BG);
+            // this.RunPathMove(this.BG);
+
+            this.SetPassivePos(this.Pool_PassiveProps, this.BG);
         }, "Game");
 
         //设置当前玩家
@@ -426,6 +438,7 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private LeftStart(event) {
+        console.log(this.Player);
         this.Horizontal = -1;
     }
 
@@ -434,7 +447,7 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private TouchEnd(event) {
-        this, this.Horizontal = 0;
+        this.Horizontal = 0;
     }
 
     /**
@@ -456,6 +469,84 @@ export default class Game extends cc.Component {
             let pre_node = cc.instantiate(pre);
             pool.put(pre_node);
         }
+    }
+
+    /**
+     * 设置被动道具对象池
+     * @param pre_PassiveProps 
+     * @param pool 
+     */
+    private SetPoolPassive(pre_PassiveProps: cc.Prefab[], pool: cc.NodePool) {
+        let arr: string[] = [];
+        for (let i = 0; i < pre_PassiveProps.length; i++) {
+            let ran = Math.floor(Math.random() * pre_PassiveProps.length);
+            let pre_Prop = this.Pre_PassiveProps[ran];
+            let ind = arr.indexOf(pre_Prop.name);
+            if (ind === -1) {
+                arr.push(pre_Prop.name);
+                let prop = cc.instantiate(pre_Prop);
+                pool.put(prop);
+                continue;
+            }
+            i--;
+        }
+    }
+
+    /**
+     * 设置被动道具位置
+     * @param pool 对象池
+     * @param parent 父节点
+     */
+    private SetPassivePos(pool: cc.NodePool, parent: cc.Node) {
+        for (let i = 0; i < 1; i++) {
+            let prop = pool.get();
+            if (!prop) {
+                this.SetPoolPassive(this.Pre_PassiveProps, this.Pool_PassiveProps);
+                prop = pool.get();
+            }
+
+            let name=prop.name;
+            let cha=name.charAt(name.length-1);
+            let num=parseInt(cha);
+            if(!num){
+                i--;
+                continue;
+            }
+
+            let world_Pos = this.Area_Path.parent.convertToWorldSpaceAR(this.Area_Path.position);
+            let node_Pos = this.BG.convertToNodeSpaceAR(world_Pos);
+            parent.addChild(prop);
+
+            let ran_x = Math.random() * 600 + node_Pos.x;
+            let value = 50;
+            prop.setPosition(ran_x, i * value + value / 2);
+            // prop.runAction(cc.moveBy(20, 0, -10000));
+        }
+    }
+
+    /**
+     * 设置移动型被动道具
+     * @param prop 
+     * @param parent 
+     * @param ind 
+     * @param value 
+     */
+    private SetMovePassiveProp(prop: cc.Node, parent: cc.Node, node_Pos: cc.Vec2, ind: number, value: number) {
+
+        prop.setPosition(node_Pos.x, ind * value + value / 2);
+    }
+
+    /**
+     * 设置静止类型的被动道具
+     * @param prop 道具
+     * @param parent 父节点
+     * @param ind 下标索引
+     * @param value 值
+     */
+    private SetStaticPassiveProp(prop: cc.Node, parent: cc.Node, node_Pos: cc.Vec2, ind: number, value: number) {
+
+        let ran_x = Math.random() * 600 + node_Pos.x;
+        prop.setPosition(ran_x, ind * value + value / 2);
     }
 
     /**

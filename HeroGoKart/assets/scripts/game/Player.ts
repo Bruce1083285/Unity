@@ -1,10 +1,13 @@
 import Game from "../Game";
 import { EventCenter } from "../commont/EventCenter";
-import { EventType } from "../commont/Enum";
+import { EventType, Prop_Passive, DragonBonesAnimation_Role } from "../commont/Enum";
 import { PropEffect } from "./PropEffect";
 import { EffectBananaSkin } from "./propeffect/EffectBananaSkin";
 import { EffectBomb } from "./propeffect/EffectBomb";
 import { EffectClownGift } from "./propeffect/EffectClownGift";
+import { GameManage } from "../commont/GameManager";
+import { EffectCoin } from "./propPassive/EffectCoin";
+import { PropPassive } from "./PropPassive";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -23,7 +26,7 @@ export default class Player extends cc.Component {
     /**
      * @property 水平移动速度
      */
-    private Speed_Horizontal: number = 1;
+    private Speed_Horizontal: number = 0.1;
     /**
      * @property 移动速度
      */
@@ -44,6 +47,7 @@ export default class Player extends cc.Component {
      * @property 游戏类
      */
     private Game: Game = null;
+    //------------------------------------------------>主动道具效果
     /**
      * @property 香蕉皮效果
      */
@@ -56,19 +60,24 @@ export default class Player extends cc.Component {
      * @property 小丑礼包
      */
     private ClownGift: PropEffect = null;
+    //------------------------------------------------>被动道具效果
+    /**
+     * @property 金币影响效果
+     */
+    private EffectCoin: PropPassive = null;
 
     onLoad() {
         this.Init();
     }
 
     update(dt) {
-        if (!this.Game || !this.Game.IsGameStart) {
+        if (!this.Game || !GameManage.Instance.IsGameStart) {
             return;
         }
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
         //水平移动
-        let x = this.node.position.x + this.Speed_Horizontal * 100 * this.Horizontal_Sensitivity * this.Game.Horizontal;
+        let x = this.node.position.x + this.Speed_Horizontal * 1 * this.Horizontal_Sensitivity * this.Game.Horizontal;
         this.node.setPosition(x, y);
     }
 
@@ -78,10 +87,13 @@ export default class Player extends cc.Component {
     Init() {
         this.Game = this.node.parent.parent.getComponent(Game);
 
-        //道具效果
+        //---------->主动道具效果
         this.BananaSkin = new EffectBananaSkin(this.Game.Pool_Prop);
         this.Bomb = new EffectBomb(this.Game.Pool_Prop);
         this.ClownGift = new EffectClownGift(this.Game.Pool_Prop);
+        //---------->被动道具效果
+        this.EffectCoin = new EffectCoin(this.Game.Pool_PassiveProps);
+
 
         this.UpdateSpeed();
     }
@@ -122,6 +134,9 @@ export default class Player extends cc.Component {
             case "prop":
                 this.CollisionProp(target, self_node);
                 break;
+            case "passive_prop":
+                this.CollisionPassiveProp(target, self_node);
+                break;
             default:
                 break;
         }
@@ -146,6 +161,7 @@ export default class Player extends cc.Component {
     /**
      * 碰撞到道具
      * @param target 道具节点
+     * @param self 玩家节点
      */
     private CollisionProp(target: cc.Node, self: cc.Node) {
         let name = target.getChildByName("prop").getComponent(cc.Sprite).spriteFrame.name;
@@ -161,6 +177,22 @@ export default class Player extends cc.Component {
             case "3":
                 //小丑礼包
                 this.ClownGift.Effect(self, target);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 碰撞到被动道具
+     * @param target 道具节点
+     * @param self 玩家节点
+     */
+    private CollisionPassiveProp(target: cc.Node, self: cc.Node) {
+        let name = target.name;
+        switch (name) {
+            case "Coin":
+                this.EffectCoin.Effect(self, target);
                 break;
             default:
                 break;

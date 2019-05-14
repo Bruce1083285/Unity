@@ -84,3 +84,43 @@ export enum DragonBonesAnimation_PlayTimes {
     /**无限循环，大于0表示循环次数 */
     Loop = 0,
 }
+
+/**@enum 被动道具 */
+export enum Prop_Passive {
+    /**加速带 */
+    AreaSpeedUp = "AreaSpeedUp",
+    /**传送门 */
+    Portal = "Portal",
+    /**集装箱 */
+    Container = "Container",
+    /**龙卷风 */
+    Tornado = "Tornado",
+    /**栏杆 */
+    Handrail = "Handrail",
+    /**路障 */
+    Roadblock = "Roadblock",
+    /**大石头 */
+    Boulder = "Boulder",
+    /**石墩 */
+    Piers = "Piers",
+    /**水滩 */
+    Water = "Water",
+    /**定时炸弹 */
+    TimeBomb = "TimeBomb",
+    /**金币--->1 */
+    Coin_1 = "Coin_1",
+    /**金币--->2 */
+    Coin_2 = "Coin_2",
+    /**金币--->3 */
+    Coin_3 = "Coin_3",
+    /**金币--->4 */
+    Coin_4 = "Coin_4",
+    /**金币--->5 */
+    Coin_5 = "Coin_5",
+    /**金币--->6 */
+    Coin_6 = "Coin_6",
+    /**金币--->7 */
+    Coin_7 = "Coin_7",
+    /**金币--->8 */
+    Coin_8 = "Coin_8",
+}
