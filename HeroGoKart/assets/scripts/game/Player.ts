@@ -1,6 +1,6 @@
 import Game from "../Game";
 import { EventCenter } from "../commont/EventCenter";
-import { EventType, Prop_Passive, DragonBonesAnimation_Role } from "../commont/Enum";
+import { EventType, Prop_Passive, DragonBonesAnimation_Role, CacheType } from "../commont/Enum";
 import { PropEffect } from "./PropEffect";
 import { EffectBananaSkin } from "./propeffect/EffectBananaSkin";
 import { EffectBomb } from "./propeffect/EffectBomb";
@@ -18,6 +18,7 @@ import { EffectBoulder } from "./propPassive/EffectBoulder";
 import { EffectPiers } from "./propPassive/EffectPiers";
 import { EffectWater } from "./propPassive/EffectWater";
 import { EffectTimeBomb } from "./propPassive/EffectTimeBomb";
+import { Cache } from "../commont/Cache";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -218,6 +219,9 @@ export default class Player extends cc.Component {
             case "role":
                 this.CollisionRole(target, self_node);
                 break;
+            case "card":
+                this.CollisionTransportation(target, self);
+                break;
             default:
                 break;
         }
@@ -360,5 +364,53 @@ export default class Player extends cc.Component {
         }
         let act_seq = cc.sequence(act_move, cc.callFunc(callback));
         this.TimeBomb.runAction(act_seq);
+    }
+
+    /**
+     * 碰撞到空投
+     * @param target 空投奖励
+     * @param self 玩家节点
+     */
+    private CollisionTransportation(target: cc.Node, self: cc.Node) {
+        let spr_target = target.getComponent(cc.Sprite);
+        let name = spr_target.spriteFrame.name;
+        let cha = name.charAt(0);
+        //加速
+        if (cha === "7") {
+            this.SetTransportationSpeedUp(self);
+        }
+        //金币
+        if (cha === "2") {
+            this.SetTransportationCoin();
+        }
+        target.destroy();
+    }
+
+    /**
+     * 设置空投奖励--->加速
+     * @param role 角色节点
+     * @param award 奖励节点
+     */
+    private SetTransportationSpeedUp(role: cc.Node) {
+
+        let player = role.getComponent(Player);
+        let speed_value = player.Speed;
+        player.IsSpeedUp = false;
+        player.Speed = speed_value + speed_value * 0.5;
+        let callback = () => {
+            player.IsSpeedUp = true;
+            player.Speed = speed_value;
+        }
+        setTimeout(callback, 10000);
+    }
+
+    /**
+     * 设置空投奖励--->金币
+     */
+    private SetTransportationCoin() {
+        let coin = Cache.GetCache(CacheType.Coin_Amount);
+        let num = parseInt(coin);
+        let sum = num + 1000;
+        Cache.SetCache(CacheType.Coin_Amount, sum + "");
     }
 }

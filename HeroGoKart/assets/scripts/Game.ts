@@ -56,6 +56,26 @@ export default class Game extends cc.Component {
     @property(cc.Prefab)
     private Pre_Prop: cc.Prefab = null;
     /**
+     * @property 空投--->卡片预制体
+     */
+    @property(cc.Prefab)
+    private Pre_TransportationCard: cc.Prefab = null;
+    /**
+     * @property 空投--->奖励精灵帧
+     */
+    @property([cc.SpriteFrame])
+    private Spr_TransportationAward: cc.SpriteFrame[] = [];
+    /**
+     * @property 空投--->礼包预制体
+     */
+    @property([cc.Prefab])
+    private Pre_TransportationGift: cc.Prefab[] = [];
+    /**
+     * @property 空投--->飞机预制体
+     */
+    @property([cc.Prefab])
+    private Pre_TransportationAircraft: cc.Prefab[] = [];
+    /**
      * @property 对象池初始化次数
      */
     @property
@@ -106,6 +126,10 @@ export default class Game extends cc.Component {
      * @property 赛道区域
      */
     private Area_Path: cc.Node = null;
+    /**
+     * @property 道具区域
+     */
+    private Area_Prop: cc.Node = null;
     /**
      * @property 玩家
      */
@@ -254,6 +278,7 @@ export default class Game extends cc.Component {
         // manager.enabledDebugDraw = true;
         this.BG = this.node.getChildByName("BG");
         this.Area_Path = this.node.getChildByName("Area_Path");
+        this.Area_Prop = this.node.getChildByName("Area_Prop");
         this.But_Left = this.node.getChildByName("But_Directions").getChildByName("but_Left");
         this.But_Right = this.node.getChildByName("But_Directions").getChildByName("but_Right");
         this.Bar_Speeds = this.node.getChildByName("SpeedBar").getChildByName("Progress").children;
@@ -356,6 +381,7 @@ export default class Game extends cc.Component {
             // this.RunPathMove(this.BG);
 
             this.SetPassivePos(this.Pool_PassiveProps, this.BG);
+            this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Prop);
         }, "Game");
 
         //设置当前玩家
@@ -868,5 +894,61 @@ export default class Game extends cc.Component {
             }
             this.Questions.push(arr);
         }
+    }
+
+    /**
+     * 设置空投奖励
+     * @param pre_Gift [Array]空投--->礼包预制体
+     * @param pre_Aircraft [Array]空投--->飞机预制体
+     * @param pre_Card 空投--->卡片
+     * @param spr_Award [Array]空投--->奖励精灵帧
+     * @param parent 父节点
+     */
+    private SetTransportationAward(pre_Gift: cc.Prefab[], pre_Aircraft: cc.Prefab[], pre_Card: cc.Prefab, spr_Award: cc.SpriteFrame[], parent: cc.Node) {
+        let ran_ind = Math.floor(Math.random() * pre_Gift.length);
+        ran_ind=1;
+        let gift = cc.instantiate(pre_Gift[ran_ind]);
+        parent.addChild(gift);
+        gift.active = false;
+
+        let aircraft = cc.instantiate(pre_Aircraft[ran_ind]);
+        parent.addChild(aircraft);
+        let size_Hight = parent.getContentSize().height;
+        let y = Math.random() * (size_Hight - 800) + 800;
+        aircraft.setPosition(-500, y);
+
+        let card = cc.instantiate(pre_Card);
+        parent.addChild(card);
+        card.active = false;
+        let spr_card = card.getComponent(cc.Sprite);
+        spr_card.spriteFrame = spr_Award[ran_ind]
+
+        let speed_value = 5;
+        let ran_x = Math.random() * 500 + 100;
+        let callback = () => {
+            let x = aircraft.position.x + speed_value;
+            aircraft.setPosition(x, aircraft.position.y);
+
+            let dis = Math.abs(aircraft.position.x - ran_x);
+            if (dis <= 10) {
+                gift.active = true;
+                gift.setPosition(ran_x, aircraft.position.y);
+                let act_scale = cc.scaleTo(1, 0.4);
+                let act_move = cc.moveBy(1, 0, -100);
+                let act_callback = () => {
+                    gift.destroy();
+                    card.active = true;
+                    card.setPosition(gift.position.x, gift.position.y);
+                }
+                let act_spawn = cc.spawn(act_scale, act_move);
+                let act_seq = cc.sequence(act_spawn, cc.callFunc(act_callback));
+                gift.runAction(act_seq);
+                this.scheduleOnce(() => {
+                    aircraft.destroy();
+                    this.unschedule(callback);
+                }, 5);
+            }
+        }
+        this.schedule(callback, 0);
     }
 }
