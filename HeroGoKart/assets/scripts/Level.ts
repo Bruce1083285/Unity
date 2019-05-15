@@ -72,7 +72,7 @@ export default class Level extends cc.Component {
         EventCenter.Broadcast(EventType.Page_GameShow);
         EventCenter.BroadcastOne<string>(EventType.Game_SetCurrentPath, click);
         //设置玩家
-        // EventCenter.Broadcast(EventType.Game_SetCurrentPlayerSkin);
+        EventCenter.Broadcast(EventType.Game_SetCurrentPlayerSkin);
     }
 
     /**

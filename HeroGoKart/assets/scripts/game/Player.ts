@@ -38,6 +38,12 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Player extends cc.Component {
+
+    /**
+     * @property 摄像机
+     */
+    @property(cc.Node)
+    private Camera: cc.Node = null;
     /**
      * @property 水平移动速度
      */
@@ -49,7 +55,7 @@ export default class Player extends cc.Component {
     /**
      * @property 速度最大值
      */
-    private Speed_Max: number = 120;
+    private Speed_Max: number = 1000;
     /**
      * @property 灵敏度
      */
@@ -58,6 +64,10 @@ export default class Player extends cc.Component {
      * @property 保护罩是否开启
      */
     public IsOpen_Pretection: boolean = false;
+    /**
+     * @property 相机是否跟随
+     */
+    private IsCameraFollow: boolean = false;
     /**
      * @property 水平移动开关
      */
@@ -158,6 +168,19 @@ export default class Player extends cc.Component {
         //水平移动
         let x = this.node.position.x + this.Speed_Horizontal * 1 * this.Horizontal_Sensitivity * this.Game.Horizontal;
         this.node.setPosition(x, y);
+        this.UpdateSpeed();
+
+        if (!this.IsCameraFollow) {
+            let size_hight = cc.winSize.height;
+            if (this.node.position.y >= size_hight / 2 - 200) {
+                this.IsCameraFollow = true;
+            }
+        }
+
+        if (this.IsCameraFollow && !GameManage.Instance.IsGameEnd) {
+            let camrea_y = this.Camera.position.y + this.Speed * dt;
+            this.Camera.setPosition(this.Camera.position.x, camrea_y);
+        }
     }
 
     /**
@@ -194,20 +217,20 @@ export default class Player extends cc.Component {
      * 更新速度值
      */
     private UpdateSpeed() {
-        let callback = () => {
-            if (!this.IsSpeedUp) {
-                return;
-            }
-            this.Speed += 20;
-            if (this.Speed >= this.Speed_Max) {
-                this.Speed = this.Speed_Max;
-            }
-            if (this.Speed % 20 === 0) {
-                let num = this.Speed / 20;
-                EventCenter.BroadcastOne<number>(EventType.Game_SetSpeedBar, num);
-            }
+        // let callback = () => {
+        if (!this.IsSpeedUp || !GameManage.Instance.IsGameStart) {
+            return;
         }
-        this.schedule(callback, 1);
+        this.Speed += 2;
+        if (this.Speed >= this.Speed_Max) {
+            this.Speed = this.Speed_Max;
+        }
+        if (this.Speed % 100 === 0) {
+            let num = this.Speed / 100;
+            EventCenter.BroadcastOne<number>(EventType.Game_SetSpeedBar, num);
+        }
+        // }
+        // this.schedule(callback, 1);
     }
 
     /**
@@ -237,6 +260,12 @@ export default class Player extends cc.Component {
                 break;
             case "card":
                 this.CollisionTransportation(target, self);
+                break;
+            case "begin":
+                // GameManage.Instance.IsUpdateProgress = true;
+                break;
+            case "end":
+                this.CollisionEnd();
                 break;
             default:
                 break;
@@ -477,5 +506,14 @@ export default class Player extends cc.Component {
             this.TranCoin.SetTransportation();
         }
         target.destroy();
+    }
+
+    /**
+     * 碰撞到终点线
+     */
+    private CollisionEnd() {
+        GameManage.Instance.IsUpdateProgress = false;
+        GameManage.Instance.IsGameEnd = true;
+        EventCenter.Broadcast(EventType.Game_GameOver);
     }
 }

@@ -71,4 +71,33 @@ export class PopupBox {
         let Act_sequence = cc.sequence(Act_scale, Act_spawn);
         hint.runAction(Act_sequence);
     }
+
+    /**
+     * 游戏暂停页弹出框
+     * @param hint 弹出框
+     */
+    public static GamePauePopup(hint: cc.Node) {
+        hint.active = true;
+        let scale_value = hint.getScale();
+        if (scale_value > 0) {
+            hint.scale = 0;
+        }
+        let Act_scale = cc.scaleTo(0.5, 1).easing(cc.easeElasticInOut(1));
+        let Act_sequence = cc.sequence(Act_scale);
+        hint.runAction(Act_sequence);
+    }
+
+    /**
+     * 游戏暂停页回收框
+     * @param hint 弹出框
+     */
+    public static GamePauseBack(hint: cc.Node) {
+        let Act_scale_1 = cc.scaleTo(0.1, 1.2);
+        let Act_scale_2 = cc.scaleTo(0.2, 0);
+        let Act_callback = () => {
+            hint.active = false;
+        }
+        let Act_sequence = cc.sequence(Act_scale_1, Act_scale_2, cc.callFunc(Act_callback));
+        hint.runAction(Act_sequence);
+    }
 }

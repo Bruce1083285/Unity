@@ -81,7 +81,7 @@ export default class PropBox extends cc.Component {
      * 初始化
      */
     Init() {
-        this.Game = this.node.parent.getComponent(Game);
+        this.Game = this.node.parent.parent.getChildByName("Page_Game").getComponent(Game);
         this.BananaSkin = new BananaSkin(this.Fra_InitiativeProp, this.Game.Pool_Prop);
         this.Bomb = new Bomb(this.Fra_InitiativeProp, this.Game.Pool_Prop);
         this.ClownGift = new ClownGift(this.Fra_InitiativeProp, this.Game.Pool_Prop);

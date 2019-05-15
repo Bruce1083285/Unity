@@ -31,8 +31,8 @@ export default class Main extends cc.Component {
     private Game: Game = null;
 
     onLoad() {
-        this.Start = this.node.getChildByName("Page_Start").getComponent(Start);
-        this.Level = this.node.getChildByName("Page_Level").getComponent(Level);
+        this.Start = this.node.getChildByName("Main Camera").getChildByName("Page_Start").getComponent(Start);
+        this.Level = this.node.getChildByName("Main Camera").getChildByName("Page_Level").getComponent(Level);
         this.Game = this.node.getChildByName("Page_Game").getComponent(Game);
 
         this.Start.Init();

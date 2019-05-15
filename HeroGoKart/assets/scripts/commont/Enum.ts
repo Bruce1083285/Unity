@@ -32,6 +32,8 @@ export enum EventType {
     Game_SetSpeedBar,
     /**设置道具对象池 */
     Game_SetPoolProp,
+    /**游戏结束*/
+    Game_GameOver,
 }
 
 /**@enum 缓存类型 */

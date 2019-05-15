@@ -4,6 +4,8 @@ import { Cache } from "./commont/Cache";
 import PropBox from "./game/PropBox";
 import Player from "./game/Player";
 import { GameManage } from "./commont/GameManager";
+import AI from "./game/AI";
+import { PopupBox } from "./commont/PopupBox";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -147,6 +149,42 @@ export default class Game extends cc.Component {
      */
     private Bar_Progres: cc.Node = null;
     /**
+     * @property 游戏开始倒计时
+     */
+    public Page_StartTime: cc.Node = null;
+    /**
+     * @property 游戏结束倒计时
+     */
+    private Page_EndTime: cc.Node = null;
+    /**
+     * @property 游戏结束页
+     */
+    private Page_Over: cc.Node = null;
+    /**
+     * @property 暂停页
+     */
+    private Page_Pause: cc.Node = null;
+    /**
+     * @property 空投--->飞机
+     */
+    private Trans_Aircraft: cc.Node = null;
+    /**
+     * @property 空投--->礼包
+     */
+    private Trans_Gift: cc.Node = null;
+    /**
+     * @property 空投--->卡
+     */
+    private Trans_Card: cc.Node = null;
+    /**
+     * @property 空投--->回调--->1
+     */
+    private Trans_CallBack_1: Function = null;
+    /**
+    * @property 空投--->回调--->2
+    */
+    private Trans_CallBack_2: Function = null;
+    /**
      * @property 当前赛道皮肤
      */
     private Current_PathSkin: cc.SpriteFrame = null;
@@ -248,7 +286,7 @@ export default class Game extends cc.Component {
     }
 
     update(dt) {
-        if (this.Player) {
+        if (this.Player && GameManage.Instance.IsUpdateProgress) {
             //进度条
             this.UpdateProgresBar();
         }
@@ -279,12 +317,16 @@ export default class Game extends cc.Component {
         this.BG = this.node.getChildByName("BG");
         this.Area_Path = this.node.getChildByName("Area_Path");
         this.Area_Prop = this.node.getChildByName("Area_Prop");
-        this.But_Left = this.node.getChildByName("But_Directions").getChildByName("but_Left");
-        this.But_Right = this.node.getChildByName("But_Directions").getChildByName("but_Right");
-        this.Bar_Speeds = this.node.getChildByName("SpeedBar").getChildByName("Progress").children;
-        this.Bar_Progres = this.node.getChildByName("ProgressBar");
+        this.But_Left = this.node.parent.getChildByName("Main Camera").getChildByName("But_Directions").getChildByName("but_Left");
+        this.But_Right = this.node.parent.getChildByName("Main Camera").getChildByName("But_Directions").getChildByName("but_Right");
+        this.Bar_Speeds = this.node.parent.getChildByName("Main Camera").getChildByName("SpeedBar").getChildByName("Progress").children;
+        this.Bar_Progres = this.node.parent.getChildByName("Main Camera").getChildByName("ProgressBar");
+        this.Page_StartTime = this.node.parent.getChildByName("Main Camera").getChildByName("Page_StartTime");
+        this.Page_Over = this.node.parent.getChildByName("Main Camera").getChildByName("Page_Over");
+        this.Page_EndTime = this.node.parent.getChildByName("Main Camera").getChildByName("Page_EndTime");
+        this.Page_Pause = this.node.parent.getChildByName("Main Camera").getChildByName("Page_Pause");
 
-        this.Prop_Box = this.node.getChildByName("Box_Prop").getComponent(PropBox);
+        this.Prop_Box = this.node.parent.getChildByName("Main Camera").getChildByName("Box_Prop").getComponent(PropBox);
         this.Prop_Box.Init();
 
         this.AddListenter();
@@ -331,9 +373,11 @@ export default class Game extends cc.Component {
      */
     private ButtonClick(lv: any, click: string) {
         switch (click) {
-            case "":
+            case "back":
+                this.Back();
                 break;
-            case "":
+            case "pause":
+                this.Paues();
                 break;
             case "":
                 break;
@@ -345,13 +389,81 @@ export default class Game extends cc.Component {
     }
 
     /**
+     * 返回
+     */
+    private Back() {
+        EventCenter.Broadcast(EventType.Page_LevelShow);
+        this.Close(this.node);
+        this.Page_Over.active = false;
+        this.Page_Pause.active = false;
+        this.Page_StartTime.active = false;
+
+        this.Trans_Aircraft.destroy();
+        this.Trans_Aircraft = null;
+        this.Trans_Card.destroy();
+        this.Trans_Card = null;
+        this.Trans_Gift.destroy();
+        this.Trans_Gift = null;
+        this.unschedule(this.Trans_CallBack_1);
+        this.Trans_CallBack_1 = null;
+        // this.unschedule(this.Trans_CallBack_2);
+        // this.Trans_CallBack_2 = null;
+
+        GameManage.Instance.IsUpdateProgress = true;
+        GameManage.Instance.IsGameEnd = false;
+        GameManage.Instance.IsGameStart = false;
+
+        let prop_arr = this.Area_Prop.children;
+        for (let i = 0; i < prop_arr.length; i++) {
+            prop_arr[i].destroy();
+        }
+
+        let path_arr = this.BG.children;
+        for (let i = 0; i < path_arr.length; i++) {
+            let path = path_arr[i];
+            if (path.name === "Path") {
+                this.Pool_Path.put(path);
+            }
+            if (path.name === "Path_End") {
+                this.Pool_PathEnd.put(path);
+            }
+            if (path.name === "Path_Start") {
+                this.Pool_PathStart.put(path);
+            }
+            i--;
+        }
+
+        let role_arr = this.Area_Path.children;
+        for (let i = 0; i < role_arr.length; i++) {
+            let role = role_arr[i];
+            let role_Type = null;
+            if (role.name === "AI") {
+                role_Type = role.getComponent(AI);
+            }
+            if (role.name === "Player") {
+                role_Type = role.getComponent(Player);
+                role_Type.Camera.setPosition(0, 0);
+            }
+            role_Type.Speed = 0;
+        }
+    }
+
+    /**
+     * 暂停
+     */
+    private Paues() {
+        if (GameManage.Instance.IsGameStart) {
+            PopupBox.CommontPopup(this.Page_Pause, () => { });
+        }
+    }
+
+    /**
      * 添加监听
      */
     private AddListenter() {
         //显示
         EventCenter.AddListenter(EventType.Page_GameShow, () => {
             this.Show(this.node);
-            GameManage.Instance.IsGameStart = true;
         }, "Game");
 
         //关闭
@@ -361,34 +473,40 @@ export default class Game extends cc.Component {
 
         //设置当前跑道
         EventCenter.AddListenter(EventType.Game_SetCurrentPath, (path_ID) => {
-
-            //测试
-            this.Player = this.Area_Path.getChildByName("Player");
-
-            this.SetQuestion(this.Pool_Question, this.Area_Path);
-
+            this.Page_StartTime.active = true;
+            let dragon = this.Page_StartTime.getChildByName("time").getComponent(dragonBones.ArmatureDisplay);
+            dragon.playAnimation("a1", 1);
             this.SetCurrentPathSkin(path_ID);
             this.SetPathStart(this.Pool_PathStart, this.BG);
             this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
 
             let ran = Math.floor(Math.random() * 3 + 2);
-            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, ran);
-
+            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
-
-            // this.UpdateSpeed();
-            // this.RunPathMove(this.BG);
-
-            this.SetPassivePos(this.Pool_PassiveProps, this.BG);
             this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Prop);
+
+            let callback = () => {
+                this.Page_StartTime.active = false;
+                GameManage.Instance.IsGameStart = true;
+                //测试
+                this.Player = this.Area_Path.getChildByName("Player");
+
+                this.SetQuestion(this.Pool_Question, this.Area_Prop);
+
+                // this.UpdateSpeed();
+                // this.RunPathMove(this.BG);
+
+                this.SetPassivePos(this.Pool_PassiveProps, this.Area_Prop);
+            }
+            this.scheduleOnce(callback, 4);
         }, "Game");
 
         //设置当前玩家
         EventCenter.AddListenter(EventType.Game_SetCurrentPlayerSkin, () => {
-            this.SetCurrentPlayerSkin();
-            this.SetPlayer(this.Area_Path, this.Pre_Player);
-            this.SetAI(this.Pool_AI, this.Area_Path);
+            // this.SetCurrentPlayerSkin();
+            // this.SetPlayer(this.Area_Path, this.Pre_Player);
+            // this.SetAI(this.Pool_AI, this.Area_Path);
             this.SetRolePos(this.Area_Path);
         }, "Game");
 
@@ -400,6 +518,11 @@ export default class Game extends cc.Component {
         //设置道具对象池
         EventCenter.AddListenter(EventType.Game_SetPoolProp, () => {
             this.SetPool(this.Pool_Prop, this.Pool_InitCount, this.Pre_Prop);
+        }, "Game");
+
+        //游戏结束
+        EventCenter.AddListenter(EventType.Game_GameOver, () => {
+            this.GameOver();
         }, "Game");
     }
 
@@ -415,6 +538,9 @@ export default class Game extends cc.Component {
 
         //设置当前跑道
         EventCenter.RemoveListenter(EventType.Game_SetCurrentPath, "Game");
+
+        //游戏结束
+        EventCenter.RemoveListenter(EventType.Game_GameOver, "Game");
     }
 
     /**
@@ -834,9 +960,22 @@ export default class Game extends cc.Component {
         let path = this.Bar_Progres.getChildByName("Path");
         let ball = path.getChildByName("ball");
 
-        let size_Hight = path.getContentSize().height;
-        let progres_y = this.Player.position.y / (this.Journey - 2400);
-        ball.setPosition(ball.position.x, ball.position.y + progres_y);
+        let arr = this.BG.children;
+        let maxY_Node = arr[0];
+        for (let i = 0; i < arr.length; i++) {
+            let max_y = maxY_Node.position.y;
+            let arr_y = arr[i].position.y;
+            if (max_y < arr_y) {
+                maxY_Node = arr[i];
+            }
+        }
+        let world_Pos = this.BG.convertToWorldSpaceAR(maxY_Node.position);
+        let hight = world_Pos.y - 1200;
+        let wrold_Player_pos = this.Player.parent.convertToWorldSpaceAR(this.Player.position);
+        let progres_y = (wrold_Player_pos.y - 300) / (hight - 1200);
+        let path_hight = path.getContentSize().height;
+        let ball_y = path_hight * progres_y;
+        ball.setPosition(ball.position.x, ball_y);
     }
 
     /**
@@ -906,49 +1045,85 @@ export default class Game extends cc.Component {
      */
     private SetTransportationAward(pre_Gift: cc.Prefab[], pre_Aircraft: cc.Prefab[], pre_Card: cc.Prefab, spr_Award: cc.SpriteFrame[], parent: cc.Node) {
         let ran_ind = Math.floor(Math.random() * pre_Gift.length);
-        ran_ind=1;
-        let gift = cc.instantiate(pre_Gift[ran_ind]);
-        parent.addChild(gift);
-        gift.active = false;
+        ran_ind = 1;
+        this.Trans_Gift = cc.instantiate(pre_Gift[ran_ind]);
+        parent.addChild(this.Trans_Gift);
+        this.Trans_Gift.active = false;
 
-        let aircraft = cc.instantiate(pre_Aircraft[ran_ind]);
-        parent.addChild(aircraft);
+        this.Trans_Aircraft = cc.instantiate(pre_Aircraft[ran_ind]);
+        parent.addChild(this.Trans_Aircraft);
         let size_Hight = parent.getContentSize().height;
         let y = Math.random() * (size_Hight - 800) + 800;
-        aircraft.setPosition(-500, y);
+        this.Trans_Aircraft.setPosition(-500, y);
 
-        let card = cc.instantiate(pre_Card);
-        parent.addChild(card);
-        card.active = false;
-        let spr_card = card.getComponent(cc.Sprite);
+        this.Trans_Card = cc.instantiate(pre_Card);
+        parent.addChild(this.Trans_Card);
+        this.Trans_Card.active = false;
+        let spr_card = this.Trans_Card.getComponent(cc.Sprite);
         spr_card.spriteFrame = spr_Award[ran_ind]
 
         let speed_value = 5;
         let ran_x = Math.random() * 500 + 100;
-        let callback = () => {
-            let x = aircraft.position.x + speed_value;
-            aircraft.setPosition(x, aircraft.position.y);
+        this.Trans_CallBack_1 = () => {
+            let x = this.Trans_Aircraft.position.x + speed_value;
+            this.Trans_Aircraft.setPosition(x, this.Trans_Aircraft.position.y);
 
-            let dis = Math.abs(aircraft.position.x - ran_x);
+            let dis = Math.abs(this.Trans_Aircraft.position.x - ran_x);
             if (dis <= 10) {
-                gift.active = true;
-                gift.setPosition(ran_x, aircraft.position.y);
+                this.Trans_Gift.active = true;
+                this.Trans_Gift.setPosition(ran_x, this.Trans_Aircraft.position.y);
                 let act_scale = cc.scaleTo(1, 0.4);
                 let act_move = cc.moveBy(1, 0, -100);
                 let act_callback = () => {
-                    gift.destroy();
-                    card.active = true;
-                    card.setPosition(gift.position.x, gift.position.y);
+                    this.Trans_Gift.destroy();
+                    this.Trans_Card.active = true;
+                    this.Trans_Card.setPosition(this.Trans_Gift.position.x, this.Trans_Gift.position.y);
                 }
                 let act_spawn = cc.spawn(act_scale, act_move);
                 let act_seq = cc.sequence(act_spawn, cc.callFunc(act_callback));
-                gift.runAction(act_seq);
-                this.scheduleOnce(() => {
-                    aircraft.destroy();
-                    this.unschedule(callback);
-                }, 5);
+                this.Trans_Gift.runAction(act_seq);
+                // this.Trans_CallBack_2 = () => {
+                //     this.Trans_Aircraft.destroy();
+                //     this.unschedule(this.Trans_CallBack_1);
+                // }
+                // this.scheduleOnce(this.Trans_CallBack_2, 5);
+            }
+            let width = parent.getContentSize().width;
+            width = width + 200;
+            if (this.Trans_Aircraft.position.x > width) {
+                this.Trans_Aircraft.destroy();
+                this.unschedule(this.Trans_CallBack_1);
             }
         }
-        this.schedule(callback, 0);
+        this.schedule(this.Trans_CallBack_1, 0);
+    }
+
+    /**
+     * 游戏结束
+     */
+    private GameOver() {
+        this.Page_EndTime.active = true;
+        console.log(this.Page_EndTime);
+        let label = this.Page_EndTime.getChildByName("label").getComponent(cc.Label);
+        let num = 10;
+        label.string = num + "";
+        let callback = () => {
+            num--;
+            label.string = num + "";
+            if (num <= 0) {
+                this.Page_EndTime.active = false;
+                this.Page_Over.active = true;
+                console.log(this.Page_Over);
+                this.unschedule(callback);
+            }
+        }
+        this.schedule(callback, 1);
+    }
+
+    /**
+     * 游戏重置
+     */
+    private GameReset() {
+
     }
 }

@@ -29,6 +29,7 @@ import { EffectTimeBomb } from "./propPassive/EffectTimeBomb";
 import { TranSpeedUp } from "./transportation/TranSpeedUp";
 import { TranCoin } from "./transportation/TranCoin";
 import { Prop_Passive } from "../commont/Enum";
+import { GameManage } from "../commont/GameManager";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -190,6 +191,9 @@ export default class AI extends cc.Component {
     }
 
     update(dt) {
+        if (!GameManage.Instance.IsGameStart) {
+            return;
+        }
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
         //水平移动

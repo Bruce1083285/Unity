@@ -55,9 +55,11 @@ export class ClownGift extends PropUseing {
         let sprite = prop.getChildByName("prop").getComponent(cc.Sprite);
         sprite.spriteFrame = skin;
 
-        let parent = role.parent;
+        let parent = role.parent.parent.getChildByName("Area_Prop");;
         parent.addChild(prop);
-        prop.setPosition(role.position);
+        let world_pos = role.parent.convertToWorldSpaceAR(role.position);
+        let node_pos = parent.convertToNodeSpaceAR(world_pos);
+        prop.setPosition(node_pos);
 
         let y = Math.floor(Math.random() * 500 + role.position.y);
         let size_Width = parent.getContentSize().width;

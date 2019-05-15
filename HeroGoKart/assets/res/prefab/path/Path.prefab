@@ -21,7 +21,7 @@
       }
     ],
     "_active": true,
-    "_level": 2,
+    "_level": 1,
     "_components": [],
     "_prefab": {
       "__id__": 5
@@ -68,7 +68,7 @@
     "_skewX": 0,
     "_skewY": 0,
     "_zIndex": 0,
-    "groupIndex": 0,
+    "groupIndex": 9,
     "_id": ""
   },
   {
@@ -168,7 +168,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "ea7ece6d-7447-465a-9c48-b01fc310162d"
     },
     "fileId": "edaCI578dN+LbKVAXzzCT7",
     "sync": false
@@ -179,7 +179,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "ea7ece6d-7447-465a-9c48-b01fc310162d"
     },
     "fileId": "c8HloQsOpHA7GIkptjUFZE",
     "sync": false

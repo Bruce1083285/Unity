@@ -54,9 +54,11 @@ export class BananaSkin extends PropUseing {
         let sprite = prop.getChildByName("prop").getComponent(cc.Sprite);
         sprite.spriteFrame = skin;
 
-        let parent = role.parent;
+        let parent = role.parent.parent.getChildByName("Area_Prop");;
         parent.addChild(prop);
-        prop.setPosition(role.position);
+        let world_pos = role.parent.convertToWorldSpaceAR(role.position);
+        let node_pos = parent.convertToNodeSpaceAR(world_pos);
+        prop.setPosition(node_pos);
 
         let act_Move = cc.moveBy(0.3, 0, -100);
         let callback = () => {
