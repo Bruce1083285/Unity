@@ -70,6 +70,7 @@ export class Lightning extends PropUseing {
             } else if (name === "Player") {
                 target_Class = target.getComponent(Player);
             }
+            target_Class.IsSpeedUp = false;
             let target_Speed_value = target_Class.Speed;
             target_Class.Speed = target_Speed_value * 0.6;
 
@@ -78,6 +79,7 @@ export class Lightning extends PropUseing {
             let act_dt = cc.delayTime(3);
             let callback = () => {
                 this.Pool_Prop.put(prop);
+                target_Class.IsSpeedUp = true;
                 target_Class.Speed = target_Speed_value;
             }
             let act_Seq = cc.sequence(act_Scale_big, act_dt, act_Scale_small, cc.callFunc(callback));

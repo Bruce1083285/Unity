@@ -20,8 +20,20 @@ export class GameManage {
      */
     public IsUpdateProgress: boolean = true;
     /**
+     * @property 游戏中是否可以点击
+     */
+    public IsGameClick: boolean = true;
+    /**
+     * @property 是否可以触摸点击
+     */
+    public IsTouchClick: boolean = true;
+    /**
      * @property 移动速度
      */
     public Speed: number = 0;
+    /**
+     * @property 排名
+     */
+    public Ranking: string[] = [];
 
 }

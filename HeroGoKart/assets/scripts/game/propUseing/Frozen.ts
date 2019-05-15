@@ -67,7 +67,7 @@ export class Frozen extends PropUseing {
                 ran_node = null;
             }
         }
-        let parent = ran_node.parent.getChildByName("Area_Prop");
+        let parent = ran_node.parent.parent.getChildByName("Area_Prop");
         parent.addChild(prop);
         let world_pos = ran_node.parent.convertToWorldSpaceAR(ran_node.position);
         let node_pos = parent.convertToNodeSpaceAR(world_pos);
@@ -80,11 +80,13 @@ export class Frozen extends PropUseing {
         } else if (name === "Player") {
             type_Class = ran_node.getComponent(Player);
         }
+        type_Class.IsSpeedUp = false;
         type_Class.Speed = 0;
 
         let callback = () => {
             this.Pool_Prop.put(prop);
-            type_Class.Speed = 0.1;
+            type_Class.IsSpeedUp = true;
+            type_Class.Speed = 0;
         }
 
         setTimeout(callback, 3000);

@@ -34,6 +34,8 @@ export enum EventType {
     Game_SetPoolProp,
     /**游戏结束*/
     Game_GameOver,
+    /**清空道具盒子 */
+    Game_ClearPropBox,
 }
 
 /**@enum 缓存类型 */

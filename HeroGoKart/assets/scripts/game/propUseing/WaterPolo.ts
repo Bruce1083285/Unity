@@ -77,11 +77,13 @@ export class WaterPolo extends PropUseing {
         } else if (name === "Player") {
             type_Class = ran_node.getComponent(Player);
         }
+        type_Class.IsSpeedUp = false;
         type_Class.Speed = 0;
 
         let callback = () => {
             this.Pool_Prop.put(prop);
-            type_Class.Speed = 0.1;
+            type_Class.IsSpeedUp = true;
+            type_Class.Speed = 0;
         }
 
         setTimeout(callback, 2000);

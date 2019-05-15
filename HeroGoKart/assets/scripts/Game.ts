@@ -131,7 +131,7 @@ export default class Game extends cc.Component {
     /**
      * @property 道具区域
      */
-    private Area_Prop: cc.Node = null;
+    public Area_Prop: cc.Node = null;
     /**
      * @property 玩家
      */
@@ -157,6 +157,10 @@ export default class Game extends cc.Component {
      */
     private Page_EndTime: cc.Node = null;
     /**
+     * @property 游戏结束倒计时回调
+     */
+    private Page_EndTimeCallBack: Function = null;
+    /**
      * @property 游戏结束页
      */
     private Page_Over: cc.Node = null;
@@ -176,6 +180,10 @@ export default class Game extends cc.Component {
      * @property 空投--->卡
      */
     private Trans_Card: cc.Node = null;
+    /**
+     * @property 排名label
+     */
+    private Label_Ranking: cc.Label = null;
     /**
      * @property 空投--->回调--->1
      */
@@ -289,6 +297,7 @@ export default class Game extends cc.Component {
         if (this.Player && GameManage.Instance.IsUpdateProgress) {
             //进度条
             this.UpdateProgresBar();
+            this.UpdateRanking();
         }
     }
 
@@ -325,6 +334,7 @@ export default class Game extends cc.Component {
         this.Page_Over = this.node.parent.getChildByName("Main Camera").getChildByName("Page_Over");
         this.Page_EndTime = this.node.parent.getChildByName("Main Camera").getChildByName("Page_EndTime");
         this.Page_Pause = this.node.parent.getChildByName("Main Camera").getChildByName("Page_Pause");
+        this.Label_Ranking = this.node.parent.getChildByName("Main Camera").getChildByName("label_Ranking").getComponent(cc.Label);
 
         this.Prop_Box = this.node.parent.getChildByName("Main Camera").getChildByName("Box_Prop").getComponent(PropBox);
         this.Prop_Box.Init();
@@ -379,9 +389,11 @@ export default class Game extends cc.Component {
             case "pause":
                 this.Paues();
                 break;
-            case "":
+            case "restart":
+                this.Restart();
                 break;
-            case "":
+            case "goon":
+                this.GoOn();
                 break;
             default:
                 break;
@@ -392,24 +404,109 @@ export default class Game extends cc.Component {
      * 返回
      */
     private Back() {
-        EventCenter.Broadcast(EventType.Page_LevelShow);
-        this.Close(this.node);
-        this.Page_Over.active = false;
-        this.Page_Pause.active = false;
-        this.Page_StartTime.active = false;
+        let callback = () => {
+            EventCenter.Broadcast(EventType.Page_LevelShow);
+            this.Close(this.node);
+            this.Page_EndTime.active = false;
+            this.GameReset();
 
-        this.Trans_Aircraft.destroy();
-        this.Trans_Aircraft = null;
-        this.Trans_Card.destroy();
-        this.Trans_Card = null;
-        this.Trans_Gift.destroy();
-        this.Trans_Gift = null;
-        this.unschedule(this.Trans_CallBack_1);
-        this.Trans_CallBack_1 = null;
+        }
+        if (this.Page_Over.active) {
+            PopupBox.CommontBack(this.Page_Over, callback);
+        }
+        if (this.Page_Pause.active) {
+            PopupBox.CommontBack(this.Page_Pause, callback);
+        }
+
+
+    }
+
+    /**
+     * 暂停
+     */
+    private Paues() {
+        if (GameManage.Instance.IsGameStart && GameManage.Instance.IsGameClick) {
+            let callback = () => {
+                let role_arr = this.Area_Path.children;
+                for (let i = 0; i < role_arr.length; i++) {
+                    let role = role_arr[i];
+                    let role_type = null;
+                    if (role.name === "AI") {
+                        role_type = role.getComponent(AI);
+                    }
+                    if (role.name === "Player") {
+                        role_type = role.getComponent(Player);
+                    }
+                    role_type.IsSpeedUp = false;
+                    role_type.Speed = 0;
+                }
+            }
+            PopupBox.CommontPopup(this.Page_Pause, callback);
+        }
+    }
+
+    /**
+     * 重新开始
+     */
+    private Restart() {
+        let callback = () => {
+            this.unscheduleAllCallbacks();
+            this.GameReset();
+            EventCenter.BroadcastOne<string>(EventType.Game_SetCurrentPath, this.Current_PathSkin.name);
+            //设置玩家
+            EventCenter.Broadcast(EventType.Game_SetCurrentPlayerSkin);
+        }
+
+        if (this.Page_Pause.active) {
+            PopupBox.CommontBack(this.Page_Pause, callback);
+        }
+
+        if (this.Page_Over.active) {
+            PopupBox.CommontBack(this.Page_Over, callback);
+        }
+    }
+
+    /**
+     * 继续游戏
+     */
+    private GoOn() {
+        let callback = () => {
+            let role_arr = this.Area_Path.children;
+            for (let i = 0; i < role_arr.length; i++) {
+                let role = role_arr[i];
+                let role_type = null;
+                if (role.name === "AI") {
+                    role_type = role.getComponent(AI);
+                }
+                if (role.name === "Player") {
+                    role_type = role.getComponent(Player);
+                }
+                role_type.IsSpeedUp = true;
+            }
+        }
+        PopupBox.CommontBack(this.Page_Pause, callback);
+    }
+
+    /**
+     * 游戏重置
+     */
+    private GameReset() {
+        this.unscheduleAllCallbacks();
+        this.SetSpeedBar(0);
+        // this.Trans_Aircraft.destroy();
+        // this.Trans_Aircraft = null;
+        // this.Trans_Card.destroy();
+        // this.Trans_Card = null;
+        // this.Trans_Gift.destroy();
+        // this.Trans_Gift = null;
+        // this.unschedule(this.Trans_CallBack_1);
+        // this.Trans_CallBack_1 = null;
         // this.unschedule(this.Trans_CallBack_2);
         // this.Trans_CallBack_2 = null;
+        EventCenter.Broadcast(EventType.Game_ClearPropBox);
 
         GameManage.Instance.IsUpdateProgress = true;
+        GameManage.Instance.IsGameClick = true;
         GameManage.Instance.IsGameEnd = false;
         GameManage.Instance.IsGameStart = false;
 
@@ -449,15 +546,6 @@ export default class Game extends cc.Component {
     }
 
     /**
-     * 暂停
-     */
-    private Paues() {
-        if (GameManage.Instance.IsGameStart) {
-            PopupBox.CommontPopup(this.Page_Pause, () => { });
-        }
-    }
-
-    /**
      * 添加监听
      */
     private AddListenter() {
@@ -481,7 +569,7 @@ export default class Game extends cc.Component {
             this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
 
             let ran = Math.floor(Math.random() * 3 + 2);
-            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
+            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 8);
             this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
             this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Prop);
@@ -492,7 +580,7 @@ export default class Game extends cc.Component {
                 //测试
                 this.Player = this.Area_Path.getChildByName("Player");
 
-                this.SetQuestion(this.Pool_Question, this.Area_Prop);
+                // this.SetQuestion(this.Pool_Question, this.Area_Prop);
 
                 // this.UpdateSpeed();
                 // this.RunPathMove(this.BG);
@@ -570,6 +658,8 @@ export default class Game extends cc.Component {
             let speed_value = parseInt(speed.name);
             if (speed_value <= speed_level) {
                 speed.active = true;
+            } else {
+                speed.active = false;
             }
         }
     }
@@ -590,6 +680,9 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private LeftStart(event) {
+        if (!GameManage.Instance.IsTouchClick) {
+            return;
+        }
         console.log(this.Player);
         this.Horizontal = -1;
     }
@@ -599,6 +692,9 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private TouchEnd(event) {
+        if (!GameManage.Instance.IsTouchClick) {
+            return;
+        }
         this.Horizontal = 0;
     }
 
@@ -607,6 +703,9 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private RightStart(event) {
+        if (!GameManage.Instance.IsTouchClick) {
+            return;
+        }
         this.Horizontal = 1;
     }
 
@@ -650,7 +749,8 @@ export default class Game extends cc.Component {
      * @param parent 父节点
      */
     private SetPassivePos(pool: cc.NodePool, parent: cc.Node) {
-        for (let i = 0; i < 1; i++) {
+        let ran = Math.random() * 5 + 10
+        for (let i = 0; i < ran; i++) {
             let prop = pool.get();
             if (!prop) {
                 this.SetPoolPassive(this.Pre_PassiveProps, this.Pool_PassiveProps);
@@ -660,17 +760,17 @@ export default class Game extends cc.Component {
             let name = prop.name;
             // let cha=name.charAt(name.length-1);
             // let num=parseInt(cha);
-            if (name !== "TimeBomb") {
-                i--;
-                continue;
-            }
+            // if (name !== "AreaSpeedUp") {
+            //     i--;
+            //     continue;
+            // }
 
             let world_Pos = this.Area_Path.parent.convertToWorldSpaceAR(this.Area_Path.position);
             let node_Pos = this.BG.convertToNodeSpaceAR(world_Pos);
             parent.addChild(prop);
 
-            let ran_x = Math.random() * 600 + node_Pos.x;
-            let value = 50;
+            let ran_x = Math.random() * 400 + node_Pos.x + 200;
+            let value = 1500;
             prop.setPosition(ran_x, i * value + value / 2);
             // prop.runAction(cc.moveBy(20, 0, -10000));
         }
@@ -912,6 +1012,14 @@ export default class Game extends cc.Component {
             have_arr.push(ran);
 
             let role = arr[ran];
+            let role_Type = null;
+            if (role.name === "AI") {
+                role_Type = role.getComponent(AI);
+            }
+            if (role.name === "Player") {
+                role_Type = role.getComponent(Player);
+            }
+            role_Type.IsSpeedUp = true;
             let size_x = role.getContentSize().width;
             role.setPosition(i * 150 + 150 / 2, 300);
         }
@@ -951,6 +1059,31 @@ export default class Game extends cc.Component {
             }
         }
         this.schedule(callback, 1);
+    }
+
+    /**
+     * 更新排名
+     */
+    private UpdateRanking() {
+        let arr = this.Area_Path.children;
+        for (let i = 0; i < arr.length; i++) {
+            let y_1 = arr[i].position.y;
+            for (let j = i + 1; j < arr.length - 1 - i; j++) {
+                let y_2 = arr[j].position.y;
+                if (y_1 < y_2) {
+                    let temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                }
+            }
+        }
+
+        for (let i = 0; i < arr.length; i++) {
+            let role = arr[i];
+            if (role.name === "Player") {
+                this.Label_Ranking.string = (i + 1) + "st"
+            }
+        }
     }
 
     /**
@@ -1017,8 +1150,9 @@ export default class Game extends cc.Component {
         let arr: cc.Node[] = [];
         let ques_x: number = 150;
 
-        for (let j = 0; j < 1; j++) {
-            this.Question_Space += 100;
+        let ran_max = Math.random() * 10;
+        for (let j = 0; j < ran_max; j++) {
+            this.Question_Space += 1000;
             for (let i = 0; i < 4; i++) {
                 let question = pool.get();
                 if (!question) {
@@ -1103,27 +1237,63 @@ export default class Game extends cc.Component {
      */
     private GameOver() {
         this.Page_EndTime.active = true;
-        console.log(this.Page_EndTime);
+        // console.log(this.Page_EndTime);
         let label = this.Page_EndTime.getChildByName("label").getComponent(cc.Label);
         let num = 10;
         label.string = num + "";
-        let callback = () => {
+        this.Page_EndTimeCallBack = () => {
             num--;
             label.string = num + "";
             if (num <= 0) {
                 this.Page_EndTime.active = false;
-                this.Page_Over.active = true;
-                console.log(this.Page_Over);
-                this.unschedule(callback);
+
+                let list: cc.Node[] = this.Page_Over.getChildByName("Box").getChildByName("List").children;
+                let length = GameManage.Instance.Ranking.length;
+                if (length < 3) {
+                    let ranking_num = 0;
+                    for (let i = 0; i < length; i++) {
+                        ranking_num = i + 1;
+                        this.SetRanking(list[i], GameManage.Instance.Ranking[i], true);
+                    }
+                    let arr = this.Area_Path.children;
+                    for (let i = 0; i < arr.length; i++) {
+                        let role = arr[i];
+                        let label = role.getChildByName("name").getComponent(cc.Label);
+                        for (let j = 0; j < length; j++) {
+                            let name = GameManage.Instance.Ranking[j];
+                            if (label.string !== name) {
+                                this.SetRanking(list[ranking_num], label.string, false);
+                            }
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < list.length; i++) {
+                        this.SetRanking(list[i], GameManage.Instance.Ranking[i], true);
+                    }
+                }
+
+                // GameManage.Instance.IsGameStart = false;
+                PopupBox.CommontPopup(this.Page_Over);
+                // console.log(this.Page_Over);
+                this.unschedule(this.Page_EndTimeCallBack);
             }
         }
-        this.schedule(callback, 1);
+        this.schedule(this.Page_EndTimeCallBack, 1);
     }
 
     /**
-     * 游戏重置
+     * 设置排行榜
+     * @param rank 排名盒子
+     * @param name 排名昵称
+     * @param isComplete 是否完成
      */
-    private GameReset() {
+    private SetRanking(rank: cc.Node, name, isComplete: boolean) {
+        let label = rank.getChildByName("label_Name").getComponent(cc.Label);
+        label.string = name;
 
+        let yes = rank.getChildByName("isComplete").getChildByName("yes");
+        yes.active = isComplete;
+        let no = rank.getChildByName("isComplete").getChildByName("no");
+        no.active = !isComplete;
     }
 }

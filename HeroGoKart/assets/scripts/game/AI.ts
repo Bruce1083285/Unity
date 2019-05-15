@@ -62,11 +62,19 @@ export default class AI extends cc.Component {
     /**
      * @property 移动速度
      */
-    public Speed: number = 0.1;
+    public Speed: number = 0;
     /**
      * @property 保护罩是否开启
      */
     public IsOpen_Pretection: boolean = false;
+    /**
+     * @property 是否开启加速
+     */
+    public IsSpeedUp: boolean = true;
+    /**
+     * @property 加速最大值
+     */
+    private Speed_Max: number = 1000;
     /**
      * @property 是否在空中
      */
@@ -199,6 +207,8 @@ export default class AI extends cc.Component {
         //水平移动
         let x = this.node.position.x + this.Speed_Horizontal * 100 * dt * this.Horizontal;
         this.node.setPosition(x, y);
+        this.UpdateSpeed();
+        this.ListenterDistance();
     }
 
     /**
@@ -237,18 +247,44 @@ export default class AI extends cc.Component {
         //---------->空投奖励
         this.TranSpeedUp = new TranSpeedUp();
         this.TranCoin = new TranCoin();
-
-        this.UpdateSpeed();
     }
 
     /**
      * 更新速度值
      */
     private UpdateSpeed() {
-        let callback = () => {
-            this.Speed += 20;
+        if (!this.IsSpeedUp || !GameManage.Instance.IsGameStart) {
+            return;
         }
-        this.schedule(callback, 1);
+        this.Speed += 2;
+        if (this.Speed >= this.Speed_Max) {
+            this.Speed = this.Speed_Max;
+        }
+    }
+
+    /**
+     * 监听距离
+     */
+    private ListenterDistance() {
+        let arr = this.Game.Area_Prop.children;
+        for (let i = 0; i < arr.length; i++) {
+            let prop = arr[i];
+            //计算亮点距离
+            let dis = prop.position.sub(this.node.position).mag();
+            if (dis <= 50) {
+                let ran = Math.random() * 100;
+                if (ran <= 50) {
+                    let ran_hor = Math.random() * 100;
+                    let act_move: cc.ActionInterval = null;
+                    if (ran_hor <= 50) {
+                        act_move = cc.moveBy(0.3, 100, 0);
+                    } else {
+                        act_move = cc.moveBy(0.3, -100, 0);
+                    }
+                    this.node.runAction(act_move);
+                }
+            }
+        }
     }
 
     /**
@@ -269,6 +305,21 @@ export default class AI extends cc.Component {
                 break;
             case "prop":
                 this.CollisionProp(target, self_node);
+                break;
+            case "passive_prop":
+                this.CollisionPassiveProp(target, self_node);
+                break;
+            case "role":
+                this.CollisionRole(target, self_node);
+                break;
+            case "card":
+                this.CollisionTransportation(target, self_node);
+                break;
+            case "begin":
+                // GameManage.Instance.IsUpdateProgress = true;
+                break;
+            case "end":
+                this.CollisionEnd(target, self_node);
                 break;
             default:
                 break;
@@ -337,6 +388,10 @@ export default class AI extends cc.Component {
      * @param target 道具节点
      */
     private CollisionProp(target: cc.Node, self: cc.Node) {
+        let istrue = this.GetPretection();
+        if (istrue) {
+            return
+        }
         let name = target.getChildByName("prop").getComponent(cc.Sprite).spriteFrame.name;
         switch (name) {
             case "1":
@@ -364,6 +419,7 @@ export default class AI extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionPassiveProp(target: cc.Node, self: cc.Node) {
+        let istrue: boolean = null;
         let name = target.name;
         switch (name) {
             case "Coin":
@@ -372,6 +428,10 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.Tornado:
                 //龙卷风
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectTornado.Effect(self, target);
                 break;
             case Prop_Passive.AreaSpeedUp:
@@ -384,18 +444,34 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.Paint:
                 //油漆
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectPaint.Effect(self, target);
                 break;
             case Prop_Passive.Handrail:
                 //栏杆
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectHandrail.Effect(self, target);
                 break;
             case Prop_Passive.Roadblock:
                 //路障
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectRoadblock.Effect(self, target);
                 break;
             case Prop_Passive.Boulder:
-                //大石油
+                //大石头
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectBoulder.Effect(self, target);
                 break;
             case Prop_Passive.Piers:
@@ -404,10 +480,18 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.Water:
                 //水滩
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectWater.Effect(self, target);
                 break;
             case Prop_Passive.TimeBomb:
                 //定时炸弹
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.SetTimeBomb(target);
                 // this.EffectTimeBomb.Effect(self, target);
                 break;
@@ -418,7 +502,7 @@ export default class AI extends cc.Component {
 
     /**
      * 设置定时炸弹
-     * @param target 
+     * @param target  炸弹节点
      */
     private SetTimeBomb(target: cc.Node) {
         this.TimeBomb = target;
@@ -460,13 +544,13 @@ export default class AI extends cc.Component {
         //垂直碰撞
         let dis_x = Math.abs(target_x - self_x);
         if (dis_x <= 30) {
-            let value = this.Vertical(target, self, target_y, self_y, speed_value);
+            let value = this.GetVertical(target, self, target_y, self_y, speed_value);
             callback(target.position.x, target.position.y + value, self.position.x, self.position.y - value);
             return;
         }
 
         let value_x = this.GetHorizontal(target, self, target_x, self_x, speed_value);
-        let value_y = this.Vertical(target, self, target_y, self_y, speed_value);
+        let value_y = this.GetVertical(target, self, target_y, self_y, speed_value);
         callback(target.position.x + value_x, target.position.y + value_y, self.position.x - value_x, self.position.y - value_y);
     }
 
@@ -500,7 +584,7 @@ export default class AI extends cc.Component {
      * @param target_y AI的Y轴
      * @param self_y 玩家的Y轴
      */
-    private Vertical(target: cc.Node, self: cc.Node, target_y: number, self_y: number, speed_value: number) {
+    private GetVertical(target: cc.Node, self: cc.Node, target_y: number, self_y: number, speed_value: number) {
 
         //向上
         if (target_y > self_y) {
@@ -536,7 +620,7 @@ export default class AI extends cc.Component {
     /**
      * 碰撞到空投
      * @param target 空投奖励
-     * @param self 玩家节点
+     * @param self AI节点
      */
     private CollisionTransportation(target: cc.Node, self: cc.Node) {
         let spr_target = target.getComponent(cc.Sprite);
@@ -546,10 +630,34 @@ export default class AI extends cc.Component {
         if (cha === "7") {
             this.TranSpeedUp.SetTransportation(self);
         }
-        //金币
-        if (cha === "2") {
-            this.TranCoin.SetTransportation();
-        }
+        // //金币
+        // if (cha === "2") {
+        //     this.TranCoin.SetTransportation();
+        // }
         target.destroy();
+    }
+
+    /**
+     * 碰撞到终点线
+     * @param target 终点线
+     * @param self AI节点
+     */
+    private CollisionEnd(target: cc.Node, self: cc.Node) {
+        let name = self.getChildByName("name").getComponent(cc.Label);
+        GameManage.Instance.Ranking.push(name.string);
+    }
+
+    /**
+     * 获取保护罩
+     * @returns 保护罩是否打开
+     */
+    private GetPretection(): boolean {
+        if (this.IsOpen_Pretection) {
+            let prop = this.node.getChildByName("Prop");
+            prop.destroy();
+            this.IsOpen_Pretection = false;
+            return true;
+        }
+        return false;
     }
 }

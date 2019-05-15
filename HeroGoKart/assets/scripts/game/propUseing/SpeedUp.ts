@@ -59,11 +59,13 @@ export class SpeedUp extends PropUseing {
             type_Class = role.getComponent(Player);
         }
         //加速
+        type_Class.IsSpeedUp = false;
         let speed_value = type_Class.Speed;
-        type_Class.Speed = 100;
+        type_Class.Speed = 300;
 
         let callback = () => {
             this.Pool_Prop.put(prop);
+            type_Class.IsSpeedUp = true;
             type_Class.Speed = speed_value;
         }
 

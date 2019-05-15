@@ -36,11 +36,13 @@ export class EffectClownGift extends PropEffect {
             type_Class = role.getComponent("Player");
         }
 
+        type_Class.IsSpeedUp = false;
         type_Class.Speed = 0;
         let act_Scale_big = cc.scaleTo(1, 0.6);
         let act_Scale_small = cc.scaleTo(0.3, 0.4);
         let act_callback = () => {
-            type_Class = 0.1;
+            type_Class.IsSpeedUp = true;
+            type_Class =0;
         }
         let act_Seq = cc.sequence(act_Scale_big, act_Scale_small, cc.callFunc(act_callback));
         role.runAction(act_Seq);

@@ -36,9 +36,11 @@ export class EffectBananaSkin extends PropEffect {
             type_Class = role.getComponent("Player");
         }
         let speed_Value = type_Class.Speed;
+        type_Class.IsSpeedUp = false;
         type_Class.Speed = speed_Value - speed_Value * 0.3;
         let act_Rotate = cc.rotateTo(1, 1080);
         let act_callback = () => {
+            type_Class.IsSpeedUp = true;
             type_Class = speed_Value;
         }
         let act_Seq = cc.sequence(act_Rotate, cc.callFunc(act_callback));

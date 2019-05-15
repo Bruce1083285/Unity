@@ -210,7 +210,7 @@ export default class Player extends cc.Component {
         this.TranCoin = new TranCoin();
 
 
-        this.UpdateSpeed();
+        // this.UpdateSpeed();
     }
 
     /**
@@ -259,13 +259,13 @@ export default class Player extends cc.Component {
                 this.CollisionRole(target, self_node);
                 break;
             case "card":
-                this.CollisionTransportation(target, self);
+                this.CollisionTransportation(target, self_node);
                 break;
             case "begin":
                 // GameManage.Instance.IsUpdateProgress = true;
                 break;
             case "end":
-                this.CollisionEnd();
+                this.CollisionEnd(self_node);
                 break;
             default:
                 break;
@@ -294,6 +294,10 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionProp(target: cc.Node, self: cc.Node) {
+        let istrue = this.GetPretection();
+        if (istrue) {
+            return
+        }
         let name = target.getChildByName("prop").getComponent(cc.Sprite).spriteFrame.name;
         switch (name) {
             case "1":
@@ -319,6 +323,7 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionPassiveProp(target: cc.Node, self: cc.Node) {
+        let istrue: boolean = null;
         let name = target.name;
         switch (name) {
             case "Coin":
@@ -327,6 +332,10 @@ export default class Player extends cc.Component {
                 break;
             case Prop_Passive.Tornado:
                 //龙卷风
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectTornado.Effect(self, target);
                 break;
             case Prop_Passive.AreaSpeedUp:
@@ -339,18 +348,34 @@ export default class Player extends cc.Component {
                 break;
             case Prop_Passive.Paint:
                 //油漆
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectPaint.Effect(self, target);
                 break;
             case Prop_Passive.Handrail:
                 //栏杆
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectHandrail.Effect(self, target);
                 break;
             case Prop_Passive.Roadblock:
                 //路障
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectRoadblock.Effect(self, target);
                 break;
             case Prop_Passive.Boulder:
-                //大石油
+                //大石头
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectBoulder.Effect(self, target);
                 break;
             case Prop_Passive.Piers:
@@ -359,10 +384,18 @@ export default class Player extends cc.Component {
                 break;
             case Prop_Passive.Water:
                 //水滩
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.EffectWater.Effect(self, target);
                 break;
             case Prop_Passive.TimeBomb:
                 //定时炸弹
+                istrue = this.GetPretection();
+                if (istrue) {
+                    return
+                }
                 this.SetTimeBomb(target);
                 // this.EffectTimeBomb.Effect(self, target);
                 break;
@@ -511,9 +544,26 @@ export default class Player extends cc.Component {
     /**
      * 碰撞到终点线
      */
-    private CollisionEnd() {
+    private CollisionEnd(self: cc.Node) {
+        let name = self.getChildByName("name").getComponent(cc.Label);
+        GameManage.Instance.Ranking.push(name.string);
         GameManage.Instance.IsUpdateProgress = false;
         GameManage.Instance.IsGameEnd = true;
+        GameManage.Instance.IsGameClick = false;
         EventCenter.Broadcast(EventType.Game_GameOver);
+    }
+
+    /**
+     * 获取保护罩
+     * @returns 保护罩是否打开
+     */
+    private GetPretection(): boolean {
+        if (this.IsOpen_Pretection) {
+            let prop = this.node.getChildByName("Prop");
+            prop.destroy();
+            this.IsOpen_Pretection = false;
+            return true;
+        }
+        return false;
     }
 }

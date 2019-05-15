@@ -21,7 +21,7 @@ export class PopupBox {
      * @param hint 弹出框
      * @function callback 回调函数
      */
-    public static CommontPopup(hint: cc.Node, callback: Function) {
+    public static CommontPopup(hint: cc.Node, callback?: Function) {
         hint.active = true;
         let box = hint.getChildByName("Box");
         let scale_value = box.getScale();
@@ -29,7 +29,11 @@ export class PopupBox {
             box.scale = 0;
         }
         let Act_scale = cc.scaleTo(0.5, 1).easing(cc.easeElasticInOut(1));
-        let Act_sequence = cc.sequence(Act_scale, cc.callFunc(callback));
+        let Act_sequence = cc.sequence(Act_scale, cc.callFunc(() => {
+            if (callback) {
+                callback();
+            }
+        }));
         box.runAction(Act_sequence);
     }
 
@@ -38,13 +42,15 @@ export class PopupBox {
      * @param hint 弹出框
      * @function callback 回调函数
      */
-    public static CommontBack(hint: cc.Node, callback: Function) {
+    public static CommontBack(hint: cc.Node, callback?: Function) {
         let box = hint.getChildByName("Box");
         let Act_scale_1 = cc.scaleTo(0.1, 1.2);
         let Act_scale_2 = cc.scaleTo(0.2, 0);
         let Act_callback = () => {
             hint.active = false;
-            callback();
+            if (callback) {
+                callback();
+            }
         }
         let Act_sequence = cc.sequence(Act_scale_1, Act_scale_2, cc.callFunc(Act_callback));
         box.runAction(Act_sequence);

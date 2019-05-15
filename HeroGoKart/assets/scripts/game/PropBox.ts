@@ -104,7 +104,6 @@ export default class PropBox extends cc.Component {
     * @param click 点击参数
     */
     private PropButtonClick(lv: any, click: string) {
-        this.Extract();
         let prop: cc.Node = null;
         for (let i = 0; i < this.Props.length; i++) {
             prop = this.Props[i];
@@ -113,13 +112,13 @@ export default class PropBox extends cc.Component {
             }
         }
 
-        let fra = prop.getComponent(cc.Sprite);
-        if (!fra) {
+        let spr = prop.getComponent(cc.Sprite);
+        if (!spr.spriteFrame) {
             return;
         }
 
         //使用道具
-        let prop_name = fra.spriteFrame.name;
+        let prop_name = spr.spriteFrame.name;
         switch (prop_name) {
             case "1":
                 //香蕉皮
@@ -160,6 +159,7 @@ export default class PropBox extends cc.Component {
             default:
                 break;
         }
+        spr.spriteFrame = null;
     }
 
     /**
@@ -195,6 +195,11 @@ export default class PropBox extends cc.Component {
         EventCenter.AddListenter(EventType.Game_ExtractProp, () => {
             this.Extract();
         }, "PropBox");
+
+        //清空道具盒子
+        EventCenter.AddListenter(EventType.Game_ClearPropBox, () => {
+            this.ClearPropBox();
+        }, "Game");
     }
 
     /**
@@ -254,8 +259,10 @@ export default class PropBox extends cc.Component {
             count = 0;
         }
 
+        console.log(dt+"<-----持续时间值");
         //减速
         if (dt > 0.5) {
+            console.log("是否跳出");
             return
         }
         if (index >= fra_props.length) {
@@ -265,5 +272,20 @@ export default class PropBox extends cc.Component {
             this.ExtractProp(srpite, dt, index, this.Fra_InitiativeProp, value, count);
         }
         this.scheduleOnce(callback, dt);
+    }
+
+    /**
+     * 清空道具盒子
+     */
+    private ClearPropBox() {
+        this.unscheduleAllCallbacks();
+
+        for (let i = 0; i < this.Props.length; i++) {
+            let prop = this.Props[i];
+            let spr = prop.getComponent(cc.Sprite);
+            if (spr.spriteFrame) {
+                spr.spriteFrame = null;
+            }
+        }
     }
 }

@@ -74,6 +74,7 @@ export class Magnet extends PropUseing {
         } else if (target_name === "Player") {
             target_Class = ran_node.getComponent(Player);
         }
+        target_Class.IsSpeedUp = false;
         let target_Speed_value = target_Class.Speed;
         target_Class.Speed = target_Speed_value - target_Speed_value * 0.2;
 
@@ -84,12 +85,16 @@ export class Magnet extends PropUseing {
         } else if (role_name === "Player") {
             role_Class = role.getComponent(Player);
         }
+        role_Class.IsSpeedUp = false;
         let role_Speed_value = role_Class.Speed;
         role_Class.Speed = role_Speed_value + role_Speed_value * 0.3;
 
         let callback = () => {
             this.Pool_Prop.put(prop);
+            target_Class.IsSpeedUp = true;
             target_Class.Speed = target_Speed_value;
+
+            role_Class.IsSpeedUp = true;
             role_Class.Speed = role_Speed_value;
         }
 

@@ -69,7 +69,7 @@ export class Bomb extends PropUseing {
                 ran_node = null;
             }
         }
-        let parent = ran_node.parent.getChildByName("Area_Prop");
+        let parent = ran_node.parent.parent.getChildByName("Area_Prop");
         parent.addChild(prop);
         let world_pos = ran_node.parent.convertToWorldSpaceAR(ran_node.position);
         let node_pos = parent.convertToNodeSpaceAR(world_pos);
