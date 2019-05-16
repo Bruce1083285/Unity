@@ -685,6 +685,11 @@ export default class Game extends cc.Component {
         }
         console.log(this.Player);
         this.Horizontal = -1;
+        let dra_role = this.Player.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
+        dra_role.playAnimation("a3", 0);
+
+        let dra_car = this.Player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+        dra_car.playAnimation("a3", 0);
     }
 
     /**
@@ -695,6 +700,11 @@ export default class Game extends cc.Component {
         if (!GameManage.Instance.IsTouchClick) {
             return;
         }
+        let dra_role = this.Player.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
+        dra_role.playAnimation("a1", 0);
+
+        let dra_car = this.Player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+        dra_car.playAnimation("a1", 0);
         this.Horizontal = 0;
     }
 
@@ -706,6 +716,11 @@ export default class Game extends cc.Component {
         if (!GameManage.Instance.IsTouchClick) {
             return;
         }
+        let dra_role = this.Player.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
+        dra_role.playAnimation("a6", 0);
+
+        let dra_car = this.Player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+        dra_car.playAnimation("a6", 0);
         this.Horizontal = 1;
     }
 
@@ -760,16 +775,16 @@ export default class Game extends cc.Component {
             let name = prop.name;
             // let cha=name.charAt(name.length-1);
             // let num=parseInt(cha);
-            // if (name !== "AreaSpeedUp") {
-            //     i--;
-            //     continue;
-            // }
+            if (name === "Container") {
+                i--;
+                continue;
+            }
 
-            let world_Pos = this.Area_Path.parent.convertToWorldSpaceAR(this.Area_Path.position);
-            let node_Pos = this.BG.convertToNodeSpaceAR(world_Pos);
+            // let world_Pos = this.Area_Path.convertToWorldSpaceAR(this.Area_Path.position);
+            // let node_Pos = this.ar.convertToNodeSpaceAR(world_Pos);
             parent.addChild(prop);
 
-            let ran_x = Math.random() * 400 + node_Pos.x + 200;
+            let ran_x = Math.random() * 400 + 100;
             let value = 1500;
             prop.setPosition(ran_x, i * value + value / 2);
             // prop.runAction(cc.moveBy(20, 0, -10000));
@@ -1179,7 +1194,6 @@ export default class Game extends cc.Component {
      */
     private SetTransportationAward(pre_Gift: cc.Prefab[], pre_Aircraft: cc.Prefab[], pre_Card: cc.Prefab, spr_Award: cc.SpriteFrame[], parent: cc.Node) {
         let ran_ind = Math.floor(Math.random() * pre_Gift.length);
-        ran_ind = 1;
         this.Trans_Gift = cc.instantiate(pre_Gift[ran_ind]);
         parent.addChild(this.Trans_Gift);
         this.Trans_Gift.active = false;
@@ -1247,30 +1261,7 @@ export default class Game extends cc.Component {
             if (num <= 0) {
                 this.Page_EndTime.active = false;
 
-                let list: cc.Node[] = this.Page_Over.getChildByName("Box").getChildByName("List").children;
-                let length = GameManage.Instance.Ranking.length;
-                if (length < 3) {
-                    let ranking_num = 0;
-                    for (let i = 0; i < length; i++) {
-                        ranking_num = i + 1;
-                        this.SetRanking(list[i], GameManage.Instance.Ranking[i], true);
-                    }
-                    let arr = this.Area_Path.children;
-                    for (let i = 0; i < arr.length; i++) {
-                        let role = arr[i];
-                        let label = role.getChildByName("name").getComponent(cc.Label);
-                        for (let j = 0; j < length; j++) {
-                            let name = GameManage.Instance.Ranking[j];
-                            if (label.string !== name) {
-                                this.SetRanking(list[ranking_num], label.string, false);
-                            }
-                        }
-                    }
-                } else {
-                    for (let i = 0; i < list.length; i++) {
-                        this.SetRanking(list[i], GameManage.Instance.Ranking[i], true);
-                    }
-                }
+                this.SetRanking();
 
                 // GameManage.Instance.IsGameStart = false;
                 PopupBox.CommontPopup(this.Page_Over);
@@ -1287,13 +1278,38 @@ export default class Game extends cc.Component {
      * @param name 排名昵称
      * @param isComplete 是否完成
      */
-    private SetRanking(rank: cc.Node, name, isComplete: boolean) {
-        let label = rank.getChildByName("label_Name").getComponent(cc.Label);
-        label.string = name;
+    private SetRanking() {
+        let role_arr = this.Area_Path.children;
+        for (let i = 0; i < role_arr.length; i++) {
+            let y_i = role_arr[i].position.y;
+            for (let j = i + 1; j < role_arr.length - i - 1; j++) {
+                let y_j = role_arr[j].position.y;
+                if (y_i < y_j) {
+                    let temp = role_arr[i];
+                    role_arr[i] = role_arr[j];
+                    role_arr[j] = role_arr[i];
+                }
+            }
+        }
 
-        let yes = rank.getChildByName("isComplete").getChildByName("yes");
-        yes.active = isComplete;
-        let no = rank.getChildByName("isComplete").getChildByName("no");
-        no.active = !isComplete;
+        let list: cc.Node[] = this.Page_Over.getChildByName("Box").getChildByName("List").children;
+        for (let i = 0; i < role_arr.length; i++) {
+            let role = role_arr[i];
+            let name = role.getChildByName("name").getComponent(cc.scaleBy).string;
+            let ind = GameManage.Instance.Ranking.indexOf(name);
+            let rank = list[i];
+            let label = rank.getChildByName("label_Name").getComponent(cc.Label);
+            label.string = name;
+            let istrue: boolean = null;
+            if (ind !== -1) {
+                istrue = true;
+            } else {
+                istrue = false;
+            }
+            let yes = rank.getChildByName("isComplete").getChildByName("yes");
+            yes.active = istrue;
+            let no = rank.getChildByName("isComplete").getChildByName("no");
+            no.active = !istrue;
+        }
     }
 }

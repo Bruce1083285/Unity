@@ -1,4 +1,6 @@
 import { PropPassive } from "../PropPassive";
+import AI from "../AI";
+import Player from "../Player";
 
 /**
  * @class 石墩效果
@@ -28,23 +30,22 @@ export class EffectPiers extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        // let type_C = null;
-        // if (role.name === "AI") {
-        //     type_C = role.getComponent(AI);
-        // } else if (role.name === "Player") {
-        //     type_C = role.getComponent(Player);
-        // }
-        // type_C.IsSpeedUp = false;
-        // let speed_Value = type_C.Speed;
-        // type_C.Speed = speed_Value * 0.5;
+        let role_type = null;
+        if (role.name === "AI") {
+            role_type = role.getComponent(AI);
+        } else if (role.name === "Player") {
+            role_type = role.getComponent(Player);
+        }
+        role_type.IsSpeedUp = false;
+        let speed_Value = role_type.Speed;
+        role_type.Speed = 0;
 
-        // let callback = () => {
-        //     type_C.Speed = speed_Value;
-        //     type_C.IsSpeedUp = true;
-        //     role.scaleX = 0.4;
-        // }
-        // setTimeout(callback, 3000);
         let act_Move = cc.moveBy(0.3, 0, -100);
-        role.runAction(act_Move);
+        let callback = () => {
+            role_type.Speed = speed_Value;
+            role_type.IsSpeedUp = true;
+        }
+        let act_seq = cc.sequence(act_Move, cc.callFunc(callback));
+        role.runAction(act_seq);
     }
 }

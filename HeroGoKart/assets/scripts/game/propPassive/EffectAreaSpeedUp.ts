@@ -36,9 +36,11 @@ export class EffectAreaSpeedUp extends PropPassive {
         } else if (role.name === "Player") {
             type_C = role.getComponent(Player);
         }
+        type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
         type_C.Speed = 1000;
         let callback = () => {
+            type_C.IsSpeedUp = true;
             type_C.Speed = speed_Value;
         }
         setTimeout(callback, 2000);

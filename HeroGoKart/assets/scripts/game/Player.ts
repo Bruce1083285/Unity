@@ -244,7 +244,7 @@ export default class Player extends cc.Component {
         let group = target.group;
         switch (group) {
             case "wall":
-                this.CollisionWall(this.Game);
+                this.CollisionWall(this.Game, self_node);
                 break;
             case "question":
                 this.CollisionQuestion(target);
@@ -275,8 +275,9 @@ export default class Player extends cc.Component {
     /**
      * 碰撞到围墙
      */
-    private CollisionWall(game: Game) {
+    private CollisionWall(game: Game, self: cc.Node) {
         game.Horizontal = 0;
+        this.CrossingTheLineProtection(self);
     }
 
     /**
@@ -545,6 +546,7 @@ export default class Player extends cc.Component {
      * 碰撞到终点线
      */
     private CollisionEnd(self: cc.Node) {
+        this.unscheduleAllCallbacks();
         let name = self.getChildByName("name").getComponent(cc.Label);
         GameManage.Instance.Ranking.push(name.string);
         GameManage.Instance.IsUpdateProgress = false;
@@ -565,5 +567,29 @@ export default class Player extends cc.Component {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 越界保护
+     * @param self 玩家节点
+     */
+    private CrossingTheLineProtection(self: cc.Node) {
+        GameManage.Instance.IsTouchClick = false;
+        this.IsSpeedUp = false;
+        this.Speed = 0;
+
+        let size_hight = cc.winSize.height;
+        self.setPosition(300, size_hight / 2);
+        let act_fadOut = cc.fadeOut(0.5);
+        let act_fadIn = cc.fadeIn(0.5);
+        let act_seq_1 = cc.sequence(act_fadOut, act_fadIn);
+        let act_rep = cc.repeat(act_seq_1, 3);
+        let callback = () => {
+            GameManage.Instance.IsTouchClick = true;
+            this.IsSpeedUp = true;
+            this.Speed = 0;
+        }
+        let act_seq_2 = cc.sequence(act_rep, cc.callFunc(callback));
+        self.runAction(act_seq_2);
     }
 }

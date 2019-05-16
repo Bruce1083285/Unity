@@ -44,6 +44,6 @@ export class EffectHandrail extends PropPassive {
             type_C.Speed = speed_Value * 0.3;
             type_C.IsSpeedUp = true;
         }
-        setTimeout(callback, 10000);
+        setTimeout(callback, 500);
     }
 }

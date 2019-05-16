@@ -5,12 +5,12 @@ import Player from "../Player";
 /**
  * @class 路障
  */
-export  class EffectRoadblock extends PropPassive {
+export class EffectRoadblock extends PropPassive {
 
-     /**
-     * 构造函数
-     * @param pool_PassiveProp 被动道具对象池
-     */
+    /**
+    * 构造函数
+    * @param pool_PassiveProp 被动道具对象池
+    */
     constructor(pool_PassiveProp: cc.NodePool) {
         super(pool_PassiveProp);
     }
@@ -44,6 +44,6 @@ export  class EffectRoadblock extends PropPassive {
             type_C.Speed = speed_Value * 0.2;
             type_C.IsSpeedUp = true;
         }
-        setTimeout(callback, 10000);
+        setTimeout(callback, 500);
     }
 }

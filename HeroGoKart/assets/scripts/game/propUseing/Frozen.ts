@@ -32,9 +32,9 @@ export class Frozen extends PropUseing {
     private SetProp(role: cc.Node, skin_id: string) {
         let skin: cc.SpriteFrame = null;
         for (let i = 0; i < this.Prop_Skins.length; i++) {
-            let prop = this.Prop_Skins[i];
-            if (skin_id === prop.name) {
-                skin = prop;
+            let spr_prop = this.Prop_Skins[i];
+            if (skin_id === spr_prop.name) {
+                skin = spr_prop;
                 break;
             }
         }

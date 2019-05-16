@@ -59,8 +59,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 95,
-      "y": 282,
+      "x": 382.7,
+      "y": 169,
       "z": 0
     },
     "_scale": {
@@ -395,7 +395,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_armatureName": "kadingchexiyangyang",
-    "_animationName": "",
+    "_animationName": "a1",
     "playTimes": 0,
     "premultipliedAlpha": false,
     "_N$dragonAsset": {
@@ -405,7 +405,7 @@
       "__uuid__": "cddf065f-87a8-4f07-8435-207618d88d6b"
     },
     "_N$_defaultArmatureIndex": 0,
-    "_N$_animationIndex": 0,
+    "_N$_animationIndex": 1,
     "_N$timeScale": 1,
     "_N$debugBones": false,
     "_id": ""
@@ -460,7 +460,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 240,
+      "width": 300,
       "height": 60
     },
     "_anchorPoint": {
@@ -506,8 +506,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "玩家昵称",
-    "_N$string": "玩家昵称",
+    "_string": "名字真难取",
+    "_N$string": "名字真难取",
     "_fontSize": 60,
     "_lineHeight": 60,
     "_enableWrapText": true,
@@ -540,6 +540,7 @@
       "__id__": 1
     },
     "_enabled": true,
+    "Camera": null,
     "_id": ""
   },
   {
