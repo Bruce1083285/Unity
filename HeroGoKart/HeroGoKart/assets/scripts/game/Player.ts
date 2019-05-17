@@ -160,6 +160,7 @@ export default class Player extends cc.Component {
         if (!this.Game || !GameManage.Instance.IsGameStart) {
             return;
         }
+        return
         if (!this.IsHorizontal) {
             this.Game.Horizontal = 0;
         }

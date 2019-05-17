@@ -4,6 +4,9 @@ import { EventType } from "../../commont/Enum";
 import AI from "../AI";
 import Player from "../Player";
 import { PropUseing } from "../PropUseing";
+import { GameManage } from "../../commont/GameManager";
+import Game from "../../Game";
+import Animation_Bomb from "../../animation/Animation_Bomb";
 
 /**
  * @class 炸弹
@@ -11,12 +14,11 @@ import { PropUseing } from "../PropUseing";
 export class Bomb extends PropUseing {
 
     /**
-      * 构造函数
-      * @param prop_skins [Array]道具皮肤
-      * @param pool_prop 道具对象池
-      */
-    constructor(prop_skins: cc.SpriteFrame[], pool_prop: cc.NodePool) {
-        super(prop_skins, pool_prop);
+       * 构造函数
+       * @param props [Array]道具预制体
+       */
+    constructor(props: cc.Prefab[], game: Game) {
+        super(props, game);
     }
 
     /**
@@ -29,75 +31,49 @@ export class Bomb extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        let box_Collider = role.getComponent(cc.BoxCollider);
-        box_Collider.enabled = false;
-
-        let skin: cc.SpriteFrame = null;
-        for (let i = 0; i < this.Prop_Skins.length; i++) {
-            let prop = this.Prop_Skins[i];
-            if (skin_id === prop.name) {
-                skin = prop;
+        let prop: cc.Node = null;
+        let parent = role.parent;
+        for (let i = 0; i < this.Props.length; i++) {
+            if (this.Props[i].name === skin_id) {
+                prop = cc.instantiate(this.Props[i]);
+                parent.addChild(prop);
+                prop.setPosition(role.position);
                 break;
             }
         }
+        let box_Collider = prop.getComponent(cc.BoxCollider);
+        box_Collider.enabled = false;
+        // setTimeout(() => {
+        //     box_Collider.enabled = true;
+        // }, 100);
 
-        let prop = this.Pool_Prop.get();
-        if (!prop) {
-            EventCenter.Broadcast(EventType.Game_SetPoolProp);
-            prop = this.Pool_Prop.get();
-        }
-        let sprite = prop.getChildByName("prop").getComponent(cc.Sprite);
-        sprite.spriteFrame = skin;
-
-        let arr = role.parent.children;
-        let patch_arr: cc.Node[] = [];
-        for (let i = 0; i < arr.length; i++) {
-            let node = arr[i];
-            if (node.name === "AI" || node.name === "Player") {
-                patch_arr.push(node);
-            }
-        }
-
-        let ran_node: cc.Node = null;
-        for (let i = 0; i < patch_arr.length; i++) {
-            let ran = Math.floor(Math.random() * patch_arr.length);
-            ran_node = patch_arr[ran];
-            if (ran_node.position.y > role.position.y) {
+        let target: cc.Node = null;
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
+            target = GameManage.Instance.Roles[ran];
+            if (target.position.y > role.position.y) {
                 break;
             } else {
                 i--;
-                ran_node = null;
+                target = null;
             }
         }
-        let parent = ran_node.parent.parent.getChildByName("Area_Prop");
-        parent.addChild(prop);
-        let world_pos = ran_node.parent.convertToWorldSpaceAR(ran_node.position);
-        let node_pos = parent.convertToNodeSpaceAR(world_pos);
-        prop.setPosition(node_pos);
-
-
-        // let type_Class = null;
-        // let name = ran_node.name;
-        // if (name === "AI") {
-        //     type_Class = ran_node.getComponent(AI);
-        // } else if (name === "Player") {
-        //     type_Class = ran_node.getComponent(Player);
-        // }
-        // type_Class.Speed = 0;
-
-        let x = ran_node.position.x - prop.position.x;
-        let y = ran_node.position.y - prop.position.y;
-        let dirVec = cc.v2(x, y);    // 方向向量
-        let radian = prop.position.signAngle(dirVec);    // 求弧度
-        let degree = cc.misc.radiansToDegrees(radian);    // 将弧度转换为角度
-        prop.rotation = -degree;
-
-        let act_Move = cc.moveTo(0.3, ran_node.position);
-        let callback = () => {
-            this.Pool_Prop.put(prop);
-            box_Collider.enabled = true;
+        if (!target) {
+            return;
         }
-        let act_Seq = cc.sequence(act_Move, cc.callFunc(callback));
-        prop.runAction(act_Seq);
+
+        let bomb = prop.getComponent(Animation_Bomb);
+        bomb.SetTarget(target);
+        // let callback = () => {
+        //     let prop_y = prop.position.y + 10;
+        //     prop.setPosition(prop.position.x, prop_y);
+        //     let x = target.position.x - prop.position.x;
+        //     let y = target.position.y - prop.position.y;
+        //     let dirVec = cc.v2(x, y);    // 方向向量
+        //     let radian = prop.position.signAngle(dirVec);    // 求弧度
+        //     let degree = cc.misc.radiansToDegrees(radian);    // 将弧度转换为角度
+        //     prop.rotation = -degree;
+        // }
+        // this.Game.schedule(callback, 0.5);
     }
 }

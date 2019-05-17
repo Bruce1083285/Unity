@@ -13,10 +13,10 @@ import { GameManage } from "../commont/GameManager";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class Animation_Coin extends cc.Component {
+export default class Animation_Tornado extends cc.Component {
 
     /**
-     * @property [Array]金币精灵帧
+     * @property [Array]龙卷风精灵帧
      */
     @property([cc.SpriteFrame])
     private Coin_Skins: cc.SpriteFrame[] = [];

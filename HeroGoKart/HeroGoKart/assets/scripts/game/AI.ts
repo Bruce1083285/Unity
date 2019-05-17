@@ -207,6 +207,7 @@ export default class AI extends cc.Component {
         if (!GameManage.Instance.IsGameStart) {
             return;
         }
+        return
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
         //水平移动
@@ -306,7 +307,7 @@ export default class AI extends cc.Component {
                 this.CollisionWall(this.Game, self_node);
                 break;
             case "question":
-                this.CollisionQuestion(target);
+                // this.CollisionQuestion(target);
                 break;
             case "prop":
                 this.CollisionProp(target, self_node);
@@ -347,6 +348,19 @@ export default class AI extends cc.Component {
         this.Game.Pool_Question.put(target);
         let ran = Math.floor(Math.random() * this.Fra_InitiativeProp.length);
         let str = ran.toString();
+        let arr = this.node.getChildByName("Role").children;
+        let role: cc.Node = null;
+        for (let i = 0; i < arr.length; i++) {
+            role = arr[i];
+            if (role.active) {
+                break;
+            }
+        }
+        let dragon = role.getComponent(dragonBones.ArmatureDisplay)
+        dragon.playAnimation("a8", 1);
+        this.scheduleOnce(() => {
+            dragon.playAnimation("a1", 0);
+        }, 0.5);
         switch (str) {
             case "1":
                 //香蕉皮
@@ -406,7 +420,8 @@ export default class AI extends cc.Component {
                 break;
             case "2":
                 //炸弹效果
-                this.Effect_Bomb.Effect(self, target);
+                target.destroy();
+                // this.Effect_Bomb.Effect(self, target);
                 break;
             case "3":
                 //小丑礼包

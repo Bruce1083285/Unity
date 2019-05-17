@@ -82,15 +82,15 @@ export default class PropBox extends cc.Component {
      */
     Init() {
         this.Game = this.node.parent.parent.getChildByName("Page_Game").getComponent(Game);
-        this.BananaSkin = new BananaSkin(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Bomb = new Bomb(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.ClownGift = new ClownGift(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.WaterPolo = new WaterPolo(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Frozen = new Frozen(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Protection = new Protection(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.SpeedUp = new SpeedUp(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Mangnet = new Magnet(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Lightning = new Lightning(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.BananaSkin = new BananaSkin(this.Game.Pre_InitiativeProp, this.Game);
+        this.Bomb = new Bomb(this.Game.Pre_InitiativeProp, this.Game);
+        this.ClownGift = new ClownGift(this.Game.Pre_InitiativeProp);
+        this.WaterPolo = new WaterPolo(this.Game.Pre_InitiativeProp);
+        this.Frozen = new Frozen(this.Game.Pre_InitiativeProp);
+        this.Protection = new Protection(this.Game.Pre_InitiativeProp);
+        this.SpeedUp = new SpeedUp(this.Game.Pre_InitiativeProp);
+        this.Mangnet = new Magnet(this.Game.Pre_InitiativeProp);
+        this.Lightning = new Lightning(this.Game.Pre_InitiativeProp);
 
         this.Props = this.node.getChildByName("Prop").children;
 
@@ -116,6 +116,20 @@ export default class PropBox extends cc.Component {
         if (!spr.spriteFrame) {
             return;
         }
+
+        let arr = this.Game.Player.getChildByName("Role").children;
+        let role: cc.Node = null;
+        for (let i = 0; i < arr.length; i++) {
+            role = arr[i];
+            if (role.active) {
+                break;
+            }
+        }
+        let dragon = role.getComponent(dragonBones.ArmatureDisplay)
+        dragon.playAnimation("a8", 1);
+        this.scheduleOnce(() => {
+            dragon.playAnimation("a1", 0);
+        }, 0.5);
 
         //使用道具
         let prop_name = spr.spriteFrame.name;
@@ -259,7 +273,7 @@ export default class PropBox extends cc.Component {
             count = 0;
         }
 
-        console.log(dt+"<-----持续时间值");
+        console.log(dt + "<-----持续时间值");
         //减速
         if (dt > 0.3) {
             console.log("是否跳出");

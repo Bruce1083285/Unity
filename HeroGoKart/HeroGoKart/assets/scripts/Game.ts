@@ -53,11 +53,6 @@ export default class Game extends cc.Component {
     @property(cc.Prefab)
     private Pre_Question: cc.Prefab = null;
     /**
-     * @property 道具预制体
-     */
-    @property(cc.Prefab)
-    private Pre_Prop: cc.Prefab = null;
-    /**
      * @property 空投--->卡片预制体
      */
     @property(cc.Prefab)
@@ -78,15 +73,20 @@ export default class Game extends cc.Component {
     @property([cc.Prefab])
     private Pre_TransportationAircraft: cc.Prefab[] = [];
     /**
-     * @property 对象池初始化次数
-     */
-    @property
-    private Pool_InitCount: number = 5;
-    /**
      * @property [Array]被动道具预制体
      */
     @property([cc.Prefab])
     private Pre_PassiveProps: cc.Prefab[] = [];
+    /**
+     * @property [Array]主动道具道具预制体
+     */
+    @property([cc.Prefab])
+    public Pre_InitiativeProp: cc.Prefab[] = [];
+    /**
+     * @property 对象池初始化次数
+     */
+    @property
+    private Pool_InitCount: number = 5;
     /**
      * @property [Array]赛道皮肤
      */
@@ -258,9 +258,9 @@ export default class Game extends cc.Component {
     */
     public Pool_Question: cc.NodePool = null;
     /**
-     * @property 道具对象池
+     * @property 主动道具对象池
      */
-    public Pool_Prop: cc.NodePool = null;
+    public Pool_InitiativeProp: cc.NodePool = null;
     /**
      * @property 被动道具对象池
      */
@@ -442,8 +442,8 @@ export default class Game extends cc.Component {
         this.SetPool(this.Pool_AI, this.Pool_InitCount, this.Pre_AI);
         this.Pool_Question = new cc.NodePool();
         this.SetPool(this.Pool_Question, this.Pool_InitCount, this.Pre_Question);
-        this.Pool_Prop = new cc.NodePool();
-        this.SetPool(this.Pool_Prop, this.Pool_InitCount, this.Pre_Prop);
+        // this.Pool_InitiativeProp = new cc.NodePool();
+        // this.SetPool(this.Pool_InitiativeProp, this.Pool_InitCount, this.Pre_InitiativeProp);
         this.Pool_PassiveProps = new cc.NodePool();
         this.SetPoolPassive(this.Pre_PassiveProps, this.Pool_PassiveProps);
 
@@ -648,9 +648,13 @@ export default class Game extends cc.Component {
         GameManage.Instance.IsTouchClick = false;
         GameManage.Instance.IsCameraFollow = false;
 
-        let prop_arr = this.Area_Prop.children;
+        let prop_arr = this.Area_Path.children;
         for (let i = 0; i < prop_arr.length; i++) {
-            prop_arr[i].destroy();
+            let prop = prop_arr[i];
+            if (prop.name === "AI" || prop.name === "Player") {
+                continue;
+            }
+            prop.destroy();
         }
 
         let path_arr = this.BG.children;
@@ -742,7 +746,7 @@ export default class Game extends cc.Component {
             // this.SetCurrentPlayerSkin();
             this.SetPlayer(this.Area_Path, this.Pre_Player);
             this.SetAI(this.Pool_AI, this.Area_Path);
-            this.SetRolePos(this.Area_Path);
+            // this.SetRolePos(this.Area_Path);
         }, "Game");
 
         //设置速度等级
@@ -752,7 +756,7 @@ export default class Game extends cc.Component {
 
         //设置道具对象池
         EventCenter.AddListenter(EventType.Game_SetPoolProp, () => {
-            this.SetPool(this.Pool_Prop, this.Pool_InitCount, this.Pre_Prop);
+            // this.SetPool(this.Pool_Prop, this.Pool_InitCount, this.Pre_InitiativeProp);
         }, "Game");
 
         //游戏结束
@@ -882,6 +886,16 @@ export default class Game extends cc.Component {
             let pre_node = cc.instantiate(pre);
             pool.put(pre_node);
         }
+    }
+
+    /**
+     * 设置主动道具对象池
+     */
+    private SetPoolInitiativeProp() {
+        // for (let i = 0; i < this.Pool_InitCount.; i++) {
+        //     let prop = cc.instantiate(this.Pre_InitiativeProp[i]);
+
+        // }
     }
 
     /**
@@ -1150,9 +1164,6 @@ export default class Game extends cc.Component {
     * @param parent 父节点
     */
     private SetAI(pool: cc.NodePool, parent: cc.Node) {
-        let arr_Role: number[] = [];
-        let arr_Car: number[] = [];
-
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
             let AI = GameManage.Instance.Roles[i];
             if (AI.name !== "AI") {
@@ -1160,24 +1171,45 @@ export default class Game extends cc.Component {
             }
 
             //角色
-            for (let j = 0; j < this.BonesAsset_Role.length; j++) {
-                let display_role = AI.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
-                let istrue = this.SetAIDragonBones(display_role, this.BonesAsset_Role, this.BonesAtlasAsset_Role, DragonBonesAnimation_Role.a1, DragonBonesAnimation_PlayTimes.Loop, arr_Role);
-                if (istrue) {
-                    break;
+            let role_arr = AI.getChildByName("Role").children;
+            let ran_role = Math.floor(Math.random() * role_arr.length);
+            let role = role_arr[ran_role];
+            role.active = true;
+            for (let j = 0; j < role_arr.length; j++) {
+                if (j !== ran_role) {
+                    role_arr[j].active = false;
                 }
-                j--;
             }
+            let display_role = role.getComponent(dragonBones.ArmatureDisplay);
+            display_role.playAnimation("a1", 0);
+            // for (let j = 0; j < this.BonesAsset_Role.length; j++) {
+            // let istrue = this.SetAIDragonBones(display_role, this.BonesAsset_Role, this.BonesAtlasAsset_Role, DragonBonesAnimation_Role.a1, DragonBonesAnimation_PlayTimes.Loop, arr_Role);
+            // if (istrue) {
+            //     break;
+            // }
+            // j--;
+            // }
 
             //汽车
-            for (let j = 0; j < this.BonesAsset_Car.length; j++) {
-                let display_car = AI.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
-                let istrue = this.SetAIDragonBones(display_car, this.BonesAsset_Car, this.BonesAtlasAsset_Car, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, arr_Car);
-                if (istrue) {
-                    break;
+            let car_arr = AI.getChildByName("Car").children;
+            let ran_car = Math.floor(Math.random() * car_arr.length);
+            let car = car_arr[ran_car];
+            car.active = true;
+            for (let j = 0; j < car_arr.length; j++) {
+                if (j !== ran_car) {
+                    car_arr[j].active = false;
                 }
-                j--;
             }
+            let display_care = car.getComponent(dragonBones.ArmatureDisplay);
+            display_care.playAnimation("a1", 0);
+            // for (let j = 0; j < this.BonesAsset_Car.length; j++) {
+            //     let display_car = AI.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+            //     let istrue = this.SetAIDragonBones(display_car, this.BonesAsset_Car, this.BonesAtlasAsset_Car, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, arr_Car);
+            //     if (istrue) {
+            //         break;
+            //     }
+            //     j--;
+            // }
 
             // parent.addChild(AI);
         }
