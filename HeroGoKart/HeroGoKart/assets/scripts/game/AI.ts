@@ -77,6 +77,10 @@ export default class AI extends cc.Component {
      */
     private Speed_Max: number = 1000;
     /**
+     * @property 当前速度值
+     */
+    public Current_SpeedValue: number = 0;
+    /**
      * @property 是否在空中
      */
     public IsSky: boolean = false;

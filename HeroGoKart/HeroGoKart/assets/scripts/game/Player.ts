@@ -61,6 +61,10 @@ export default class Player extends cc.Component {
      */
     public Horizontal_Sensitivity: number = 100;
     /**
+     * @property 当前速度值
+     */
+    public Current_SpeedValue: number = 0;
+    /**
      * @property 保护罩是否开启
      */
     public IsOpen_Pretection: boolean = false;
@@ -590,8 +594,7 @@ export default class Player extends cc.Component {
         this.IsSpeedUp = false;
         this.Speed = 0;
 
-        let size_hight = cc.winSize.height;
-        self.setPosition(300, size_hight / 2);
+        self.setPosition(300, self.position.y);
         let act_fadOut = cc.fadeOut(0.5);
         let act_fadIn = cc.fadeIn(0.5);
         let act_seq_1 = cc.sequence(act_fadOut, act_fadIn);

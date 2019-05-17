@@ -103,6 +103,11 @@ export default class Game extends cc.Component {
     @property([dragonBones.DragonBonesAtlasAsset])
     private BonesAtlasAsset_Role: dragonBones.DragonBonesAtlasAsset[] = [];
     /**
+     * @property [Array]角色图集材质
+     */
+    @property([cc.Texture2D])
+    private BonesAtlasAssetTexture_Role: cc.Texture2D[] = [];
+    /**
     * @property [Array]汽车龙骨资源
     */
     @property([dragonBones.DragonBonesAsset])
@@ -197,21 +202,41 @@ export default class Game extends cc.Component {
      */
     private Current_PathSkin: cc.SpriteFrame = null;
     /**
-     * @property 当前玩家--->角色龙骨资源
+     * @property 当前玩家--->角色皮肤ID
      */
-    private Current_Player_RoleAsset: dragonBones.DragonBonesAsset = null;
+    private Current_Player_RoleID: string = null;
     /**
-     * @property 当前玩家--->角色图集
+     * @property 当前玩家--->角色龙骨节点
      */
-    private Current_Player_RoleAtlasAsset: dragonBones.DragonBonesAtlasAsset = null;
+    private Current_Player_DraRoleNode: cc.Node = null;
     /**
-     * @property 当前玩家--->汽车龙骨资源
+     * @property 当前玩家--->汽车皮肤ID
      */
-    private Current_Player_CarAsset: dragonBones.DragonBonesAsset = null;
+    private Current_Player_CarID: string = null;
     /**
-     * @property 当前玩家--->汽车图集
-     */
-    private Current_Player_CarAtlasAsset: dragonBones.DragonBonesAtlasAsset = null;
+  * @property 当前玩家--->汽车龙骨节点
+  */
+    private Current_Player_DraCarNode: cc.Node = null;
+    // /**
+    //  * @property 当前玩家--->角色龙骨资源
+    //  */
+    // private Current_Player_RoleAsset: dragonBones.DragonBonesAsset = null;
+    // /**
+    //  * @property 当前玩家--->角色图集
+    //  */
+    // private Current_Player_RoleAtlasAsset: dragonBones.DragonBonesAtlasAsset = null;
+    // /**
+    //  * @property 当前玩家--->角色图集材质
+    //  */
+    // private Current_Player_RoleAtlasAssetTexture: cc.Texture2D = null;
+    // /**
+    //  * @property 当前玩家--->汽车龙骨资源
+    //  */
+    // private Current_Player_CarAsset: dragonBones.DragonBonesAsset = null;
+    // /**
+    //  * @property 当前玩家--->汽车图集
+    //  */
+    // private Current_Player_CarAtlasAsset: dragonBones.DragonBonesAtlasAsset = null;
     /**
      * @property 跑道起点对象池
      */
@@ -269,28 +294,130 @@ export default class Game extends cc.Component {
      */
     private Bar_Speeds: cc.Node[] = [];
     /**
-     * 龙骨骨架--->汽车
+     * @property 龙骨骨架--->汽车
      */
     private Armature_Car = {
-        "1": "kadingcheguanjunche",
-        "2": "kadingchefeidieche",
-        "3": "kadingcheF1hong",
-        "4": "kadingchehanbaoche",
-        "5": "kadingcheziseche",
-        "6": "kadingcheboluoche",
-        "7": "kadingcheF1lan",
-        "8": "kadingcheboheche",
+        1: "kadingcheguanjunche",
+        2: "kadingchefeidieche",
+        3: "kadingcheF1hong",
+        4: "kadingchehanbaoche",
+        5: "kadingcheziseche",
+        6: "kadingcheboluoche",
+        7: "kadingcheF1lan",
+        8: "kadingcheboheche",
     }
 
     /**
-    * 龙骨骨架--->角色
+    * @property 龙骨骨架--->角色
     */
     private Armature_Role = {
-        "1": "kadingchexiyangyang",
-        "2": "kadingchexiongda",
-        "3": "kadingcheguangtouqiang",
-        "4": "kadingchebakeduizhang",
-        "5": "kadingchewukong",
+        1: "kadingchexiyangyang",
+        2: "kadingchexiongda",
+        3: "kadingcheguangtouqiang",
+        4: "kadingchebakeduizhang",
+        5: "kadingchewukong",
+    }
+
+    /**
+     * @property 渲染顺序配置表
+     */
+    private RenderOrderConfigurationTable = {
+        /**道具 */
+        Prop: {
+            /**被动 */
+            Passivity: [
+                /**金币--->1 */
+                {
+                    name: "Coin_1",
+                    zInd: 0,
+                },
+                /**金币--->2 */
+                {
+                    name: "Coin_2",
+                    zInd: 0,
+                },
+                /**金币--->3 */
+                {
+                    name: "Coin_3",
+                    zInd: 0,
+                },
+                /**金币--->4 */
+                {
+                    name: "Coin_4",
+                    zInd: 0,
+                },
+                /**金币--->5 */
+                {
+                    name: "Coin_5",
+                    zInd: 0,
+                },
+                /**金币--->6 */
+                {
+                    name: "Coin_6",
+                    zInd: 0,
+                },
+                /**金币--->7 */
+                {
+                    name: "Coin_7",
+                    zInd: 0,
+                },
+                /**金币--->8 */
+                {
+                    name: "Coin_8",
+                    zInd: 0,
+                },
+                /**龙卷风 */
+                {
+                    name: "Tornado",
+                    zInd: -1,
+                },
+                /**加速带 */
+                {
+                    name: "AreaSpeedUp",
+                    zInd: -1,
+                },
+                /**传送门 */
+                {
+                    name: "Portal",
+                    zInd: 0,
+                },
+                /**油漆 */
+                {
+                    name: "Paint",
+                    zInd: -1,
+                },
+                /**栏杆 */
+                {
+                    name: "Handrail",
+                    zInd: 0,
+                },
+                /**路障 */
+                {
+                    name: "Handrail",
+                    zInd: 0,
+                },
+                /**大石头 */
+                {
+                    name: "Boulder",
+                    zInd: 1,
+                },
+                /**石墩 */
+                {
+                    name: "Piers",
+                    zInd: 0,
+                },
+                /**水滩 */
+                {
+                    name: "Water",
+                    zInd: -1,
+                },
+                /**定时炸弹 */
+                {
+                    name: "TimeBomb",
+                    zInd: 0,
+                },
+            ],
+        }
     }
 
     update(dt) {
@@ -335,7 +462,13 @@ export default class Game extends cc.Component {
         this.Page_EndTime = this.node.parent.getChildByName("Main Camera").getChildByName("Page_EndTime");
         this.Page_Pause = this.node.parent.getChildByName("Main Camera").getChildByName("Page_Pause");
         this.Label_Ranking = this.node.parent.getChildByName("Main Camera").getChildByName("label_Ranking").getComponent(cc.Label);
-        GameManage.Instance.Roles = this.Area_Path.children;
+        let arr = this.Area_Path.children;
+        for (let i = 0; i < arr.length; i++) {
+            let role = arr[i];
+            if (role.name === "AI" || role.name === "Player") {
+                GameManage.Instance.Roles.push(role);
+            }
+        }
 
         this.Prop_Box = this.node.parent.getChildByName("Main Camera").getChildByName("Box_Prop").getComponent(PropBox);
         this.Prop_Box.Init();
@@ -439,6 +572,7 @@ export default class Game extends cc.Component {
                         role_type = role.getComponent(Player);
                     }
                     role_type.IsSpeedUp = false;
+                    role_type.Current_SpeedValue = role_type.Speed;
                     role_type.Speed = 0;
                 }
             }
@@ -483,6 +617,7 @@ export default class Game extends cc.Component {
                     role_type = role.getComponent(Player);
                 }
                 role_type.IsSpeedUp = true;
+                role_type.Speed = role_type.Current_SpeedValue;
             }
         }
         PopupBox.CommontBack(this.Page_Pause, callback);
@@ -580,7 +715,7 @@ export default class Game extends cc.Component {
             this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
 
             let ran = Math.floor(Math.random() * 3 + 2);
-            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 8);
+            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 3);
             this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
             this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Prop);
@@ -592,12 +727,12 @@ export default class Game extends cc.Component {
                 //测试
                 this.Player = this.Area_Path.getChildByName("Player");
 
-                // this.SetQuestion(this.Pool_Question, this.Area_Prop);
+                this.SetQuestion(this.Pool_Question, this.Area_Prop);
 
                 // this.UpdateSpeed();
                 // this.RunPathMove(this.BG);
 
-                this.SetPassivePos(this.Pool_PassiveProps, this.Area_Prop);
+                this.SetPassivePos(this.Pool_PassiveProps, this.Area_Path);
             }
             this.scheduleOnce(callback, 4);
         }, "Game");
@@ -605,8 +740,8 @@ export default class Game extends cc.Component {
         //设置当前玩家
         EventCenter.AddListenter(EventType.Game_SetCurrentPlayerSkin, () => {
             // this.SetCurrentPlayerSkin();
-            // this.SetPlayer(this.Area_Path, this.Pre_Player);
-            // this.SetAI(this.Pool_AI, this.Area_Path);
+            this.SetPlayer(this.Area_Path, this.Pre_Player);
+            this.SetAI(this.Pool_AI, this.Area_Path);
             this.SetRolePos(this.Area_Path);
         }, "Game");
 
@@ -692,15 +827,15 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private LeftStart(event) {
-        if (!GameManage.Instance.IsTouchClick && !GameManage.Instance.IsGameStart) {
+        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart) {
             return;
         }
         console.log(this.Player);
         this.Horizontal = -1;
-        let dra_role = this.Player.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
+        let dra_role = this.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
         dra_role.playAnimation("a3", 0);
 
-        let dra_car = this.Player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+        let dra_car = this.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
         dra_car.playAnimation("a3", 0);
     }
 
@@ -709,15 +844,15 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private TouchEnd(event) {
-        if (!GameManage.Instance.IsTouchClick && !GameManage.Instance.IsGameStart) {
+        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart) {
             return;
         }
-        let dra_role = this.Player.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
+        this.Horizontal = 0;
+        let dra_role = this.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
         dra_role.playAnimation("a1", 0);
 
-        let dra_car = this.Player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+        let dra_car = this.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
         dra_car.playAnimation("a1", 0);
-        this.Horizontal = 0;
     }
 
     /**
@@ -725,15 +860,15 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private RightStart(event) {
-        if (!GameManage.Instance.IsTouchClick && !GameManage.Instance.IsGameStart) {
+        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart) {
             return;
         }
-        let dra_role = this.Player.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
+        this.Horizontal = 1;
+        let dra_role = this.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
         dra_role.playAnimation("a6", 0);
 
-        let dra_car = this.Player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+        let dra_car = this.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
         dra_car.playAnimation("a6", 0);
-        this.Horizontal = 1;
     }
 
     /**
@@ -784,22 +919,32 @@ export default class Game extends cc.Component {
                 prop = pool.get();
             }
 
-            let name = prop.name;
-            // let cha=name.charAt(name.length-1);
-            // let num=parseInt(cha);
-            if (name === "Container") {
-                i--;
-                continue;
-            }
 
             // let world_Pos = this.Area_Path.convertToWorldSpaceAR(this.Area_Path.position);
             // let node_Pos = this.ar.convertToNodeSpaceAR(world_Pos);
             parent.addChild(prop);
-
-            let ran_x = Math.random() * 400 + 100;
+            let name = prop.name;
+            let cha = name.charAt(name.length - 1);
+            let num = parseInt(cha);
             let value = 1500;
-            prop.setPosition(ran_x, i * value + value / 2);
-            // prop.runAction(cc.moveBy(20, 0, -10000));
+            if (num === NaN || num === null) {
+                i--;
+                prop.setPosition(300, i * value + value / 2);
+            } else {
+                let ran_x = Math.random() * 300 + 200;
+                prop.setPosition(ran_x, i * value + value / 2);
+            }
+
+            //修改渲染顺序
+            for (let i in this.RenderOrderConfigurationTable.Prop.Passivity) {
+                let rend_name = this.RenderOrderConfigurationTable.Prop.Passivity[i].name;
+                let zind = this.RenderOrderConfigurationTable.Prop.Passivity[i].zInd;
+                if (rend_name === name) {
+                    prop.zIndex = zind;
+                }
+                console.log(this.RenderOrderConfigurationTable.Prop.Passivity[i].name);
+            }
+
         }
     }
 
@@ -885,18 +1030,49 @@ export default class Game extends cc.Component {
      * @param pre_player 玩家预制体
      */
     private SetPlayer(parent: cc.Node, pre_player: cc.Prefab) {
-        let player = cc.instantiate(pre_player);
+        let player: cc.Node = null;
+        for (let i in GameManage.Instance.Roles) {
+            if (GameManage.Instance.Roles[i].name === "Player") {
+                player = GameManage.Instance.Roles[i];
+            }
+        }
+
+        this.Current_Player_RoleID = Cache.GetCache(CacheType.Current_Role_ID);
+        this.Current_Player_CarID = Cache.GetCache(CacheType.Current_Car_ID);
 
         //角色
-        let display_role = player.getChildByName("Role").getChildByName("role").getComponent(dragonBones.ArmatureDisplay);
-        this.SetPlayerDragonBones(display_role, this.Current_Player_RoleAsset, this.Current_Player_RoleAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Role);
+        let arr_role = player.getChildByName("Role").children;
+        for (let i = 0; i < arr_role.length; i++) {
+            let role: cc.Node = arr_role[i];
+            if (role.name === this.Current_Player_RoleID) {
+                this.Current_Player_DraRoleNode = role;
+                role.active = true;
+                let display_role = role.getComponent(dragonBones.ArmatureDisplay);
+                display_role.playAnimation("a1", 0);
+            } else {
+                role.active = false;
+            }
+        }
+        // this.SetPlayerDragonBones(display_role, this.Current_Player_RoleAsset, this.Current_Player_RoleAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Role);
 
         //汽车
-        let display_car = player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
-        this.SetPlayerDragonBones(display_car, this.Current_Player_CarAsset, this.Current_Player_CarAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Car);
+        let arr_car = player.getChildByName("Car").children;
+        for (let i = 0; i < arr_car.length; i++) {
+            let car: cc.Node = arr_car[i];
+            if (car.name === this.Current_Player_CarID) {
+                this.Current_Player_DraCarNode = car;
+                car.active = true;
+                let display_car = car.getComponent(dragonBones.ArmatureDisplay);
+                display_car.playAnimation("a1", 0);
+            } else {
+                car.active = false;
+            }
+        }
+        // let display_car = player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
+        // this.SetPlayerDragonBones(display_car, this.Current_Player_CarAsset, this.Current_Player_CarAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Car);
 
         // player.getComponent(Player).Init();
-        parent.addChild(player);
+        // parent.addChild(player);
     }
 
     /**
@@ -908,50 +1084,63 @@ export default class Game extends cc.Component {
      * @param animation_PlayTimes_value 龙骨动画播放次数
      */
     private SetPlayerDragonBones(display: dragonBones.ArmatureDisplay, asset: dragonBones.DragonBonesAsset, atlasAsset: dragonBones.DragonBonesAtlasAsset, animation_vlaue: any, animation_PlayTimes_value: DragonBonesAnimation_PlayTimes, obj_Armature: {}) {
-        console.log("组件龙骨资源");
-        console.log(display.dragonAsset);
-        console.log("参数龙骨资源");
-        console.log(asset);
-        let a = display.armature();
-        console.log(a);
+        // console.log("组件龙骨资源");
+        // console.log(display.dragonAsset);
+        // console.log("参数龙骨资源");
+        // console.log(asset);
+        // let a = display.armature();
+        // console.log(a);
 
-        display.dragonAsset = asset;
-        display.dragonAtlasAsset = atlasAsset;
-        display.animationName = animation_vlaue;
-        display.playTimes = animation_PlayTimes_value;
+        // var atlas = new dragonBones.DragonBonesAtlasAsset();
+        // atlas = this.Current_Player_RoleAtlasAsset;
+
+        // let asset_t = new dragonBones.DragonBonesAsset();
+        // asset_t = this.curr;
+
+
+        // display.dragonAsset = asset_t;
+        // display.dragonAtlasAsset = atlas;
+        // let num = parseInt(atlasAsset.name);
+        // let arma_name: string = this.Armature_Role[num];
+        // display.armatureName = arma_name;
+        // display.playAnimation("a1", 0);
+
+
     }
 
     /**
      * 设置玩家当前皮肤
      */
     private SetCurrentPlayerSkin() {
-        //当前角色皮肤
-        let skinid_Role = Cache.GetCache(CacheType.Current_Role_ID);
-        //角色龙骨
-        for (let i = 0; i < this.BonesAsset_Role.length; i++) {
-            let asset = this.BonesAsset_Role[i];
-            let atlasAsset = this.BonesAtlasAsset_Role[i];
-            let cha = asset.name.charAt(0);
-            if (cha === skinid_Role) {
-                this.Current_Player_RoleAsset = asset;
-                this.Current_Player_RoleAtlasAsset = atlasAsset;
-                break;
-            }
-        }
+        // //当前角色皮肤
+        // let skinid_Role = Cache.GetCache(CacheType.Current_Role_ID);
+        // //角色龙骨
+        // for (let i = 0; i < this.BonesAsset_Role.length; i++) {
+        //     let asset = this.BonesAsset_Role[i];
+        //     let atlasAsset = this.BonesAtlasAsset_Role[i];
+        //     let texture = this.BonesAtlasAssetTexture_Role[i];
+        //     let cha = asset.name.charAt(0);
+        //     if (cha === skinid_Role) {
+        //         this.Current_Player_RoleAsset = asset;
+        //         this.Current_Player_RoleAtlasAsset = atlasAsset;
+        //         this.Current_Player_RoleAtlasAssetTexture = texture;
+        //         break;
+        //     }
+        // }
 
-        //当前汽车皮肤
-        let skinid_Car = Cache.GetCache(CacheType.Current_Car_ID);
-        //汽车龙骨
-        for (let i = 0; i < this.BonesAsset_Car.length; i++) {
-            let asset = this.BonesAsset_Car[i];
-            let atlasAsset = this.BonesAtlasAsset_Car[i];
-            let cha = asset.name.charAt(0);
-            if (cha === skinid_Car) {
-                this.Current_Player_CarAsset = asset;
-                this.Current_Player_CarAtlasAsset = atlasAsset;
-                break;
-            }
-        }
+        // //当前汽车皮肤
+        // let skinid_Car = Cache.GetCache(CacheType.Current_Car_ID);
+        // //汽车龙骨
+        // for (let i = 0; i < this.BonesAsset_Car.length; i++) {
+        //     let asset = this.BonesAsset_Car[i];
+        //     let atlasAsset = this.BonesAtlasAsset_Car[i];
+        //     let cha = asset.name.charAt(0);
+        //     if (cha === skinid_Car) {
+        //         this.Current_Player_CarAsset = asset;
+        //         this.Current_Player_CarAtlasAsset = atlasAsset;
+        //         break;
+        //     }
+        // }
 
     }
 
@@ -964,11 +1153,10 @@ export default class Game extends cc.Component {
         let arr_Role: number[] = [];
         let arr_Car: number[] = [];
 
-        for (let i = 0; i < 3; i++) {
-            let AI = pool.get();
-            if (!AI) {
-                this.SetPool(this.Pool_AI, this.Pool_InitCount, this.Pre_AI);
-                AI = pool.get();
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let AI = GameManage.Instance.Roles[i];
+            if (AI.name !== "AI") {
+                continue;
             }
 
             //角色
@@ -991,7 +1179,7 @@ export default class Game extends cc.Component {
                 j--;
             }
 
-            parent.addChild(AI);
+            // parent.addChild(AI);
         }
     }
 
@@ -1013,8 +1201,7 @@ export default class Game extends cc.Component {
             let atlasAsset = bonesAtlasAssets[ran];
             display.dragonAsset.dragonBonesJson = asset.dragonBonesJson;
             display.dragonAtlasAsset.atlasJson = atlasAsset.atlasJson;
-            display.animationName = animation_value;
-            display.playTimes = animation_PlayTimes_value;
+            display.playAnimation("a1", 0);
 
             arr.push(ran);
             return true;
@@ -1124,7 +1311,7 @@ export default class Game extends cc.Component {
                 if (i + 1 === 3) {
                     str = "rd"
                 }
-                if (i + 1 === 4) {
+                if (i + 1 >= 4) {
                     str = "th"
                 }
                 this.Label_Ranking.string = (i + 1) + str;
@@ -1196,9 +1383,9 @@ export default class Game extends cc.Component {
         let arr: cc.Node[] = [];
         let ques_x: number = 150;
 
-        let ran_max = Math.random() * 10;
+        let ran_max = Math.random() * 5;
         for (let j = 0; j < ran_max; j++) {
-            this.Question_Space += 1000;
+            this.Question_Space += 5000;
             for (let i = 0; i < 4; i++) {
                 let question = pool.get();
                 if (!question) {

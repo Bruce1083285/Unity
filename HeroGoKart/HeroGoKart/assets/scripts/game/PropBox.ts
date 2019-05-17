@@ -229,7 +229,7 @@ export default class PropBox extends cc.Component {
         }
         let srpite = prop.getComponent(cc.Sprite);
         let ran = Math.floor(Math.random() * this.Fra_InitiativeProp.length);
-        this.ExtractProp(srpite, 0.5, ran, this.Fra_InitiativeProp, -0.05, 0);
+        this.ExtractProp(srpite, 0.3, ran, this.Fra_InitiativeProp, -0.1, 0);
     }
 
     /**
@@ -254,14 +254,14 @@ export default class PropBox extends cc.Component {
         }
 
         //持续恒速
-        if (count >= 50) {
+        if (count >= 10) {
             value = 0.05;
             count = 0;
         }
 
         console.log(dt+"<-----持续时间值");
         //减速
-        if (dt > 0.5) {
+        if (dt > 0.3) {
             console.log("是否跳出");
             return
         }

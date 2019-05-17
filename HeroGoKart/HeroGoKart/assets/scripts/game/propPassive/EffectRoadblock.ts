@@ -1,6 +1,7 @@
 import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
+import { GameManage } from "../../commont/GameManager";
 
 /**
  * @class 路障
@@ -36,11 +37,13 @@ export class EffectRoadblock extends PropPassive {
         } else if (role.name === "Player") {
             type_C = role.getComponent(Player);
         }
+        GameManage.Instance.IsTouchClick = false;
         type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
         type_C.Speed = 0;
 
         let callback = () => {
+            GameManage.Instance.IsTouchClick = true;
             type_C.Speed = speed_Value * 0.2;
             type_C.IsSpeedUp = true;
         }
