@@ -4,6 +4,9 @@ import { EventType } from "../../commont/Enum";
 import AI from "../AI";
 import Player from "../Player";
 import { PropUseing } from "../PropUseing";
+import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
+import Animation_WaterPolo from "../../animation/Animation_WaterPolo";
 
 /**
  * @class 水球
@@ -12,11 +15,10 @@ export class WaterPolo extends PropUseing {
 
     /**
       * 构造函数
-      * @param prop_skins [Array]道具皮肤
-      * @param pool_prop 道具对象池
+      * @param props [Array]道具预制体
       */
-    constructor(prop_skins: cc.SpriteFrame[], pool_prop: cc.NodePool) {
-        super(prop_skins, pool_prop);
+    constructor(props: cc.Prefab[], game: Game) {
+        super(props, game);
     }
 
     /**
@@ -29,64 +31,62 @@ export class WaterPolo extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        let skin: cc.SpriteFrame = null;
-        for (let i = 0; i < this.Prop_Skins.length; i++) {
-            let prop = this.Prop_Skins[i];
-            if (skin_id === prop.name) {
-                skin = prop;
+        let prop: cc.Node = null;
+        let parent = role.parent;
+        for (let i = 0; i < this.Props.length; i++) {
+            if (this.Props[i].name === skin_id) {
+                prop = cc.instantiate(this.Props[i]);
+                parent.addChild(prop);
+                prop.setPosition(role.position);
                 break;
             }
         }
-
-        let prop = this.Pool_Prop.get();
-        if (!prop) {
-            EventCenter.Broadcast(EventType.Game_SetPoolProp);
-            prop = this.Pool_Prop.get();
-        }
-        let sprite = prop.getChildByName("prop").getComponent(cc.Sprite);
-        sprite.spriteFrame = skin;
-
-        let arr = role.parent.children;
-        let patch_arr: cc.Node[] = [];
-        for (let i = 0; i < arr.length; i++) {
-            let node = arr[i];
-            if (node.name === "AI" || node.name === "Player") {
-                patch_arr.push(node);
-            }
-        }
+        let box_Collider = prop.getComponent(cc.BoxCollider);
+        box_Collider.enabled = false;
 
         let ran_node: cc.Node = null;
-        for (let i = 0; i < patch_arr.length; i++) {
-            let ran = Math.floor(Math.random() * patch_arr.length);
-            ran_node = patch_arr[ran];
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
+            ran_node = GameManage.Instance.Roles[ran];
             if (ran_node.position.y > role.position.y) {
-                break;
-            } else {
-                i--;
-                ran_node = null;
+                let type_Class = null;
+                let name = ran_node.name;
+                if (name === "AI") {
+                    type_Class = ran_node.getComponent(AI);
+                } else if (name === "Player") {
+                    type_Class = ran_node.getComponent(Player);
+                }
+                if (!type_Class.IsWaterPolo) {
+                    break;
+                }
             }
+            i--;
+            ran_node = null;
         }
-        let parent = ran_node.parent;
-        parent.addChild(prop);
-        prop.setPosition(ran_node.position);
-
-        let type_Class = null;
-        let name = ran_node.name;
-        if (name === "AI") {
-            type_Class = ran_node.getComponent(AI);
-        } else if (name === "Player") {
-            type_Class = ran_node.getComponent(Player);
-        }
-        type_Class.IsSpeedUp = false;
-        type_Class.Speed = 0;
-
-        let callback = () => {
-            this.Pool_Prop.put(prop);
-            type_Class.IsSpeedUp = true;
-            type_Class.Speed = 0;
+        if (!ran_node) {
+            return;
         }
 
-        setTimeout(callback, 2000);
+        let water_polo = prop.getComponent(Animation_WaterPolo);
+        water_polo.Play(ran_node);
+        // let type_Class = null;
+        // let name = ran_node.name;
+        // if (name === "AI") {
+        //     type_Class = ran_node.getComponent(AI);
+        // } else if (name === "Player") {
+        //     type_Class = ran_node.getComponent(Player);
+        // }
+        // type_Class.IsSpeedUp = false;
+        // type_Class.Speed = 0;
+
+        // let act_move=cc.moveTo(0.3,);
+        // let callback = () => {
+        //     this.Pool_Prop.put(prop);
+        //     type_Class.IsSpeedUp = true;
+        //     type_Class.Speed = 0;
+        // }
+
+        // setTimeout(callback, 2000);
     }
 
 }

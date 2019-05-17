@@ -13,8 +13,7 @@ export abstract class PropEffect {
      * 构造函数
      * @param pool_prop 道具对象池
      */
-    constructor(pool_prop: cc.NodePool) {
-        this.Pool_Prop = pool_prop;
+    constructor() {
     }
 
     /**

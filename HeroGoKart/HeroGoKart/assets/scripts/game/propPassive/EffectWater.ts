@@ -1,6 +1,7 @@
 import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
+import Game from "../../Game";
 
 /**
  * @class 水滩效果
@@ -9,11 +10,11 @@ export class EffectWater extends PropPassive {
 
 
     /**
-   * 构造函数
-   * @param pool_PassiveProp 被动道具对象池
-   */
-    constructor(pool_PassiveProp: cc.NodePool) {
-        super(pool_PassiveProp);
+     * 构造函数
+     * @param pool_PassiveProp 被动道具对象池
+     */
+    constructor(pool_PassiveProp: cc.NodePool, game: Game) {
+        super(pool_PassiveProp, game);
     }
 
     /**

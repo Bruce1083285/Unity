@@ -4,13 +4,13 @@ import { PropEffect } from "../PropEffect";
  * @class 炸弹效果类
  */
 export class EffectBomb extends PropEffect {
-    /**
-       * 构造函数
-       * @param pool_prop 道具对象池
-       */
-    constructor(pool_prop: cc.NodePool) {
-        super(pool_prop);
-    }
+    // /**
+    //    * 构造函数
+    //    * @param pool_prop 道具对象池
+    //    */
+    // constructor(pool_prop: cc.NodePool) {
+    //     super(pool_prop);
+    // }
 
     /**
      * 影响效果
@@ -25,6 +25,7 @@ export class EffectBomb extends PropEffect {
      * @param role 被影响角色
      */
     private RunEffect(role: cc.Node, prop: cc.Node) {
+        return;
         this.Pool_Prop.put(prop);
 
         let name = role.name;

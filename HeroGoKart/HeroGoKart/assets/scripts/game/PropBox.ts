@@ -84,13 +84,13 @@ export default class PropBox extends cc.Component {
         this.Game = this.node.parent.parent.getChildByName("Page_Game").getComponent(Game);
         this.BananaSkin = new BananaSkin(this.Game.Pre_InitiativeProp, this.Game);
         this.Bomb = new Bomb(this.Game.Pre_InitiativeProp, this.Game);
-        this.ClownGift = new ClownGift(this.Game.Pre_InitiativeProp);
-        this.WaterPolo = new WaterPolo(this.Game.Pre_InitiativeProp);
-        this.Frozen = new Frozen(this.Game.Pre_InitiativeProp);
-        this.Protection = new Protection(this.Game.Pre_InitiativeProp);
-        this.SpeedUp = new SpeedUp(this.Game.Pre_InitiativeProp);
-        this.Mangnet = new Magnet(this.Game.Pre_InitiativeProp);
-        this.Lightning = new Lightning(this.Game.Pre_InitiativeProp);
+        this.ClownGift = new ClownGift(this.Game.Pre_InitiativeProp, this.Game);
+        this.WaterPolo = new WaterPolo(this.Game.Pre_InitiativeProp, this.Game);
+        this.Frozen = new Frozen(this.Game.Pre_InitiativeProp, this.Game);
+        this.Protection = new Protection(this.Game.Pre_InitiativeProp, this.Game);
+        this.SpeedUp = new SpeedUp(this.Game.Pre_InitiativeProp, this.Game);
+        this.Mangnet = new Magnet(this.Game.Pre_InitiativeProp, this.Game);
+        this.Lightning = new Lightning(this.Game.Pre_InitiativeProp, this.Game);
 
         this.Props = this.node.getChildByName("Prop").children;
 

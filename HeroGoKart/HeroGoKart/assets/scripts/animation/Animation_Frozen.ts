@@ -1,3 +1,6 @@
+import AI from "../game/AI";
+import Player from "../game/Player";
+
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
@@ -18,6 +21,10 @@ export default class Animation_Frozen extends cc.Component {
      */
     @property([cc.SpriteFrame])
     private Fram_Frozen: cc.SpriteFrame[] = [];
+    /**
+     * @property 目标节点
+     */
+    private Target: cc.Node
     /**
      * @property 图片精灵
      */
@@ -53,7 +60,21 @@ export default class Animation_Frozen extends cc.Component {
     /**
      * 播放开始动画
      */
-    public PlayBegin() {
+    public PlayBegin(target: cc.Node) {
+        this.Target = target;
+        let collider = target.getComponent(cc.BoxCollider);
+        collider.enabled = false;
+
+        let type_Class = null;
+        let name = this.Target.name;
+        if (name === "AI") {
+            type_Class = this.Target.getComponent(AI);
+        } else if (name === "Player") {
+            type_Class = this.Target.getComponent(Player);
+        }
+        type_Class.IsWaterPolo = true;
+        type_Class.IsSpeedUp = false;
+        type_Class.Speed = 0;
         let callback = () => {
             this.Spri_Img.spriteFrame = this.Fram_Frozen[this.Index_Begin];
             this.Index_Begin++;
@@ -74,8 +95,21 @@ export default class Animation_Frozen extends cc.Component {
             this.Spri_Img.spriteFrame = this.Fram_Frozen[this.Index_End];
             this.Index_End--;
             if (this.Index_End < 0) {
-                this.unschedule(callback);
-                this.Spri_Img.spriteFrame = null;
+                let collider = this.Target.getComponent(cc.BoxCollider);
+                collider.enabled = true;
+                // this.unschedule(callback);
+                // this.Spri_Img.spriteFrame = null;
+                let type_Class = null;
+                let name = this.Target.name;
+                if (name === "AI") {
+                    type_Class = this.Target.getComponent(AI);
+                } else if (name === "Player") {
+                    type_Class = this.Target.getComponent(Player);
+                }
+                type_Class.IsWaterPolo = false;
+                type_Class.IsSpeedUp = true;
+                type_Class.Speed = 0;
+                this.node.destroy();
             }
         }
 

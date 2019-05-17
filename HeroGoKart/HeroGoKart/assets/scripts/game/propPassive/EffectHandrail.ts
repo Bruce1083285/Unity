@@ -1,6 +1,7 @@
 import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
+import Game from "../../Game";
 
 /**
  * @class 栏杆效果
@@ -8,11 +9,11 @@ import Player from "../Player";
 export class EffectHandrail extends PropPassive {
 
     /**
-     * 构造函数
-     * @param pool_PassiveProp 被动道具对象池
-     */
-    constructor(pool_PassiveProp: cc.NodePool) {
-        super(pool_PassiveProp);
+      * 构造函数
+      * @param pool_PassiveProp 被动道具对象池
+      */
+    constructor(pool_PassiveProp: cc.NodePool, game: Game) {
+        super(pool_PassiveProp, game);
     }
 
     /**
@@ -30,6 +31,15 @@ export class EffectHandrail extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        let act_rotate = cc.rotateBy(15, 10000);
+        let act_move = cc.moveBy(15, 10000, 10000);
+        let act_spa = cc.spawn(act_rotate, act_move);
+        let act_callback = () => {
+            prop.destroy();
+        }
+        let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
+        prop.runAction(act_seq);
+
         let type_C = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);

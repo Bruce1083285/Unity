@@ -4,19 +4,21 @@ import { EventType } from "../../commont/Enum";
 import AI from "../AI";
 import Player from "../Player";
 import { PropUseing } from "../PropUseing";
+import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
 /**
  * @class 吸铁石
  */
 export class Magnet extends PropUseing {
 
     /**
-       * 构造函数
-       * @param prop_skins [Array]道具皮肤
-       * @param pool_prop 道具对象池
-       */
-    constructor(prop_skins: cc.SpriteFrame[], pool_prop: cc.NodePool) {
-        super(prop_skins, pool_prop);
+     * 构造函数
+     * @param props [Array]道具预制体
+     */
+    constructor(props: cc.Prefab[], game: Game) {
+        super(props, game);
     }
+
 
     /**
     * 道具使用
@@ -28,55 +30,55 @@ export class Magnet extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        let skin: cc.SpriteFrame = null;
-        for (let i = 0; i < this.Prop_Skins.length; i++) {
-            let prop = this.Prop_Skins[i];
-            if (skin_id === prop.name) {
-                skin = prop;
+        skin_id = "7"
+        let prop: cc.Node = null;
+        for (let i = 0; i < this.Props.length; i++) {
+            if (this.Props[i].name === skin_id) {
+                prop = cc.instantiate(this.Props[i]);
+                role.addChild(prop);
+                prop.scale = 3;
+                prop.setPosition(0, 400);
                 break;
             }
         }
 
-        let prop = this.Pool_Prop.get();
-        if (!prop) {
-            EventCenter.Broadcast(EventType.Game_SetPoolProp);
-            prop = this.Pool_Prop.get();
-        }
-        let sprite = prop.getChildByName("prop").getComponent(cc.Sprite);
-        sprite.spriteFrame = skin;
-        let arr = role.parent.children;
-        let patch_arr: cc.Node[] = [];
-        for (let i = 0; i < arr.length; i++) {
-            let node = arr[i];
-            if (node.name === "AI" || node.name === "Player") {
-                patch_arr.push(node);
-            }
-        }
+        let speed_Effect = cc.instantiate(this.Game.Pre_SpeedEffects);
+        role.addChild(speed_Effect);
+        speed_Effect.setPosition(0, 0);
+        speed_Effect.scale = 2;
+        speed_Effect.zIndex = -1;
+        let partic = speed_Effect.getComponent(cc.ParticleSystem);
+        partic.resetSystem();
 
-        let ran_node: cc.Node = null;
-        for (let i = 0; i < patch_arr.length; i++) {
-            let ran = Math.floor(Math.random() * patch_arr.length);
-            ran_node = patch_arr[ran];
-            if (ran_node.position.y > role.position.y) {
+        let target: cc.Node = null;
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
+            target = GameManage.Instance.Roles[ran];
+            if (target.position.y > role.position.y) {
                 break;
             } else {
                 i--;
-                ran_node = null;
+                target = null;
             }
         }
-        role.addChild(prop);
-        prop.setPosition(0, 0);
+        if (!target) {
+            return;
+        }
 
         let target_Class = null;
-        let target_name = ran_node.name;
+        let target_name = target.name;
         if (target_name === "AI") {
-            target_Class = ran_node.getComponent(AI);
+            target_Class = target.getComponent(AI);
         } else if (target_name === "Player") {
-            target_Class = ran_node.getComponent(Player);
+            target_Class = target.getComponent(Player);
         }
         target_Class.IsSpeedUp = false;
         let target_Speed_value = target_Class.Speed;
         target_Class.Speed = target_Speed_value - target_Speed_value * 0.2;
+        let act_fadeOut = cc.fadeOut(0.5);
+        let act_fadeIn = cc.fadeIn(0.5);
+        let act_seq = cc.sequence(act_fadeOut, act_fadeIn).repeatForever();
+        target.runAction(act_seq);
 
         let role_Class = null;
         let role_name = role.name;
@@ -90,7 +92,10 @@ export class Magnet extends PropUseing {
         role_Class.Speed = role_Speed_value + role_Speed_value * 0.3;
 
         let callback = () => {
-            this.Pool_Prop.put(prop);
+            target.stopAllActions();
+            prop.destroy();
+            speed_Effect.destroy();
+
             target_Class.IsSpeedUp = true;
             target_Class.Speed = target_Speed_value;
 

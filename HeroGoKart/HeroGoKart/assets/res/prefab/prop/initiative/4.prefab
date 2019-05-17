@@ -12,7 +12,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "WaterPolo",
+    "_name": "4",
     "_objFlags": 0,
     "_parent": null,
     "_children": [
@@ -28,10 +28,13 @@
       },
       {
         "__id__": 6
+      },
+      {
+        "__id__": 7
       }
     ],
     "_prefab": {
-      "__id__": 7
+      "__id__": 8
     },
     "_opacity": 255,
     "_color": {
@@ -75,7 +78,7 @@
     "_skewX": 0,
     "_skewY": 0,
     "_zIndex": 0,
-    "groupIndex": 0,
+    "groupIndex": 6,
     "_id": ""
   },
   {
@@ -175,7 +178,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "6b500827-8ac2-415c-87a5-a2e6e7160252"
     },
     "fileId": "50lEE1SAdETK5wDrtuMhAz",
     "sync": false
@@ -217,7 +220,17 @@
         "__uuid__": "b0406daa-df87-4742-b96c-7c70e49ff5e7"
       }
     ],
-    "playOnLoad": true,
+    "playOnLoad": false,
+    "_id": ""
+  },
+  {
+    "__type__": "03da8W/lWpPxYMjc12BYNVR",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
     "_id": ""
   },
   {
@@ -226,7 +239,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "6b500827-8ac2-415c-87a5-a2e6e7160252"
     },
     "fileId": "142O9eQQtE+rP+7X7mBerl",
     "sync": false

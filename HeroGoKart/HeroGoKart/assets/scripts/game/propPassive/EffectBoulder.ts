@@ -1,6 +1,8 @@
 import { PropPassive } from "../PropPassive";
 import Player from "../Player";
 import AI from "../AI";
+import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
 
 /**
  * @class 大石头效果
@@ -8,11 +10,11 @@ import AI from "../AI";
 export class EffectBoulder extends PropPassive {
 
     /**
-   * 构造函数
-   * @param pool_PassiveProp 被动道具对象池
-   */
-    constructor(pool_PassiveProp: cc.NodePool) {
-        super(pool_PassiveProp);
+     * 构造函数
+     * @param pool_PassiveProp 被动道具对象池
+     */
+    constructor(pool_PassiveProp: cc.NodePool, game: Game) {
+        super(pool_PassiveProp, game);
     }
 
     /**
@@ -30,6 +32,9 @@ export class EffectBoulder extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        let collider = role.getComponent(cc.BoxCollider);
+        GameManage.Instance.IsTouchClick = false;
+        collider.enabled = false;
         role.scaleX = 0.8;
 
         let type_C = null;
@@ -43,6 +48,8 @@ export class EffectBoulder extends PropPassive {
         type_C.Speed = speed_Value * 0.5;
 
         let callback = () => {
+            GameManage.Instance.IsTouchClick = true;
+            collider.enabled = true;
             type_C.Speed = speed_Value;
             type_C.IsSpeedUp = true;
             role.scaleX = 0.4;

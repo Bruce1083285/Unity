@@ -4,6 +4,7 @@ import { EventType } from "../../commont/Enum";
 import AI from "../AI";
 import Player from "../Player";
 import { PropUseing } from "../PropUseing";
+import Game from "../../Game";
 
 
 /**
@@ -12,12 +13,11 @@ import { PropUseing } from "../PropUseing";
 export class Protection extends PropUseing {
 
     /**
-      * 构造函数
-      * @param prop_skins [Array]道具皮肤
-      * @param pool_prop 道具对象池
-      */
-    constructor(prop_skins: cc.SpriteFrame[], pool_prop: cc.NodePool) {
-        super(prop_skins, pool_prop);
+         * 构造函数
+         * @param props [Array]道具预制体
+         */
+    constructor(props: cc.Prefab[], game: Game) {
+        super(props, game);
     }
 
     /**
@@ -30,25 +30,16 @@ export class Protection extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        let skin: cc.SpriteFrame = null;
-        for (let i = 0; i < this.Prop_Skins.length; i++) {
-            let spr_prop = this.Prop_Skins[i];
-            if (skin_id === spr_prop.name) {
-                skin = spr_prop;
+        let prop: cc.Node = null;
+        for (let i = 0; i < this.Props.length; i++) {
+            if (this.Props[i].name === skin_id) {
+                prop = cc.instantiate(this.Props[i]);
+                role.addChild(prop);
+                prop.scale = 3;
+                prop.setPosition(0, 0);
                 break;
             }
         }
-
-        let prop = this.Pool_Prop.get();
-        if (!prop) {
-            EventCenter.Broadcast(EventType.Game_SetPoolProp);
-            prop = this.Pool_Prop.get();
-        }
-        let sprite = prop.getChildByName("prop").getComponent(cc.Sprite);
-        sprite.spriteFrame = skin;
-
-        role.addChild(prop);
-        prop.setPosition(0, 0);
 
         let type_Class = null;
         let name = role.name;
@@ -61,7 +52,8 @@ export class Protection extends PropUseing {
         type_Class.IsOpen_Pretection = true;
 
         let callback = () => {
-            this.Pool_Prop.put(prop);
+            type_Class.IsOpen_Pretection = false;
+            prop.destroy();
         }
 
         setTimeout(callback, 5000);

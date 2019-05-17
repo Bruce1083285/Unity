@@ -1,11 +1,20 @@
 import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
+import Game from "../../Game";
 
 /**
  * @class 龙卷风效果
  */
 export class EffectTornado extends PropPassive {
+
+    /**
+    * 构造函数
+    * @param pool_PassiveProp 被动道具对象池
+    */
+    constructor(pool_PassiveProp: cc.NodePool, game: Game) {
+            super(pool_PassiveProp,game);
+    }
 
     /**
      * 影响效果
@@ -23,6 +32,8 @@ export class EffectTornado extends PropPassive {
  * @param prop 道具节点
  */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        let collider = role.getComponent(cc.BoxCollider);
+        collider.enabled = false;
         // this.Pool_PassiveProp.put(prop);
         let type_C = null;
         if (role.name === "AI") {
@@ -37,8 +48,10 @@ export class EffectTornado extends PropPassive {
         let act_Rotate = cc.rotateTo(3, 1080);
         let act_Scale_small = cc.scaleTo(0.3, 0.4);
         let act_callback = () => {
+            collider.enabled = true;
             type_C.IsSpeedUp = true;
             type_C.Speed = 0;
+            role.setPosition(role.position.x, role.position.y + 400);
         }
         let act_Seq = cc.sequence(act_Scale_big, act_Rotate, act_Scale_small, cc.callFunc(act_callback));
         role.runAction(act_Seq);

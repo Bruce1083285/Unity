@@ -31,6 +31,7 @@ import { TranCoin } from "./transportation/TranCoin";
 import { Prop_Passive, EventType } from "../commont/Enum";
 import { GameManage } from "../commont/GameManager";
 import { EventCenter } from "../commont/EventCenter";
+import Animation_TimeBomb from "../animation/Animation_TimeBomb";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -72,6 +73,18 @@ export default class AI extends cc.Component {
      * @property 是否开启加速
      */
     public IsSpeedUp: boolean = true;
+    /**
+   * @property 是否被水泡困住
+   */
+    public IsWaterPolo: boolean = false;
+    /**
+    * @property 是否被冰冻
+    */
+    public IsFrozen: boolean = false;
+    /**
+    * @property 是否被雷击
+    */
+    public IsLightning: boolean = false;
     /**
      * @property 加速最大值
      */
@@ -207,7 +220,6 @@ export default class AI extends cc.Component {
         if (!GameManage.Instance.IsGameStart) {
             return;
         }
-        return
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
         //水平移动
@@ -224,32 +236,32 @@ export default class AI extends cc.Component {
         this.Game = this.node.parent.parent.getComponent(Game);
 
         //道具效果
-        this.Effect_BananaSkin = new EffectBananaSkin(this.Game.Pool_Prop);
-        this.Effect_Bomb = new EffectBomb(this.Game.Pool_Prop);
-        this.Effect_ClownGift = new EffectClownGift(this.Game.Pool_Prop);
+        this.Effect_BananaSkin = new EffectBananaSkin();
+        this.Effect_Bomb = new EffectBomb();
+        this.Effect_ClownGift = new EffectClownGift();
 
         //道具使用
-        this.Useing_BananaSkin = new BananaSkin(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Useing_Bomb = new Bomb(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Useing_ClownGift = new ClownGift(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Useing_WaterPolo = new WaterPolo(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Useing_Frozen = new Frozen(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Useing_Protection = new Protection(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Useing_SpeedUp = new SpeedUp(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Useing_Mangnet = new Magnet(this.Fra_InitiativeProp, this.Game.Pool_Prop);
-        this.Useing_Lightning = new Lightning(this.Fra_InitiativeProp, this.Game.Pool_Prop);
+        this.Useing_BananaSkin = new BananaSkin(this.Game.Pre_InitiativeProp, this.Game);
+        this.Useing_Bomb = new Bomb(this.Game.Pre_InitiativeProp, this.Game);
+        this.Useing_ClownGift = new ClownGift(this.Game.Pre_InitiativeProp, this.Game);
+        this.Useing_WaterPolo = new WaterPolo(this.Game.Pre_InitiativeProp, this.Game);
+        this.Useing_Frozen = new Frozen(this.Game.Pre_InitiativeProp, this.Game);
+        this.Useing_Protection = new Protection(this.Game.Pre_InitiativeProp, this.Game);
+        this.Useing_SpeedUp = new SpeedUp(this.Game.Pre_InitiativeProp, this.Game);
+        this.Useing_Mangnet = new Magnet(this.Game.Pre_InitiativeProp, this.Game);
+        this.Useing_Lightning = new Lightning(this.Game.Pre_InitiativeProp, this.Game);
         //---------->被动道具效果
-        this.EffectCoin = new EffectCoin(this.Game.Pool_PassiveProps);
-        this.EffectTornado = new EffectTornado(this.Game.Pool_PassiveProps);
-        this.EffectAreaSpeedUp = new EffectAreaSpeedUp(this.Game.Pool_PassiveProps);
-        this.EffectPortal = new EffectPortal(this.Game.Pool_PassiveProps);
-        this.EffectPaint = new EffectPaint(this.Game.Pool_PassiveProps);
-        this.EffectHandrail = new EffectHandrail(this.Game.Pool_PassiveProps);
-        this.EffectRoadblock = new EffectRoadblock(this.Game.Pool_PassiveProps);
-        this.EffectBoulder = new EffectBoulder(this.Game.Pool_PassiveProps);
-        this.EffectPiers = new EffectPiers(this.Game.Pool_PassiveProps);
-        this.EffectWater = new EffectWater(this.Game.Pool_PassiveProps);
-        this.EffectTimeBomb = new EffectTimeBomb(this.Game.Pool_PassiveProps);
+        this.EffectCoin = new EffectCoin(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectTornado = new EffectTornado(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectAreaSpeedUp = new EffectAreaSpeedUp(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectPortal = new EffectPortal(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectPaint = new EffectPaint(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectHandrail = new EffectHandrail(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectRoadblock = new EffectRoadblock(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectBoulder = new EffectBoulder(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectPiers = new EffectPiers(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectWater = new EffectWater(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectTimeBomb = new EffectTimeBomb(this.Game.Pool_PassiveProps,this.Game);
         //---------->空投奖励
         this.TranSpeedUp = new TranSpeedUp();
         this.TranCoin = new TranCoin();
@@ -262,7 +274,8 @@ export default class AI extends cc.Component {
         if (!this.IsSpeedUp || !GameManage.Instance.IsGameStart) {
             return;
         }
-        this.Speed += 2;
+        let ran = Math.random() * 2;
+        this.Speed += ran;
         if (this.Speed >= this.Speed_Max) {
             this.Speed = this.Speed_Max;
         }
@@ -408,23 +421,24 @@ export default class AI extends cc.Component {
      * @param target 道具节点
      */
     private CollisionProp(target: cc.Node, self: cc.Node) {
-        let istrue = this.GetPretection();
+        let istrue = this.GetPretection(target);
         if (istrue) {
             return
         }
-        let name = target.getChildByName("prop").getComponent(cc.Sprite).spriteFrame.name;
+        let name = target.name;
         switch (name) {
             case "1":
                 //香蕉皮效果
+                istrue = this.GetPretection(target);
                 this.Effect_BananaSkin.Effect(self, target);
                 break;
             case "2":
                 //炸弹效果
-                target.destroy();
                 // this.Effect_Bomb.Effect(self, target);
                 break;
             case "3":
                 //小丑礼包
+                istrue = this.GetPretection(target);
                 this.Effect_ClownGift.Effect(self, target);
                 break;
             default:
@@ -449,7 +463,7 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.Tornado:
                 //龙卷风
-                istrue = this.GetPretection();
+                istrue = this.GetPretection(target);
                 if (istrue) {
                     return
                 }
@@ -465,7 +479,7 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.Paint:
                 //油漆
-                istrue = this.GetPretection();
+                istrue = this.GetPretection(target);
                 if (istrue) {
                     return
                 }
@@ -473,7 +487,7 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.Handrail:
                 //栏杆
-                istrue = this.GetPretection();
+                istrue = this.GetPretection(target);
                 if (istrue) {
                     return
                 }
@@ -481,7 +495,7 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.Roadblock:
                 //路障
-                istrue = this.GetPretection();
+                istrue = this.GetPretection(target);
                 if (istrue) {
                     return
                 }
@@ -489,7 +503,7 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.Boulder:
                 //大石头
-                istrue = this.GetPretection();
+                istrue = this.GetPretection(target);
                 if (istrue) {
                     return
                 }
@@ -501,7 +515,7 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.Water:
                 //水滩
-                istrue = this.GetPretection();
+                istrue = this.GetPretection(target);
                 if (istrue) {
                     return
                 }
@@ -509,7 +523,7 @@ export default class AI extends cc.Component {
                 break;
             case Prop_Passive.TimeBomb:
                 //定时炸弹
-                istrue = this.GetPretection();
+                istrue = this.GetPretection(target);
                 if (istrue) {
                     return
                 }
@@ -530,6 +544,8 @@ export default class AI extends cc.Component {
         target.removeFromParent(false);
         this.node.addChild(target);
         target.setPosition(0, 0);
+        let time_Bomb = target.getComponent(Animation_TimeBomb);
+        time_Bomb.Play();
     }
 
     /**
@@ -674,8 +690,20 @@ export default class AI extends cc.Component {
      * 获取保护罩
      * @returns 保护罩是否打开
      */
-    private GetPretection(): boolean {
+    private GetPretection(target: cc.Node): boolean {
         if (this.IsOpen_Pretection) {
+            if (target.name === "Handrail" || target.name === "Roadblock") {
+                let act_rotate = cc.rotateBy(15, 10000);
+                let act_move = cc.moveBy(15, 10000, 10000);
+                let act_spa = cc.spawn(act_rotate, act_move);
+                let act_callback = () => {
+                    target.destroy();
+                }
+                let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
+                target.runAction(act_seq);
+            } else {
+                target.destroy();
+            }
             let prop = this.node.getChildByName("Prop");
             prop.destroy();
             this.IsOpen_Pretection = false;
@@ -689,6 +717,9 @@ export default class AI extends cc.Component {
      * @param self 玩家节点
      */
     private CrossingTheLineProtection(self: cc.Node) {
+        let collision = this.node.getComponent(cc.BoxCollider);
+        collision.enabled = false;
+
         this.IsSpeedUp = false;
         this.Speed = 0;
 
@@ -699,6 +730,7 @@ export default class AI extends cc.Component {
         let act_seq_1 = cc.sequence(act_fadOut, act_fadIn);
         let act_rep = cc.repeat(act_seq_1, 5);
         let callback = () => {
+            collision.enabled = true;
             this.IsSpeedUp = true;
             this.Speed = 0;
         }

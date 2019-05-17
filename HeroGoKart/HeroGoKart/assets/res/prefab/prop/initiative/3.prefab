@@ -12,7 +12,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "ClownGift",
+    "_name": "3",
     "_objFlags": 0,
     "_parent": null,
     "_children": [
@@ -50,14 +50,14 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 259.4,
-      "y": 727.1,
+      "x": 448,
+      "y": 623,
       "z": 0
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
+      "x": 0.7,
+      "y": 0.7,
       "z": 1
     },
     "_rotationX": 0,
@@ -72,7 +72,7 @@
     "_skewX": 0,
     "_skewY": 0,
     "_zIndex": 0,
-    "groupIndex": 0,
+    "groupIndex": 6,
     "_id": ""
   },
   {

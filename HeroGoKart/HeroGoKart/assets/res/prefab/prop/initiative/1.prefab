@@ -12,7 +12,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "BananaSkin",
+    "_name": "1",
     "_objFlags": 0,
     "_parent": null,
     "_children": [
@@ -75,7 +75,7 @@
     "_skewX": 0,
     "_skewY": 0,
     "_zIndex": 0,
-    "groupIndex": 0,
+    "groupIndex": 6,
     "_id": ""
   },
   {
@@ -175,7 +175,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "eb4afb27-e0de-4b72-ae0c-7a32d75e98a6"
     },
     "fileId": "20N86Zy2dHD4y8bXgLpye9",
     "sync": false
@@ -277,7 +277,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "eb4afb27-e0de-4b72-ae0c-7a32d75e98a6"
     },
     "fileId": "38Vww2sBFKIIQf6DGj+Sa6",
     "sync": false
@@ -309,7 +309,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "eb4afb27-e0de-4b72-ae0c-7a32d75e98a6"
     },
     "fileId": "142O9eQQtE+rP+7X7mBerl",
     "sync": false

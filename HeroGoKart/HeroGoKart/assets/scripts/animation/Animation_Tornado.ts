@@ -50,11 +50,11 @@ export default class Animation_Tornado extends cc.Component {
     }
 
     update(dt) {
-        if (!GameManage.Instance.IsGameStart) {
-            return;
-        }
-        let x = this.node.position.x + this.Speed * this.Horizontal * dt;
-        this.node.setPosition(x, this.node.y);
+        // if (!GameManage.Instance.IsGameStart) {
+        //     return;
+        // }
+        // let x = this.node.position.x + this.Speed * this.Horizontal * dt;
+        // this.node.setPosition(x, this.node.y);
     }
 
     /**

@@ -53,6 +53,11 @@ export default class Game extends cc.Component {
     @property(cc.Prefab)
     private Pre_Question: cc.Prefab = null;
     /**
+     * @property 加速粒子效果
+     */
+    @property(cc.Prefab)
+    public Pre_SpeedEffects: cc.Prefab = null;
+    /**
      * @property 空投--->卡片预制体
      */
     @property(cc.Prefab)
@@ -329,42 +334,42 @@ export default class Game extends cc.Component {
                 /**金币--->1 */
                 {
                     name: "Coin_1",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**金币--->2 */
                 {
                     name: "Coin_2",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**金币--->3 */
                 {
                     name: "Coin_3",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**金币--->4 */
                 {
                     name: "Coin_4",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**金币--->5 */
                 {
                     name: "Coin_5",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**金币--->6 */
                 {
                     name: "Coin_6",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**金币--->7 */
                 {
                     name: "Coin_7",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**金币--->8 */
                 {
                     name: "Coin_8",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**龙卷风 */
                 {
@@ -379,7 +384,7 @@ export default class Game extends cc.Component {
                 /**传送门 */
                 {
                     name: "Portal",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**油漆 */
                 {
@@ -389,12 +394,12 @@ export default class Game extends cc.Component {
                 /**栏杆 */
                 {
                     name: "Handrail",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**路障 */
                 {
                     name: "Handrail",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**大石头 */
                 {
@@ -404,7 +409,7 @@ export default class Game extends cc.Component {
                 /**石墩 */
                 {
                     name: "Piers",
-                    zInd: 0,
+                    zInd: -1,
                 },
                 /**水滩 */
                 {
@@ -414,7 +419,7 @@ export default class Game extends cc.Component {
                 /**定时炸弹 */
                 {
                     name: "TimeBomb",
-                    zInd: 0,
+                    zInd: -1,
                 },
             ],
         }
@@ -449,7 +454,7 @@ export default class Game extends cc.Component {
 
         let manager = cc.director.getCollisionManager();
         manager.enabled = true;
-        // manager.enabledDebugDraw = true;
+        manager.enabledDebugDraw = true;
         this.BG = this.node.getChildByName("BG");
         this.Area_Path = this.node.getChildByName("Area_Path");
         this.Area_Prop = this.node.getChildByName("Area_Prop");
@@ -746,7 +751,7 @@ export default class Game extends cc.Component {
             // this.SetCurrentPlayerSkin();
             this.SetPlayer(this.Area_Path, this.Pre_Player);
             this.SetAI(this.Pool_AI, this.Area_Path);
-            // this.SetRolePos(this.Area_Path);
+            this.SetRolePos(this.Area_Path);
         }, "Game");
 
         //设置速度等级
@@ -933,6 +938,10 @@ export default class Game extends cc.Component {
                 prop = pool.get();
             }
 
+            if (prop.name !== "TimeBomb") {
+                i--;
+                continue;
+            }
 
             // let world_Pos = this.Area_Path.convertToWorldSpaceAR(this.Area_Path.position);
             // let node_Pos = this.ar.convertToNodeSpaceAR(world_Pos);
@@ -1246,10 +1255,9 @@ export default class Game extends cc.Component {
      * @param parent 角色父节点
      */
     private SetRolePos(parent: cc.Node) {
-        let arr = parent.children;
         let have_arr: number[] = [];
-        for (let i = 0; i < arr.length; i++) {
-            let ran = Math.floor(Math.random() * arr.length);
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
             let ind = have_arr.indexOf(ran);
             if (ind !== -1) {
                 i--;
@@ -1257,17 +1265,20 @@ export default class Game extends cc.Component {
             }
             have_arr.push(ran);
 
-            let role = arr[ran];
-            let role_Type = null;
+            let role = GameManage.Instance.Roles[ran];
+            let role_player: Player = null;
+            let role_AI: AI = null;
             if (role.name === "AI") {
-                role_Type = role.getComponent(AI);
+                role_AI = role.getComponent(AI);
+                role_AI.unscheduleAllCallbacks();
+                role_AI.IsSpeedUp = true;
             }
             if (role.name === "Player") {
-                role_Type = role.getComponent(Player);
-                role_Type.Camera.setPosition(0, 0);
+                role_player = role.getComponent(Player);
+                role_player.Camera.setPosition(0, 0);
+                role_player.unscheduleAllCallbacks();
+                role_player.IsSpeedUp = true;
             }
-            role_Type.unscheduleAllCallbacks();
-            role_Type.IsSpeedUp = true;
             let size_x = role.getContentSize().width;
             role.setPosition(i * 150 + 150 / 2, 300);
         }

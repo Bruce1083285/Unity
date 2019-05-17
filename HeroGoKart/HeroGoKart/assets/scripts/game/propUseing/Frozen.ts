@@ -4,20 +4,21 @@ import Player from "../Player";
 import { EventCenter } from "../../commont/EventCenter";
 import { EventType } from "../../commont/Enum";
 import { PropUseing } from "../PropUseing";
+import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
+import Animation_Frozen from "../../animation/Animation_Frozen";
 
 /**
  * @class 冰冻
  */
 export class Frozen extends PropUseing {
 
-
     /**
-      * 构造函数
-      * @param prop_skins [Array]道具皮肤
-      * @param pool_prop 道具对象池
-      */
-    constructor(prop_skins: cc.SpriteFrame[], pool_prop: cc.NodePool) {
-        super(prop_skins, pool_prop);
+         * 构造函数
+         * @param props [Array]道具预制体
+         */
+    constructor(props: cc.Prefab[], game: Game) {
+        super(props, game);
     }
 
     /**
@@ -30,63 +31,47 @@ export class Frozen extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        let skin: cc.SpriteFrame = null;
-        for (let i = 0; i < this.Prop_Skins.length; i++) {
-            let spr_prop = this.Prop_Skins[i];
-            if (skin_id === spr_prop.name) {
-                skin = spr_prop;
+        let prop: cc.Node = null;
+        let parent = role.parent;
+        for (let i = 0; i < this.Props.length; i++) {
+            if (this.Props[i].name === skin_id) {
+                prop = cc.instantiate(this.Props[i]);
+                parent.addChild(prop);
                 break;
             }
         }
-
-        let prop = this.Pool_Prop.get();
-        if (!prop) {
-            EventCenter.Broadcast(EventType.Game_SetPoolProp);
-            prop = this.Pool_Prop.get();
-        }
-        let sprite = prop.getChildByName("prop").getComponent(cc.Sprite);
-        sprite.spriteFrame = skin;
-
-        let arr = role.parent.children;
-        let patch_arr: cc.Node[] = [];
-        for (let i = 0; i < arr.length; i++) {
-            let node = arr[i];
-            if (node.name === "AI" || node.name === "Player") {
-                patch_arr.push(node);
-            }
-        }
+        let box_Collider = prop.getComponent(cc.BoxCollider);
+        box_Collider.enabled = false;
 
         let ran_node: cc.Node = null;
-        for (let i = 0; i < patch_arr.length; i++) {
-            let ran = Math.floor(Math.random() * patch_arr.length);
-            ran_node = patch_arr[ran];
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
+            ran_node = GameManage.Instance.Roles[ran];
             if (ran_node.position.y > role.position.y) {
-                break;
-            } else {
-                i--;
-                ran_node = null;
+                let type_Class = null;
+                let name = ran_node.name;
+                if (name === "AI") {
+                    type_Class = ran_node.getComponent(AI);
+                } else if (name === "Player") {
+                    type_Class = ran_node.getComponent(Player);
+                }
+                if (!type_Class.IsWaterPolo) {
+                    break;
+                }
             }
+            i--;
+            ran_node = null;
         }
-        let parent = ran_node.parent.parent.getChildByName("Area_Prop");
-        parent.addChild(prop);
-        let world_pos = ran_node.parent.convertToWorldSpaceAR(ran_node.position);
-        let node_pos = parent.convertToNodeSpaceAR(world_pos);
-        prop.setPosition(node_pos);
 
-        let type_Class = null;
-        let name = ran_node.name;
-        if (name === "AI") {
-            type_Class = ran_node.getComponent(AI);
-        } else if (name === "Player") {
-            type_Class = ran_node.getComponent(Player);
+        if (!ran_node) {
+            return;
         }
-        type_Class.IsSpeedUp = false;
-        type_Class.Speed = 0;
+        prop.setPosition(ran_node.position);
+        let frozen = prop.getComponent(Animation_Frozen);
+        frozen.PlayBegin(ran_node);
 
         let callback = () => {
-            this.Pool_Prop.put(prop);
-            type_Class.IsSpeedUp = true;
-            type_Class.Speed = 0;
+            frozen.PlayEnd();
         }
 
         setTimeout(callback, 3000);

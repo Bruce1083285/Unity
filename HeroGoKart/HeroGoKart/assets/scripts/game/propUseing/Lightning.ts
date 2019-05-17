@@ -4,6 +4,8 @@ import Player from "../Player";
 import { EventCenter } from "../../commont/EventCenter";
 import { EventType } from "../../commont/Enum";
 import { PropUseing } from "../PropUseing";
+import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
 
 
 /**
@@ -12,13 +14,13 @@ import { PropUseing } from "../PropUseing";
 export class Lightning extends PropUseing {
 
     /**
-      * 构造函数
-      * @param prop_skins [Array]道具皮肤
-      * @param pool_prop 道具对象池
-      */
-    constructor(prop_skins: cc.SpriteFrame[], pool_prop: cc.NodePool) {
-        super(prop_skins, pool_prop);
+     * 构造函数
+     * @param props [Array]道具预制体
+     */
+    constructor(props: cc.Prefab[], game: Game) {
+        super(props, game);
     }
+
 
     /**
     * 道具使用
@@ -30,38 +32,44 @@ export class Lightning extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        let skin: cc.SpriteFrame = null;
-        for (let i = 0; i < this.Prop_Skins.length; i++) {
-            let prop = this.Prop_Skins[i];
-            if (skin_id === prop.name) {
-                skin = prop;
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let target = GameManage.Instance.Roles[i];
+            let target_Class = null;
+            let name = target.name;
+            if (name === "AI") {
+                target_Class = target.getComponent(AI);
+            } else if (name === "Player") {
+                target_Class = target.getComponent(Player);
+            }
+            if (target_Class.IsLightning) {
+                return;
+            }
+
+        }
+
+        let pre_prop: cc.Prefab = null;
+        for (let i = 0; i < this.Props.length; i++) {
+            if (this.Props[i].name === skin_id) {
+                pre_prop = this.Props[i];
                 break;
             }
         }
 
-        let arr = role.parent.children;
         let patch_arr: cc.Node[] = [];
-        for (let i = 0; i < arr.length; i++) {
-            let node = arr[i];
-            if (node.name === "AI" || node.name === "Player") {
-                if (node.uuid !== role.uuid) {
-                    patch_arr.push(node);
-                }
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let node = GameManage.Instance.Roles[i];
+            if (node.uuid !== role.uuid) {
+                patch_arr.push(node);
             }
         }
 
         for (let i = 0; i < patch_arr.length; i++) {
             let target = patch_arr[i];
-            let prop = this.Pool_Prop.get();
-            if (!prop) {
-                EventCenter.Broadcast(EventType.Game_SetPoolProp);
-                prop = this.Pool_Prop.get();
-            }
-            let sprite = prop.getChildByName("prop").getComponent(cc.Sprite);
-            sprite.spriteFrame = skin;
-
+            let prop = cc.instantiate(pre_prop);
             target.addChild(prop);
-            prop.setPosition(0, 0);
+            target.scale = 0.2;
+            prop.scale = 2;
+            prop.setPosition(0, 400);
 
             let target_Class = null;
             let name = target.name;
@@ -70,20 +78,19 @@ export class Lightning extends PropUseing {
             } else if (name === "Player") {
                 target_Class = target.getComponent(Player);
             }
+            target_Class.IsLightning = true;
             target_Class.IsSpeedUp = false;
             let target_Speed_value = target_Class.Speed;
             target_Class.Speed = target_Speed_value * 0.6;
 
-            let act_Scale_big = cc.scaleTo(0.3, 0.2);
-            let act_Scale_small = cc.scaleTo(0.3, 0.4);
-            let act_dt = cc.delayTime(3);
             let callback = () => {
-                this.Pool_Prop.put(prop);
+                prop.destroy();
+                target.scale = 0.4;
+                target_Class.IsLightning = false;
                 target_Class.IsSpeedUp = true;
                 target_Class.Speed = target_Speed_value;
             }
-            let act_Seq = cc.sequence(act_Scale_big, act_dt, act_Scale_small, cc.callFunc(callback));
-            target.runAction(act_Seq);
+            setTimeout(callback, 10000);
         }
 
     }

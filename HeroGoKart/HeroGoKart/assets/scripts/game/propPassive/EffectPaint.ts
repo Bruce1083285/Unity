@@ -1,6 +1,7 @@
 import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
+import Game from "../../Game";
 
 /**
  * @class 油漆效果
@@ -8,11 +9,11 @@ import Player from "../Player";
 export class EffectPaint extends PropPassive {
 
     /**
-    * 构造函数
-    * @param pool_PassiveProp 被动道具对象池
-    */
-    constructor(pool_PassiveProp: cc.NodePool) {
-        super(pool_PassiveProp);
+     * 构造函数
+     * @param pool_PassiveProp 被动道具对象池
+     */
+    constructor(pool_PassiveProp: cc.NodePool, game: Game) {
+        super(pool_PassiveProp, game);
     }
 
     /**
@@ -30,17 +31,21 @@ export class EffectPaint extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        this.Pool_PassiveProp.put(prop);
+
         let type_C = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);
         } else if (role.name === "Player") {
             type_C = role.getComponent(Player);
         }
-        type_C.IsHorizontal = false;
+        let sens = type_C.Horizontal_Sensitivity;
+        type_C.Horizontal_Sensitivity = 20;
         type_C.IsSpeedUp = false;
         type_C.Speed = type_C.Speed * 0.5;
 
         let callback = () => {
+            type_C.Horizontal_Sensitivity = sens;
             type_C.IsHorizontal = true;
             type_C.IsSpeedUp = true;
         }

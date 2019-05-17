@@ -58,8 +58,32 @@ export default class Animation_Bomb extends cc.Component {
         let num = this.node.position.sub(this.Target.position).mag();
         let dis = Math.abs(num);
         if (dis < 100) {
-            this.Target = null;
             this.node.destroy();
+            let collider = this.Target.getComponent(cc.BoxCollider);
+            collider.enabled = false;
+            let name = this.Target.name;
+            let type_Class = null;
+            if (name === "AI") {
+                type_Class = this.Target.getComponent("AI");
+            } else if (name === "Player") {
+                type_Class = this.Target.getComponent("Player");
+            }
+
+            type_Class.IsSpeedUp = false;
+            type_Class.Speed = 0;
+            let act_Scale_big = cc.scaleTo(1, 0.6);
+            let act_Rotate = cc.rotateTo(1, 1080);
+            let act_Spawn = cc.spawn(act_Scale_big, act_Rotate);
+            let act_Scale_small = cc.scaleTo(0.3, 0.4);
+            let act_callback = () => {
+                collider.enabled = true;
+                type_Class.IsSpeedUp = true;
+                type_Class = 0;
+            }
+            let act_Seq = cc.sequence(act_Spawn, act_Scale_small, cc.callFunc(act_callback));
+            this.Target.runAction(act_Seq);
+            this.Target = null;
+            return;
         }
         // let self_y = this.node.position.y + 20;
         // let self_x = this.node.position.x + 20 * this.Horizontal;

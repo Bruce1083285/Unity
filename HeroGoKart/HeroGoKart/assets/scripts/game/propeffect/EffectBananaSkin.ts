@@ -5,13 +5,13 @@ import { PropEffect } from "../PropEffect";
  */
 export class EffectBananaSkin extends PropEffect {
 
-    /**
-        * 构造函数
-        * @param pool_prop 道具对象池
-        */
-    constructor(pool_prop: cc.NodePool) {
-        super(pool_prop);
-    }
+    // /**
+    //     * 构造函数
+    //     * @param pool_prop 道具对象池
+    //     */
+    // constructor(pool_prop: cc.NodePool) {
+    //     super(pool_prop);
+    // }
 
     /**
      * 影响效果
@@ -26,7 +26,9 @@ export class EffectBananaSkin extends PropEffect {
      * @param role 被影响角色
      */
     private RunEffect(role: cc.Node, prop: cc.Node) {
-        this.Pool_Prop.put(prop);
+        prop.destroy();
+        let collider = role.getComponent(cc.BoxCollider);
+        collider.enabled = false;
 
         let name = role.name;
         let type_Class = null;
@@ -36,10 +38,14 @@ export class EffectBananaSkin extends PropEffect {
             type_Class = role.getComponent("Player");
         }
         let speed_Value = type_Class.Speed;
+        let sens = type_Class.Horizontal_Sensitivity;
+        type_Class.Horizontal_Sensitivity = 20;
         type_Class.IsSpeedUp = false;
         type_Class.Speed = speed_Value - speed_Value * 0.3;
         let act_Rotate = cc.rotateTo(1, 1080);
         let act_callback = () => {
+            collider.enabled = true;
+            type_Class.Horizontal_Sensitivity = sens;
             type_Class.IsSpeedUp = true;
             type_Class = speed_Value;
         }

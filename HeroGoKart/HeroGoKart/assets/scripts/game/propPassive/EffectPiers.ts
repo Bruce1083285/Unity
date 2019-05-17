@@ -1,6 +1,8 @@
 import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
+import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
 
 /**
  * @class 石墩效果
@@ -8,12 +10,13 @@ import Player from "../Player";
 export class EffectPiers extends PropPassive {
 
     /**
-     * 构造函数
-     * @param pool_PassiveProp 被动道具对象池
-     */
-    constructor(pool_PassiveProp: cc.NodePool) {
-        super(pool_PassiveProp);
+      * 构造函数
+      * @param pool_PassiveProp 被动道具对象池
+      */
+    constructor(pool_PassiveProp: cc.NodePool, game: Game) {
+        super(pool_PassiveProp, game);
     }
+
 
     /**
      * 影响效果
@@ -30,6 +33,10 @@ export class EffectPiers extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        let collider = role.getComponent(cc.BoxCollider);
+        GameManage.Instance.IsTouchClick = false;
+        collider.enabled = false;
+
         let role_type = null;
         if (role.name === "AI") {
             role_type = role.getComponent(AI);
@@ -42,6 +49,8 @@ export class EffectPiers extends PropPassive {
 
         let act_Move = cc.moveBy(0.3, 0, -100);
         let callback = () => {
+            GameManage.Instance.IsTouchClick = true;
+            collider.enabled = true;
             role_type.Speed = speed_Value;
             role_type.IsSpeedUp = true;
         }

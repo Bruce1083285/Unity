@@ -1,18 +1,20 @@
 import { PropPassive } from "../PropPassive";
 import { Cache } from "../../commont/Cache";
 import { CacheType } from "../../commont/Enum";
+import Game from "../../Game";
 
 /**
  * @class 金币影响效果
  */
 export class EffectCoin extends PropPassive {
 
+
     /**
      * 构造函数
      * @param pool_PassiveProp 被动道具对象池
      */
-    constructor(pool_PassiveProp: cc.NodePool) {
-        super(pool_PassiveProp);
+    constructor(pool_PassiveProp: cc.NodePool, game: Game) {
+        super(pool_PassiveProp, game);
     }
 
     /**

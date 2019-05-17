@@ -1,6 +1,7 @@
 import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
+import Game from "../../Game";
 
 /**
  * @class 加速带效果
@@ -8,11 +9,11 @@ import Player from "../Player";
 export class EffectAreaSpeedUp extends PropPassive {
 
     /**
-     * 构造函数
-     * @param pool_PassiveProp 被动道具对象池
-     */
-    constructor(pool_PassiveProp: cc.NodePool) {
-        super(pool_PassiveProp);
+    * 构造函数
+    * @param pool_PassiveProp 被动道具对象池
+    */
+    constructor(pool_PassiveProp: cc.NodePool, game: Game) {
+        super(pool_PassiveProp, game);
     }
 
     /**
@@ -30,6 +31,25 @@ export class EffectAreaSpeedUp extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        let prop_1: cc.Node = null;
+        for (let i = 0; i < this.Game.Pre_InitiativeProp.length; i++) {
+            if (this.Game.Pre_InitiativeProp[i].name === "7") {
+                prop_1 = cc.instantiate(this.Game.Pre_InitiativeProp[i]);
+                role.addChild(prop_1);
+                prop_1.scale = 3;
+                prop_1.setPosition(0, 400);
+                break;
+            }
+        }
+
+        let speed_Effect = cc.instantiate(this.Game.Pre_SpeedEffects);
+        role.addChild(speed_Effect);
+        speed_Effect.setPosition(0, 0);
+        speed_Effect.scale = 2;
+        speed_Effect.zIndex = -1;
+        let partic = speed_Effect.getComponent(cc.ParticleSystem);
+        partic.resetSystem();
+
         let type_C = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);
@@ -40,6 +60,8 @@ export class EffectAreaSpeedUp extends PropPassive {
         let speed_Value = type_C.Speed;
         type_C.Speed = 1000;
         let callback = () => {
+            prop_1.destroy();
+            speed_Effect.destroy();
             type_C.IsSpeedUp = true;
             type_C.Speed = speed_Value;
         }

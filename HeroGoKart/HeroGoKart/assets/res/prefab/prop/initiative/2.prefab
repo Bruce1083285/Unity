@@ -12,7 +12,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Bomb",
+    "_name": "2",
     "_objFlags": 0,
     "_parent": null,
     "_children": [
@@ -75,7 +75,7 @@
     "_skewX": 0,
     "_skewY": 0,
     "_zIndex": 0,
-    "groupIndex": 0,
+    "groupIndex": 6,
     "_id": ""
   },
   {
