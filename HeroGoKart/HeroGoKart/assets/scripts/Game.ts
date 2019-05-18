@@ -454,7 +454,7 @@ export default class Game extends cc.Component {
 
         let manager = cc.director.getCollisionManager();
         manager.enabled = true;
-        manager.enabledDebugDraw = true;
+        // manager.enabledDebugDraw = true;
         this.BG = this.node.getChildByName("BG");
         this.Area_Path = this.node.getChildByName("Area_Path");
         this.Area_Prop = this.node.getChildByName("Area_Prop");
@@ -938,10 +938,10 @@ export default class Game extends cc.Component {
                 prop = pool.get();
             }
 
-            if (prop.name !== "TimeBomb") {
-                i--;
-                continue;
-            }
+            // if (prop.name !== "TimeBomb") {
+            //     i--;
+            //     continue;
+            // }
 
             // let world_Pos = this.Area_Path.convertToWorldSpaceAR(this.Area_Path.position);
             // let node_Pos = this.ar.convertToNodeSpaceAR(world_Pos);

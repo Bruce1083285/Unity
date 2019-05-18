@@ -251,17 +251,17 @@ export default class AI extends cc.Component {
         this.Useing_Mangnet = new Magnet(this.Game.Pre_InitiativeProp, this.Game);
         this.Useing_Lightning = new Lightning(this.Game.Pre_InitiativeProp, this.Game);
         //---------->被动道具效果
-        this.EffectCoin = new EffectCoin(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectTornado = new EffectTornado(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectAreaSpeedUp = new EffectAreaSpeedUp(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectPortal = new EffectPortal(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectPaint = new EffectPaint(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectHandrail = new EffectHandrail(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectRoadblock = new EffectRoadblock(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectBoulder = new EffectBoulder(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectPiers = new EffectPiers(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectWater = new EffectWater(this.Game.Pool_PassiveProps,this.Game);
-        this.EffectTimeBomb = new EffectTimeBomb(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectCoin = new EffectCoin(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectTornado = new EffectTornado(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectAreaSpeedUp = new EffectAreaSpeedUp(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectPortal = new EffectPortal(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectPaint = new EffectPaint(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectHandrail = new EffectHandrail(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectRoadblock = new EffectRoadblock(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectBoulder = new EffectBoulder(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectPiers = new EffectPiers(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectWater = new EffectWater(this.Game.Pool_PassiveProps, this.Game);
+        this.EffectTimeBomb = new EffectTimeBomb(this.Game.Pool_PassiveProps, this.Game);
         //---------->空投奖励
         this.TranSpeedUp = new TranSpeedUp();
         this.TranCoin = new TranCoin();
@@ -274,7 +274,7 @@ export default class AI extends cc.Component {
         if (!this.IsSpeedUp || !GameManage.Instance.IsGameStart) {
             return;
         }
-        let ran = Math.random() * 2;
+        let ran = Math.random() * 3;
         this.Speed += ran;
         if (this.Speed >= this.Speed_Max) {
             this.Speed = this.Speed_Max;
@@ -545,7 +545,10 @@ export default class AI extends cc.Component {
         this.node.addChild(target);
         target.setPosition(0, 0);
         let time_Bomb = target.getComponent(Animation_TimeBomb);
-        time_Bomb.Play();
+        if (!GameManage.Instance.IsTime) {
+            time_Bomb.Play();
+            GameManage.Instance.IsTime = true;
+        }
     }
 
     /**

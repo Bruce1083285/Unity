@@ -32,6 +32,10 @@ export class GameManage {
      */
     public IsCameraFollow: boolean = false;
     /**
+     * @property 定时炸弹是否正在计时
+     */
+    public IsTime: boolean = false;
+    /**
      * @property 移动速度
      */
     public Speed: number = 0;

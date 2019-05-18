@@ -1,6 +1,7 @@
 import { PropPassive } from "../game/PropPassive";
 import { EffectTimeBomb } from "../game/propPassive/EffectTimeBomb";
 import Game from "../Game";
+import { GameManage } from "../commont/GameManager";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -61,7 +62,8 @@ export default class Animation_TimeBomb extends cc.Component {
             num--;
             this.Time.string = num + "";
             if (num <= 0) {
-                this.Effect_TimeBomb.Effect(this.node.parent,this.node);
+                GameManage.Instance.IsTime = false;
+                this.Effect_TimeBomb.Effect(this.node.parent, this.node);
                 this.unschedule(callback);
             }
         }
