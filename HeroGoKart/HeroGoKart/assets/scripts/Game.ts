@@ -137,7 +137,7 @@ export default class Game extends cc.Component {
     /**
      * @property 赛道区域
      */
-    private Area_Path: cc.Node = null;
+    public Area_Path: cc.Node = null;
     /**
      * @property 道具区域
      */
@@ -213,7 +213,7 @@ export default class Game extends cc.Component {
     /**
      * @property 当前玩家--->角色龙骨节点
      */
-    private Current_Player_DraRoleNode: cc.Node = null;
+    public Current_Player_DraRoleNode: cc.Node = null;
     /**
      * @property 当前玩家--->汽车皮肤ID
      */
@@ -221,7 +221,7 @@ export default class Game extends cc.Component {
     /**
   * @property 当前玩家--->汽车龙骨节点
   */
-    private Current_Player_DraCarNode: cc.Node = null;
+    public Current_Player_DraCarNode: cc.Node = null;
     // /**
     //  * @property 当前玩家--->角色龙骨资源
     //  */
@@ -680,14 +680,23 @@ export default class Game extends cc.Component {
         let role_arr = GameManage.Instance.Roles;
         for (let i = 0; i < role_arr.length; i++) {
             let role = role_arr[i];
-            let role_Type = null;
+
+            let role_player: Player = null;
+            let role_AI: AI = null;
             if (role.name === "AI") {
-                role_Type = role.getComponent(AI);
+                role_AI = role.getComponent(AI);
+                role_AI.unscheduleAllCallbacks();
+                role_AI.IsSpeedUp = false;
+                role_AI.Speed = 0;
             }
             if (role.name === "Player") {
-                role_Type = role.getComponent(Player);
-                role_Type.Camera.setPosition(0, 0);
+                role_player = role.getComponent(Player);
+                role_player.Camera.setPosition(0, 0);
+                role_player.unscheduleAllCallbacks();
+                role_player.IsSpeedUp = false;
+                role_player.Speed = 0;
             }
+
             let arr = role.children;
             for (let i = 0; i < arr.length; i++) {
                 let arr_node = arr[i];
@@ -696,7 +705,6 @@ export default class Game extends cc.Component {
                 }
                 arr_node.destroy();
             }
-            role_Type.Speed = 0;
         }
     }
 

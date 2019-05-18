@@ -207,6 +207,78 @@ export default class AI extends cc.Component {
      * @property 空投奖励--->金币卡
      */
     private TranCoin: Transportation = null;
+    private MoveRatio: [
+        /**加速带 */
+        {
+            name: "AreaSpeedUp",
+            ratio: 20,
+        },
+        /**大石头 */
+        {
+            name: "Boulder",
+            ratio: 80,
+        },
+        /**集装箱 */
+        {
+            name: "Container",
+            ratio: 20,
+        },
+        /**栏杆 */
+        {
+            name: "Handrail",
+            ratio: 60,
+        },
+        /**油漆 */
+        {
+            name: "Paint",
+            ratio: 50,
+        },
+        /**石墩 */
+        {
+            name: "Piers",
+            ratio: 70,
+        },
+        /**传送门 */
+        {
+            name: "Portal",
+            ratio: 10,
+        },
+        /**路障 */
+        {
+            name: "Roadblock",
+            ratio: 50,
+        },
+        /**定时炸弹 */
+        {
+            name: "TimeBomb",
+            ratio: 50,
+        },
+        /**龙卷风 */
+        {
+            name: "Tornado",
+            ratio: 50,
+        },
+        /**水滩 */
+        {
+            name: "Water",
+            ratio: 20,
+        },
+        /**香蕉皮 */
+        {
+            name: "1",
+            ratio: 50,
+        },
+        /**小丑盒子 */
+        {
+            name: "3",
+            ratio: 50,
+        },
+        /**问号 */
+        {
+            name: "Question",
+            ratio: 20,
+        },
+    ]
 
     onLoad() {
         this.Init();
@@ -226,7 +298,9 @@ export default class AI extends cc.Component {
         let x = this.node.position.x + this.Speed_Horizontal * 100 * dt * this.Horizontal;
         this.node.setPosition(x, y);
         this.UpdateSpeed();
-        this.ListenterDistance();
+        if (GameManage.Instance.IsListenterDis) {
+            this.ListenterDistance();
+        }
     }
 
     /**
@@ -285,23 +359,37 @@ export default class AI extends cc.Component {
      * 监听距离
      */
     private ListenterDistance() {
-        let arr = this.Game.Area_Prop.children;
+        let arr = this.Game.Area_Path.children;
         for (let i = 0; i < arr.length; i++) {
             let prop = arr[i];
             //计算亮点距离
             let dis = prop.position.sub(this.node.position).mag();
-            if (dis <= 50) {
-                let ran = Math.random() * 100;
-                if (ran <= 50) {
-                    let ran_hor = Math.random() * 100;
-                    let act_move: cc.ActionInterval = null;
-                    if (ran_hor <= 50) {
-                        act_move = cc.moveBy(0.3, 100, 0);
-                    } else {
-                        act_move = cc.moveBy(0.3, -100, 0);
+            if (dis <= 200 && dis > 5) {
+                let name = prop.name;
+                for (let j in this.MoveRatio) {
+                    if (name === this.MoveRatio[j].name) {
+                        this.Move(this.MoveRatio[j].ratio);
+                        return;
                     }
-                    this.node.runAction(act_move);
                 }
+            }
+        }
+    }
+
+    /**
+     * 左右移动
+     * @param ratio 比例
+     */
+    private Move(ratio: number) {
+        let ran = Math.random() * 100;
+        if (ran <= ratio) {
+            let left_Or_right = Math.random() * 100;
+            if (left_Or_right <= 50) {
+                let act_move_Left = cc.moveBy(0.5, -100, 0);
+                this.node.runAction(act_move_Left);
+            } else {
+                let act_move_Left = cc.moveBy(0.5, 100, 0);
+                this.node.runAction(act_move_Left);
             }
         }
     }
@@ -320,7 +408,7 @@ export default class AI extends cc.Component {
                 this.CollisionWall(this.Game, self_node);
                 break;
             case "question":
-                // this.CollisionQuestion(target);
+                this.CollisionQuestion(target);
                 break;
             case "prop":
                 this.CollisionProp(target, self_node);
@@ -336,6 +424,7 @@ export default class AI extends cc.Component {
                 break;
             case "begin":
                 // GameManage.Instance.IsUpdateProgress = true;
+                GameManage.Instance.IsListenterDis = true;
                 break;
             case "end":
                 this.CollisionEnd(self_node);
@@ -459,7 +548,7 @@ export default class AI extends cc.Component {
         switch (name) {
             case "Coin":
                 //金币
-                this.EffectCoin.Effect(self, target);
+                // this.EffectCoin.Effect(self, target);
                 break;
             case Prop_Passive.Tornado:
                 //龙卷风
@@ -720,9 +809,31 @@ export default class AI extends cc.Component {
      * @param self 玩家节点
      */
     private CrossingTheLineProtection(self: cc.Node) {
+        this.Horizontal = 0;
+        let role_arr = this.node.getChildByName("Role").children;
+        for (let i = 0; i < role_arr.length; i++) {
+            let role = role_arr[i];
+            if (role.active) {
+                let dra_role = role.getComponent(dragonBones.ArmatureDisplay);
+                dra_role.playAnimation("a1", 0);
+                break;
+            }
+        }
+
+        let car_arr = this.node.getChildByName("Car").children;
+        for (let i = 0; i < car_arr.length; i++) {
+            let car = car_arr[i];
+            if (car.active) {
+                let dra_car = car.getComponent(dragonBones.ArmatureDisplay);
+                dra_car.playAnimation("a1", 0);
+                break;
+            }
+        }
+
         let collision = this.node.getComponent(cc.BoxCollider);
         collision.enabled = false;
 
+        GameManage.Instance.IsListenterDis = false;
         this.IsSpeedUp = false;
         this.Speed = 0;
 
@@ -733,6 +844,7 @@ export default class AI extends cc.Component {
         let act_seq_1 = cc.sequence(act_fadOut, act_fadIn);
         let act_rep = cc.repeat(act_seq_1, 5);
         let callback = () => {
+            GameManage.Instance.IsListenterDis = true;
             collision.enabled = true;
             this.IsSpeedUp = true;
             this.Speed = 0;

@@ -222,7 +222,7 @@ export default class Player extends cc.Component {
         this.Bomb = new EffectBomb();
         this.ClownGift = new EffectClownGift();
         //---------->被动道具效果
-        this.EffectCoin = new EffectCoin(this.Game.Pool_PassiveProps,this.Game);
+        this.EffectCoin = new EffectCoin(this.Game.Pool_PassiveProps, this.Game);
         this.EffectTornado = new EffectTornado(this.Game.Pool_PassiveProps, this.Game);
         this.EffectAreaSpeedUp = new EffectAreaSpeedUp(this.Game.Pool_PassiveProps, this.Game);
         this.EffectPortal = new EffectPortal(this.Game.Pool_PassiveProps, this.Game);
@@ -249,7 +249,7 @@ export default class Player extends cc.Component {
         if (!this.IsSpeedUp || !GameManage.Instance.IsGameStart) {
             return;
         }
-        this.Speed += 1;
+        this.Speed += 2;
         if (this.Speed >= this.Speed_Max) {
             this.Speed = this.Speed_Max;
         }
@@ -617,6 +617,13 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CrossingTheLineProtection(self: cc.Node) {
+        this.Game.Horizontal = 0;
+        let dra_role = this.Game.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
+        dra_role.playAnimation("a1", 0);
+
+        let dra_car = this.Game.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
+        dra_car.playAnimation("a1", 0);
+
         let collision = this.node.getComponent(cc.BoxCollider);
         collision.enabled = false;
         GameManage.Instance.IsTouchClick = false;

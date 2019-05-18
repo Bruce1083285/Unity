@@ -32,6 +32,10 @@ export class GameManage {
      */
     public IsCameraFollow: boolean = false;
     /**
+     * @property 是否监听距离
+     */
+    public IsListenterDis: boolean = false;
+    /**
      * @property 定时炸弹是否正在计时
      */
     public IsTime: boolean = false;

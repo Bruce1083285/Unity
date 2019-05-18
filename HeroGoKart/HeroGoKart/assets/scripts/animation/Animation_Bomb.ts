@@ -88,55 +88,60 @@ export default class Animation_Bomb extends cc.Component {
         // let self_y = this.node.position.y + 20;
         // let self_x = this.node.position.x + 20 * this.Horizontal;
         // this.node.setPosition(self_x, self_y);
-        let x = this.Target.position.x - this.node.position.x;
-        let y = this.Target.position.y - this.node.position.y;
-        let dirVec = cc.v2(x, y);    // 方向向量
-        let radian = this.node.position.signAngle(dirVec);    // 求弧度
-        let degree = cc.misc.radiansToDegrees(radian);    // 将弧度转换为角度
-        this.node.rotation = -degree;
-        // this.node.position.lerp(this.Target.position,degree);
+        // let x = this.Target.position.x - this.node.position.x;
+        // let y = this.Target.position.y - this.node.position.y;
+        // let v=this.Target.position.sub(this.node.position);
+        // let dirVec = cc.v2(x, y);    // 方向向量
+        // let radian = this.node.position.signAngle(v);    // 求弧度
+        // let degree = cc.misc.radiansToDegrees(radian);    // 将弧度转换为角度
+        // // //将弧度转换为欧拉角
+        // // let degree = radian / Math.PI * 180;
+        // this.node.rotation = -degree;
+        // // this.node.position.lerp(this.Target.position,degree);
 
         // //计算出朝向
-        // let dx = this.Target.x - this.node.position.x;
-        // let dy = this.Target.y - this.node.position.y;
-        // let dir_2 = cc.v2(dx, dy);
+        let dx = this.Target.x - this.node.position.x;
+        let dy = this.Target.y - this.node.position.y;
+        let dir_2 = cc.v2(dx, dy);
+        let v=this.Target.position.sub(this.node.position);
+        //根据朝向计算出夹角弧度
+        let angle_2 = v.signAngle(cc.v2(1, 0));
 
-        // //根据朝向计算出夹角弧度
-        // let angle_2 = dir_2.signAngle(cc.v2(1, 0));
+        //将弧度转换为欧拉角
+        let degree = angle_2 / Math.PI * 180;
 
-        // //将弧度转换为欧拉角
-        // let degree = angle_2 / Math.PI * 180;
-
-        // //赋值给节点
-        // this.node.rotation = -degree;
-
-
-
-        let _dir = cc.v2(this.Target.position.x - this.node.position.x, this.Target.position.y - this.node.position.y);
-        // degree = -1 * (Math.atan2(_dir) / Math.PI * 180)
-        degree = (Math.atan2(_dir.y, _dir.x) / Math.PI * 180);
-        // this.node.rotation = degree;
+        //赋值给节点
+        this.node.rotation = -degree;
 
 
 
-        // 由于Math函数接受的是孤度，所以我们先节节点的旋转转化为弧度
-        let angle_1 = degree / 180 * Math.PI;
-        // let angle_1 = radian;
-        //合成基于 X正方向的方向向量
-        let dir_1 = cc.v2(Math.cos(angle_1), Math.sin(angle_1));
-        //单位化向量
-        dir_1.normalizeSelf();
-
-        //根据方向向量移动位置
-        let moveSpeed = 500;
-        this.node.x += dt * dir_1.x * moveSpeed;
-        this.node.y += dt * dir_1.y * moveSpeed;
-        // this.node.x += dir_1.x * moveSpeed;
-        // this.node.y += dir_1.y * moveSpeed;
-
-        // degree = - Math.atan((currentPos.y - this.lastPosition.y) / (currentPos.x - this.lastPosition.x)) * 180 / 3.14;
+        // let _dir = cc.v2(this.Target.position.x - this.node.position.x, this.Target.position.y - this.node.position.y);
+        // // degree = -1 * (Math.atan2(_dir) / Math.PI * 180)
+        // degree = (Math.atan2(_dir.y, _dir.x) / Math.PI * 180);
+        // // this.node.rotation = degree;
 
 
+
+        // // 由于Math函数接受的是孤度，所以我们先节节点的旋转转化为弧度
+        // let angle_1 = degree / 180 * Math.PI;
+        // // let angle_1 = radian;
+        // //合成基于 X正方向的方向向量
+        // let dir_1 = cc.v2(Math.cos(angle_1), Math.sin(angle_1));
+        // //单位化向量
+        // dir_1.normalizeSelf();
+
+        // //根据方向向量移动位置
+        // let moveSpeed = 500;
+        // this.node.x += dt * dir_1.x * moveSpeed;
+        // this.node.y += dt * dir_1.y * moveSpeed;
+        // // this.node.x += dir_1.x * moveSpeed;
+        // // this.node.y += dir_1.y * moveSpeed;
+
+        // // degree = - Math.atan((currentPos.y - this.lastPosition.y) / (currentPos.x - this.lastPosition.x)) * 180 / 3.14;
+
+
+        let v2 = this.node.position.lerp(this.Target.position, 0.1, this.node.position);
+        this.node.setPosition(v2);
     }
 
     /**
