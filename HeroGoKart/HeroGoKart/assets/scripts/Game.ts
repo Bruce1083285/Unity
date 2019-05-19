@@ -1,5 +1,5 @@
 import { EventCenter } from "./commont/EventCenter";
-import { EventType, CacheType, DragonBonesAnimation_Role, DragonBonesAnimation_PlayTimes, DragonBonesAnimation_Car, Prop_Passive } from "./commont/Enum";
+import { EventType, CacheType, DragonBonesAnimation_Role, DragonBonesAnimation_PlayTimes, DragonBonesAnimation_Car, Prop_Passive, SoundType } from "./commont/Enum";
 import { Cache } from "./commont/Cache";
 import PropBox from "./game/PropBox";
 import Player from "./game/Player";
@@ -521,14 +521,19 @@ export default class Game extends cc.Component {
      * @param click 点击参数
      */
     private ButtonClick(lv: any, click: string) {
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Click);
         switch (click) {
             case "back":
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.StopBGM_Game);
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.PlayBGM_Start);
                 this.Back();
                 break;
             case "pause":
                 this.Paues();
                 break;
             case "restart":
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.StopBGM_Game);
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.PlayBGM_Game);
                 this.Restart();
                 break;
             case "goon":
@@ -653,14 +658,14 @@ export default class Game extends cc.Component {
         GameManage.Instance.IsTouchClick = false;
         GameManage.Instance.IsCameraFollow = false;
 
-        // let prop_arr = this.Area_Path.children;
-        // for (let i = 0; i < prop_arr.length; i++) {
-        //     let prop = prop_arr[i];
-        //     if (prop.name === "AI" || prop.name === "Player") {
-        //         continue;
-        //     }
-        //     prop.destroy();
-        // }
+        let prop_arr = this.Area_Path.children;
+        for (let i = 0; i < prop_arr.length; i++) {
+            let prop = prop_arr[i];
+            if (prop.name === "AI" || prop.name === "Player") {
+                continue;
+            }
+            prop.destroy();
+        }
 
         let path_arr = this.BG.children;
         for (let i = 0; i < path_arr.length; i++) {
@@ -680,6 +685,17 @@ export default class Game extends cc.Component {
         let role_arr = GameManage.Instance.Roles;
         for (let i = 0; i < role_arr.length; i++) {
             let role = role_arr[i];
+            role.opacity = 255;
+            role.scale = 0.4;
+            if (role.name === "Player") {
+                let commont_car = role.getChildByName("Car");
+                commont_car.active = true;
+
+                let arr = role.getChildByName("SpecialCar").children;
+                for (let i = 0; i < arr.length; i++) {
+                    arr[i].active = false;
+                }
+            }
 
             let role_player: Player = null;
             let role_AI: AI = null;
@@ -700,7 +716,7 @@ export default class Game extends cc.Component {
             let arr = role.children;
             for (let i = 0; i < arr.length; i++) {
                 let arr_node = arr[i];
-                if (arr_node.name === "Car" || arr_node.name === "Role" || arr_node.name === "name") {
+                if (arr_node.name === "Car" || arr_node.name === "Role" || arr_node.name === "name" || arr_node.name === "SpecialCar") {
                     continue;
                 }
                 arr_node.destroy();
@@ -737,6 +753,7 @@ export default class Game extends cc.Component {
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
             this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Prop);
 
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.Go);
             let callback = () => {
                 this.Page_StartTime.active = false;
                 GameManage.Instance.IsGameStart = true;
@@ -847,11 +864,18 @@ export default class Game extends cc.Component {
         if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart) {
             return;
         }
-        console.log(this.Player);
+        // console.log(this.Player);
         this.Horizontal = -1;
+
         let dra_role = this.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
         dra_role.playAnimation("a3", 0);
 
+        if (GameManage.Instance.Current_SpecialCar) {
+            let car = GameManage.Instance.Current_SpecialCar;
+            let dra_car = car.getComponent(dragonBones.ArmatureDisplay);
+            dra_car.playAnimation("a3", 0);
+            return;
+        }
         let dra_car = this.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
         dra_car.playAnimation("a3", 0);
     }
@@ -868,6 +892,12 @@ export default class Game extends cc.Component {
         let dra_role = this.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
         dra_role.playAnimation("a1", 0);
 
+        if (GameManage.Instance.Current_SpecialCar) {
+            let car = GameManage.Instance.Current_SpecialCar;
+            let dra_car = car.getComponent(dragonBones.ArmatureDisplay);
+            dra_car.playAnimation("a1", 0);
+            return;
+        }
         let dra_car = this.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
         dra_car.playAnimation("a1", 0);
     }
@@ -884,6 +914,12 @@ export default class Game extends cc.Component {
         let dra_role = this.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
         dra_role.playAnimation("a6", 0);
 
+        if (GameManage.Instance.Current_SpecialCar) {
+            let car = GameManage.Instance.Current_SpecialCar;
+            let dra_car = car.getComponent(dragonBones.ArmatureDisplay);
+            dra_car.playAnimation("a6", 0);
+            return;
+        }
         let dra_car = this.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
         dra_car.playAnimation("a6", 0);
     }
@@ -947,14 +983,17 @@ export default class Game extends cc.Component {
                 prop = pool.get();
             }
 
-            if (prop.name !== "TimeBomb") {
+            // if(prop.name!=="Portal"){
+            //     i--;
+            //     continue;
+            // }
+            if (prop.name === "TimeBomb" || prop.name === "Container") {
                 let ind = have_arr.indexOf(prop.name);
                 if (ind === -1) {
                     have_arr.indexOf(prop.name);
+                } else {
                     i--;
                     continue;
-                } else {
-                    return;
                 }
             }
 
@@ -1105,6 +1144,10 @@ export default class Game extends cc.Component {
             } else {
                 car.active = false;
             }
+        }
+        let arr_SpecialCar = player.getChildByName("SpecialCar").children;
+        for (let i = 0; i < arr_SpecialCar.length; i++) {
+            arr_SpecialCar[i].active = false;
         }
         // let display_car = player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
         // this.SetPlayerDragonBones(display_car, this.Current_Player_CarAsset, this.Current_Player_CarAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Car);
@@ -1546,9 +1589,24 @@ export default class Game extends cc.Component {
         let num = 10;
         label.string = num + "";
         this.Page_EndTimeCallBack = () => {
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.EndTime);
             num--;
             label.string = num + "";
             if (num <= 0) {
+                role:
+                for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+                    let role_arr = GameManage.Instance.Roles[i].children;
+                    for (let i = 0; i < role_arr.length; i++) {
+                        let role_childer = role_arr[i];
+                        if (role_childer.name === "TimeBomb") {
+                            EventCenter.Broadcast(EventType.UnSchedule);
+                            break role;
+                        }
+                    }
+
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.StopBGM_Game);
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Complete);
                 GameManage.Instance.IsUpdateProgress = false;
                 GameManage.Instance.IsGameEnd = true;
 

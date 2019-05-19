@@ -23,5 +23,5 @@ export abstract class PropPassive {
         this.Game = game;
     }
 
-    public abstract Effect(role: cc.Node, prop: cc.Node);
+    public abstract Effect(role: cc.Node, prop?: cc.Node);
 }

@@ -2,6 +2,8 @@ import { PropPassive } from "../game/PropPassive";
 import { EffectTimeBomb } from "../game/propPassive/EffectTimeBomb";
 import Game from "../Game";
 import { GameManage } from "../commont/GameManager";
+import { EventCenter } from "../commont/EventCenter";
+import { EventType, SoundType } from "../commont/Enum";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -50,6 +52,8 @@ export default class Animation_TimeBomb extends cc.Component {
         this.Effect_TimeBomb = new EffectTimeBomb(this.Game.Pool_PassiveProps, this.Game);
 
         this.Time = this.node.getChildByName("time").getComponent(cc.Label);
+
+        this.AddListenter();
     }
 
     /**
@@ -59,9 +63,11 @@ export default class Animation_TimeBomb extends cc.Component {
         let num = 30;
         this.Time.string = num + "";
         let callback = () => {
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.EndTime);
             num--;
             this.Time.string = num + "";
             if (num <= 0) {
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.TimeBomb);
                 GameManage.Instance.IsTime = false;
                 this.node.destroy();
                 this.Effect_TimeBomb.Effect(this.node.parent, this.node);
@@ -69,5 +75,30 @@ export default class Animation_TimeBomb extends cc.Component {
             }
         }
         this.schedule(callback, 1);
+    }
+
+    /**
+     * 添加监听
+     */
+    private AddListenter() {
+        EventCenter.AddListenter(EventType.UnSchedule, () => {
+            this.UnSchedule();
+        }, "Animation_TimeBomb");
+    }
+
+    /**
+     * 添加监听
+     */
+    private RemoveListenter() {
+        EventCenter.RemoveListenter(EventType.UnSchedule, "Animation_TimeBomb");
+    }
+
+
+
+    /**
+     * 注销延时回调
+     */
+    private UnSchedule() {
+        this.unscheduleAllCallbacks();
     }
 }

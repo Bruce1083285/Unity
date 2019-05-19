@@ -1,3 +1,7 @@
+import { EventType, SoundType, Special_Car } from "../commont/Enum";
+import { EventCenter } from "../commont/EventCenter";
+import { GameManage } from "../commont/GameManager";
+
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
@@ -58,6 +62,12 @@ export default class Animation_Bomb extends cc.Component {
         let num = this.node.position.sub(this.Target.position).mag();
         let dis = Math.abs(num);
         if (dis < 100) {
+            let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+            if (car_name && car_name === Special_Car.Pickup) {
+                this.node.destroy();
+                return;
+            }
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.Bomb);
             this.node.destroy();
             let collider = this.Target.getComponent(cc.BoxCollider);
             collider.enabled = false;
@@ -99,19 +109,19 @@ export default class Animation_Bomb extends cc.Component {
         // this.node.rotation = -degree;
         // // this.node.position.lerp(this.Target.position,degree);
 
-        // //计算出朝向
-        let dx = this.Target.x - this.node.position.x;
-        let dy = this.Target.y - this.node.position.y;
-        let dir_2 = cc.v2(dx, dy);
-        let v=this.Target.position.sub(this.node.position);
-        //根据朝向计算出夹角弧度
-        let angle_2 = v.signAngle(cc.v2(1, 0));
+        // // //计算出朝向
+        // let dx = this.Target.x - this.node.position.x;
+        // let dy = this.Target.y - this.node.position.y;
+        // let dir_2 = cc.v2(dx, dy);
+        // let v = this.Target.position.sub(this.node.position);
+        // //根据朝向计算出夹角弧度
+        // let angle_2 = v.signAngle(cc.v2(1, 0));
 
-        //将弧度转换为欧拉角
-        let degree = angle_2 / Math.PI * 180;
+        // //将弧度转换为欧拉角
+        // let degree = angle_2 / Math.PI * 180;
 
-        //赋值给节点
-        this.node.rotation = -degree;
+        // //赋值给节点
+        // this.node.rotation = -degree;
 
 
 
@@ -140,8 +150,9 @@ export default class Animation_Bomb extends cc.Component {
         // // degree = - Math.atan((currentPos.y - this.lastPosition.y) / (currentPos.x - this.lastPosition.x)) * 180 / 3.14;
 
 
+        // console.log(this.node);
         let v2 = this.node.position.lerp(this.Target.position, 0.1, this.node.position);
-        this.node.setPosition(v2);
+        this.node.setPosition(v2.x, v2.y);
     }
 
     /**

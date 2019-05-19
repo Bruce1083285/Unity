@@ -22,7 +22,7 @@ export class EffectBoulder extends PropPassive {
      * @param role 角色节点
      * @param prop 道具节点
      */
-    public Effect(role: cc.Node, prop: cc.Node) {
+    public Effect(role: cc.Node, prop?: cc.Node) {
         this.SetProp(role, prop);
     }
 
@@ -31,7 +31,7 @@ export class EffectBoulder extends PropPassive {
       * @param role 角色节点
       * @param prop 道具节点
       */
-    private SetProp(role: cc.Node, prop: cc.Node) {
+    private SetProp(role: cc.Node, prop?: cc.Node) {
         let collider = role.getComponent(cc.BoxCollider);
         GameManage.Instance.IsTouchClick = false;
         collider.enabled = false;

@@ -1,4 +1,4 @@
-import { EventType, CacheType } from "../../commont/Enum";
+import { EventType, CacheType, SoundType } from "../../commont/Enum";
 import { EventCenter } from "../../commont/EventCenter";
 import { Cache } from "../../commont/Cache";
 import { PopupBox } from "../../commont/PopupBox";
@@ -129,6 +129,7 @@ export default class ShopRole extends cc.Component {
      * @param click 点击参数
      */
     private ButtonClick(lv: any, click: string) {
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Click);
         if (!this.IsClick) {
             return;
         }
@@ -170,6 +171,7 @@ export default class ShopRole extends cc.Component {
         let isBuy = this.BuyCommodity(this.Commoditys, this.HaveCommodityIDs, this.ReadyToBuy_ID, coin_num);
         if (!isBuy) {
             //金币不足弹窗
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.Coin_insufficient);
             PopupBox.CommontCoinPopup(this.HintBox_Coin);
             this.SetIsClick(true);
         } else {
@@ -178,6 +180,7 @@ export default class ShopRole extends cc.Component {
             });
 
             this.SetHintBoxYes(this.HintBox_Yes, this.Role_Skins, this.Role_Names, this.ReadyToBuy_ID);
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.Buy_Yes);
             PopupBox.CommontPopup(this.HintBox_Yes, () => {
                 this.SetIsClick(true);
             });
@@ -250,6 +253,7 @@ export default class ShopRole extends cc.Component {
      * @param click 点击参数
      */
     private CommodityButtonClick(lv: any, click: string) {
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Click);
         for (let i = 0; i < this.Commoditys.length; i++) {
             let commodity = this.Commoditys[i];
             if (commodity.name === click) {

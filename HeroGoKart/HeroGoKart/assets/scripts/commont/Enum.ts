@@ -36,6 +36,10 @@ export enum EventType {
     Game_GameOver,
     /**清空道具盒子 */
     Game_ClearPropBox,
+    /**音效 */
+    Sound,
+    /**注销延时回调 */
+    UnSchedule,
 }
 
 /**@enum 缓存类型 */
@@ -129,4 +133,80 @@ export enum Prop_Passive {
     Coin_7 = "Coin_7",
     /**金币--->8 */
     Coin_8 = "Coin_8",
+}
+
+/**@enum 音效 */
+export enum SoundType {
+    /**播放背景音效--->首页 */
+    PlayBGM_Start,
+    /**停止背景音效--->首页 */
+    StopBGM_Start,
+    /**播放背景音效--->游戏页 */
+    PlayBGM_Game,
+    /**停止背景音效--->游戏页 */
+    StopBGM_Game,
+    /**出发音效 */
+    Go,
+    /**购买道具成功音效 */
+    Buy_Yes,
+    /**点击音效 */
+    Click,
+    /**金币不足音效 */
+    Coin_insufficient,
+    /**刹车音效 */
+    Brake,
+    /**完成音效 */
+    Complete,
+    /**开始游戏倒计时 */
+    StartTime,
+    /**游戏结束倒计时 */
+    EndTime,
+    /**道具--->问号 */
+    Question,
+    /**香蕉皮 */
+    BananaSkin,
+    /**导弹 */
+    Bomb,
+    /**小丑礼包 */
+    ClownGift,
+    /**水球 */
+    WaterPolo,
+    /**冰冻 */
+    Frozen,
+    /**保护罩 */
+    Protection,
+    /**加速 */
+    SpeedUp,
+    /**吸铁石 */
+    Mangnet,
+    /**雷击 */
+    Lightning,
+    /**金币 */
+    Coin,
+    /**龙卷风 */
+    Tornado,
+    /**传送门 */
+    Portal,
+    /**油漆 */
+    Paint,
+    /**路障 */
+    Roadblock,
+    /**石墩 */
+    Piers,
+    /**水滩 */
+    Water,
+    /**定时炸弹 */
+    TimeBomb,
+}
+
+/**@enum 特殊汽车 */
+export enum Special_Car {
+    /**皮卡车 */
+    Pickup = "Pickup",
+    /**水泥集装车 */
+    CementTruck = "CementTruck",
+    /**压路车 */
+    StreetRoller = "StreetRoller",
+    /**是否为空 */
+    Null = "null",
 }

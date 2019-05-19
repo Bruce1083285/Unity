@@ -1,5 +1,7 @@
 import AI from "../game/AI";
 import Player from "../game/Player";
+import { GameManage } from "../commont/GameManager";
+import { Special_Car } from "../commont/Enum";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -41,6 +43,11 @@ export default class Animation_WaterPolo extends cc.Component {
         let num = this.node.position.sub(this.Target.position).mag();
         let dis = Math.abs(num);
         if (dis <= 10) {
+            let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+            if (car_name && car_name === Special_Car.Pickup) {
+                this.node.destroy();
+                return;
+            }
             let type_Class = null;
             let name = this.Target.name;
             if (name === "AI") {

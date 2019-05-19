@@ -28,7 +28,7 @@ import { EffectWater } from "./propPassive/EffectWater";
 import { EffectTimeBomb } from "./propPassive/EffectTimeBomb";
 import { TranSpeedUp } from "./transportation/TranSpeedUp";
 import { TranCoin } from "./transportation/TranCoin";
-import { Prop_Passive, EventType } from "../commont/Enum";
+import { Prop_Passive, EventType, SoundType } from "../commont/Enum";
 import { GameManage } from "../commont/GameManager";
 import { EventCenter } from "../commont/EventCenter";
 import Animation_TimeBomb from "../animation/Animation_TimeBomb";
@@ -289,7 +289,7 @@ export default class AI extends cc.Component {
     }
 
     update(dt) {
-        if (!GameManage.Instance.IsGameStart) {
+        if (!GameManage.Instance.IsGameStart || GameManage.Instance.IsGameEnd) {
             return;
         }
         //垂直移动
@@ -415,6 +415,7 @@ export default class AI extends cc.Component {
                 this.CollisionWall(this.Game, self_node);
                 break;
             case "question":
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Question);
                 this.CollisionQuestion(target);
                 break;
             case "prop":
@@ -485,26 +486,32 @@ export default class AI extends cc.Component {
                 break;
             case "4":
                 //水球
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.WaterPolo);
                 this.Useing_WaterPolo.Useing(this.node, str);
                 break;
             case "5":
                 //冰冻
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
                 this.Useing_Frozen.Useing(this.node, str);
                 break;
             case "6":
                 //保护罩
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Protection);
                 this.Useing_Protection.Useing(this.node, str);
                 break;
             case "7":
                 //加速
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
                 this.Useing_SpeedUp.Useing(this.node, str);
                 break;
             case "8":
                 //吸铁石
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
                 this.Useing_Mangnet.Useing(this.node, str);
                 break;
             case "9":
                 //雷击
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Lightning);
                 this.Useing_Lightning.Useing(this.node, str);
                 break;
             default:
@@ -525,6 +532,7 @@ export default class AI extends cc.Component {
         switch (name) {
             case "1":
                 //香蕉皮效果
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.BananaSkin);
                 istrue = this.GetPretection(target);
                 this.Effect_BananaSkin.Effect(self, target);
                 break;
@@ -534,6 +542,7 @@ export default class AI extends cc.Component {
                 break;
             case "3":
                 //小丑礼包
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Bomb);
                 istrue = this.GetPretection(target);
                 this.Effect_ClownGift.Effect(self, target);
                 break;
@@ -563,14 +572,17 @@ export default class AI extends cc.Component {
                 if (istrue) {
                     return
                 }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Tornado);
                 this.EffectTornado.Effect(self, target);
                 break;
             case Prop_Passive.AreaSpeedUp:
                 //加速带
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
                 this.EffectAreaSpeedUp.Effect(self, target);
                 break;
             case Prop_Passive.Portal:
                 //传送门
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Portal);
                 this.EffectPortal.Effect(self, target);
                 break;
             case Prop_Passive.Paint:
@@ -579,6 +591,7 @@ export default class AI extends cc.Component {
                 if (istrue) {
                     return
                 }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Paint);
                 this.EffectPaint.Effect(self, target);
                 break;
             case Prop_Passive.Handrail:
@@ -587,6 +600,7 @@ export default class AI extends cc.Component {
                 if (istrue) {
                     return
                 }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Roadblock);
                 this.EffectHandrail.Effect(self, target);
                 break;
             case Prop_Passive.Roadblock:
@@ -595,6 +609,7 @@ export default class AI extends cc.Component {
                 if (istrue) {
                     return
                 }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Roadblock);
                 this.EffectRoadblock.Effect(self, target);
                 break;
             case Prop_Passive.Boulder:
@@ -603,10 +618,12 @@ export default class AI extends cc.Component {
                 if (istrue) {
                     return
                 }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Piers);
                 this.EffectBoulder.Effect(self, target);
                 break;
             case Prop_Passive.Piers:
                 //石墩
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Piers);
                 this.EffectPiers.Effect(self, target);
                 break;
             case Prop_Passive.Water:
@@ -615,6 +632,7 @@ export default class AI extends cc.Component {
                 if (istrue) {
                     return
                 }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Water);
                 this.EffectWater.Effect(self, target);
                 break;
             case Prop_Passive.TimeBomb:
@@ -767,6 +785,7 @@ export default class AI extends cc.Component {
         let cha = name.charAt(0);
         //加速
         if (cha === "7") {
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
             this.TranSpeedUp.SetTransportation(self);
         }
         // //金币

@@ -1,6 +1,6 @@
 import Game from "../Game";
 import { EventCenter } from "../commont/EventCenter";
-import { EventType, Prop_Passive, DragonBonesAnimation_Role, CacheType } from "../commont/Enum";
+import { EventType, Prop_Passive, DragonBonesAnimation_Role, CacheType, SoundType, Special_Car } from "../commont/Enum";
 import { PropEffect } from "./PropEffect";
 import { EffectBananaSkin } from "./propeffect/EffectBananaSkin";
 import { EffectBomb } from "./propeffect/EffectBomb";
@@ -24,6 +24,8 @@ import { TranSpeedUp } from "./transportation/TranSpeedUp";
 import { TranCoin } from "./transportation/TranCoin";
 import AI from "./AI";
 import Animation_TimeBomb from "../animation/Animation_TimeBomb";
+import { SpecialCar } from "./SpecialCar";
+import { Pickup } from "./specialcar/Pickup";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -164,13 +166,18 @@ export default class Player extends cc.Component {
      * @property 空投奖励--->金币卡
      */
     private TranCoin: Transportation = null;
+    //------------------------------------------------>空投奖励
+    /**
+     * @property 皮卡车
+     */
+    private Pickup: SpecialCar = null;
 
     onLoad() {
         this.Init();
     }
 
     update(dt) {
-        if (!this.Game || !GameManage.Instance.IsGameStart) {
+        if (!this.Game || !GameManage.Instance.IsGameStart || GameManage.Instance.IsPortal) {
             return;
         }
         if (!this.IsHorizontal) {
@@ -236,6 +243,8 @@ export default class Player extends cc.Component {
         //---------->空投奖励
         this.TranSpeedUp = new TranSpeedUp();
         this.TranCoin = new TranCoin();
+        //---------->特殊汽车
+        this.Pickup = new Pickup();
 
 
         // this.UpdateSpeed();
@@ -282,6 +291,7 @@ export default class Player extends cc.Component {
                 this.CollisionWall(this.Game, self_node);
                 break;
             case "question":
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Question);
                 this.CollisionQuestion(target);
                 break;
             case "prop":
@@ -330,6 +340,11 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionProp(target: cc.Node, self: cc.Node) {
+        let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+        if (car_name && car_name === Special_Car.StreetRoller) {
+            return;
+        }
+
         let istrue = this.GetPretection(target);
         if (istrue) {
             return
@@ -338,6 +353,10 @@ export default class Player extends cc.Component {
         switch (name) {
             case "1":
                 //香蕉皮效果
+                if (car_name && car_name === Special_Car.Pickup) {
+                    return;
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.BananaSkin);
                 this.BananaSkin.Effect(self, target);
                 break;
             case "2":
@@ -346,6 +365,10 @@ export default class Player extends cc.Component {
                 break;
             case "3":
                 //小丑礼包
+                if (car_name && car_name === Special_Car.CementTruck) {
+                    return;
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Bomb);
                 this.ClownGift.Effect(self, target);
                 break;
             default:
@@ -359,11 +382,14 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionPassiveProp(target: cc.Node, self: cc.Node) {
+        let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+
         let istrue: boolean = null;
         let name = target.name;
         switch (name) {
             case "Coin":
                 //金币
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Coin);
                 this.EffectCoin.Effect(self, target);
                 break;
             case Prop_Passive.Tornado:
@@ -372,14 +398,20 @@ export default class Player extends cc.Component {
                 if (istrue) {
                     return
                 }
+                if (car_name && (car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+                    return;
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Tornado);
                 this.EffectTornado.Effect(self, target);
                 break;
             case Prop_Passive.AreaSpeedUp:
                 //加速带
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
                 this.EffectAreaSpeedUp.Effect(self, target);
                 break;
             case Prop_Passive.Portal:
                 //传送门
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Portal);
                 this.EffectPortal.Effect(self, target);
                 break;
             case Prop_Passive.Paint:
@@ -388,6 +420,10 @@ export default class Player extends cc.Component {
                 if (istrue) {
                     return
                 }
+                if (car_name && (car_name === Special_Car.StreetRoller || car_name === Special_Car.Pickup)) {
+                    return;
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Paint);
                 this.EffectPaint.Effect(self, target);
                 break;
             case Prop_Passive.Handrail:
@@ -396,6 +432,10 @@ export default class Player extends cc.Component {
                 if (istrue) {
                     return
                 }
+                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+                    return;
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Roadblock);
                 this.EffectHandrail.Effect(self, target);
                 break;
             case Prop_Passive.Roadblock:
@@ -404,6 +444,10 @@ export default class Player extends cc.Component {
                 if (istrue) {
                     return
                 }
+                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+                    return;
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Roadblock);
                 this.EffectRoadblock.Effect(self, target);
                 break;
             case Prop_Passive.Boulder:
@@ -412,10 +456,18 @@ export default class Player extends cc.Component {
                 if (istrue) {
                     return
                 }
+                if (car_name && car_name === Special_Car.StreetRoller) {
+                    return;
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Piers);
                 this.EffectBoulder.Effect(self, target);
                 break;
             case Prop_Passive.Piers:
                 //石墩
+                if (car_name && car_name === Special_Car.StreetRoller) {
+                    return;
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Piers);
                 this.EffectPiers.Effect(self, target);
                 break;
             case Prop_Passive.Water:
@@ -424,6 +476,10 @@ export default class Player extends cc.Component {
                 if (istrue) {
                     return
                 }
+                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.StreetRoller)) {
+                    return;
+                }
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Water);
                 this.EffectWater.Effect(self, target);
                 break;
             case Prop_Passive.TimeBomb:
@@ -432,8 +488,15 @@ export default class Player extends cc.Component {
                 if (istrue) {
                     return
                 }
+                if (car_name && car_name === Special_Car.StreetRoller) {
+                    return;
+                }
                 this.SetTimeBomb(target);
                 // this.EffectTimeBomb.Effect(self, target);
+                break;
+            case Prop_Passive.Container:
+                //集装箱
+                this.SetSpecialCar(target);
                 break;
             default:
                 break;
@@ -466,6 +529,11 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionRole(target: cc.Node, self: cc.Node) {
+        let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+        if (car_name && car_name === Special_Car.StreetRoller) {
+            this.EffectBoulder.Effect(target);
+            return;
+        }
         if (this.TimeBomb) {
             this.TransferTimeBomb(target);
         }
@@ -577,10 +645,12 @@ export default class Player extends cc.Component {
         let cha = name.charAt(0);
         //加速
         if (cha === "7") {
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
             this.TranSpeedUp.SetTransportation(self);
         }
         //金币
         if (cha === "2") {
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.Coin);
             this.TranCoin.SetTransportation();
         }
         target.destroy();
@@ -660,11 +730,20 @@ export default class Player extends cc.Component {
     }
 
     /**
-     * 设置
+     * 设置特殊车辆
      */
-    public SetCameraPos() {
+    public SetSpecialCar(prop: cc.Node) {
+        prop.destroy();
+        let commont_car = this.node.getChildByName("Car");
+        commont_car.active = false;
 
+        let arr_Special: cc.Node[] = this.node.getChildByName("SpecialCar").children;
+        let ran = Math.floor(Math.random() * arr_Special.length);
+        GameManage.Instance.Current_SpecialCar = arr_Special[ran];
+        let car = GameManage.Instance.Current_SpecialCar;
+        car.active = true;
+        let dragon = car.getComponent(dragonBones.ArmatureDisplay);
+        dragon.playAnimation("a1", 0);
+        this.Pickup.Effect(this);
     }
-
-
 }

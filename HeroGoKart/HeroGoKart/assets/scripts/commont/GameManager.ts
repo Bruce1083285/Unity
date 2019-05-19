@@ -36,6 +36,10 @@ export class GameManage {
      */
     public IsListenterDis: boolean = false;
     /**
+     * @property 是否开始传送
+     */
+    public IsPortal:boolean=false;
+    /**
      * @property 定时炸弹是否正在计时
      */
     public IsTime: boolean = false;
@@ -43,6 +47,10 @@ export class GameManage {
      * @property 移动速度
      */
     public Speed: number = 0;
+    /**
+     * @property 当前特殊汽车
+     */
+    public Current_SpecialCar: cc.Node = null;
     /**
      * @property 排名
      */

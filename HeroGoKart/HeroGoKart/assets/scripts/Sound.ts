@@ -1,3 +1,6 @@
+import { SoundType, EventType } from "./commont/Enum";
+import { EventCenter } from "./commont/EventCenter";
+
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
@@ -168,4 +171,144 @@ export default class Sound extends cc.Component {
     //  */
     // @property({ type: cc.AudioClip })
     // private Sound_Water: cc.AudioClip = null;
+
+    /**
+     * 初始化
+     */
+    Init() {
+        this.AddListenter();
+    }
+
+    /**
+     * 播放音效
+     * @param soundType 音效类型
+     */
+    PlaySound(soundType: SoundType) {
+        switch (soundType) {
+            case SoundType.PlayBGM_Start:
+                this.Play(this.BGM_Start, true);
+                break;
+            case SoundType.StopBGM_Start:
+                this.Stop();
+                break;
+            case SoundType.PlayBGM_Game:
+                this.Play(this.BGM_Game, true);
+                break;
+            case SoundType.StopBGM_Game:
+                this.Stop();
+                break;
+            case SoundType.Go:
+                this.Play(this.Sound_Go, false);
+                break;
+            case SoundType.Buy_Yes:
+                this.Play(this.Sound_Buy_Yes, false);
+                break;
+            case SoundType.Click:
+                this.Play(this.Sound_Click, false);
+                break;
+            case SoundType.Coin_insufficient:
+                this.Play(this.Sound_Coin_insufficient, false);
+                break;
+            case SoundType.Brake:
+                this.Play(this.Sound_Brake, false);
+                break;
+            case SoundType.Complete:
+                this.Play(this.Sound_Complete, false);
+                break;
+            case SoundType.StartTime:
+                this.Play(this.Sound_StartTime, false);
+                break;
+            case SoundType.EndTime:
+                this.Play(this.Sound_EndTime, false);
+                break;
+            case SoundType.Question:
+                this.Play(this.Sound_Question, false);
+                break;
+            case SoundType.BananaSkin:
+                this.Play(this.Sound_BananaSkin, false);
+                break;
+            case SoundType.Bomb:
+                this.Play(this.Sound_Bomb, false);
+                break;
+            case SoundType.ClownGift:
+                this.Play(this.Sound_ClownGift, false);
+                break;
+            case SoundType.WaterPolo:
+                this.Play(this.Sound_WaterPolo, false);
+                break;
+            case SoundType.Frozen:
+                this.Play(this.Sound_Frozen, false);
+                break;
+            case SoundType.Protection:
+                this.Play(this.Sound_Protection, false);
+                break;
+            case SoundType.SpeedUp:
+                this.Play(this.Sound_SpeedUp, false);
+                break;
+            case SoundType.Mangnet:
+                this.Play(this.Sound_Mangnet, false);
+                break;
+            case SoundType.Lightning:
+                this.Play(this.Sound_Lightning, false);
+                break;
+            case SoundType.Coin:
+                this.Play(this.Sound_Coin, false);
+                break;
+            case SoundType.Tornado:
+                this.Play(this.Sound_Tornado, false);
+                break;
+            case SoundType.Portal:
+                this.Play(this.Sound_Portal, false);
+                break;
+            case SoundType.Paint:
+                this.Play(this.Sound_Paint, false);
+                break;
+            case SoundType.Roadblock:
+                this.Play(this.Sound_Roadblock, false);
+                break;
+            case SoundType.Piers:
+                this.Play(this.Sound_Piers, false);
+                break;
+            case SoundType.Water:
+                this.Play(this.Sound_Water, false);
+                break;
+            case SoundType.TimeBomb:
+                this.Play(this.Sound_TimeBomb, false);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 播放
+     * @param sound 音频
+     * @param loop 是否循环播放
+     */
+    private Play(sound: cc.AudioClip, loop: boolean) {
+        cc.audioEngine.play(sound, loop, 1);
+    }
+
+    /**
+     * 停止
+     */
+    private Stop() {
+        cc.audioEngine.stopAll();
+    }
+
+    /**
+     * 添加监听
+     */
+    private AddListenter() {
+        EventCenter.AddListenter(EventType.Sound, (soundType: SoundType) => {
+            this.PlaySound(soundType);
+        }, "Sound");
+    }
+
+    /**
+     * 移除监听
+     */
+    private RemoveListenter() {
+        EventCenter.RemoveListenter(EventType.Sound, "Sound");
+    }
 }

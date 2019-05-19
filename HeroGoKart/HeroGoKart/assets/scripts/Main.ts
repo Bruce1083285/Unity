@@ -1,6 +1,7 @@
 import Start from "./Start";
 import Level from "./Level";
 import Game from "./Game";
+import Sound from "./Sound";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -18,6 +19,10 @@ const { ccclass, property } = cc._decorator;
 export default class Main extends cc.Component {
 
     /**
+     * @property 音效类
+     */
+    private Sound: Sound = null;
+    /**
      * @property 首页类
      */
     private Start: Start = null;
@@ -31,10 +36,12 @@ export default class Main extends cc.Component {
     private Game: Game = null;
 
     onLoad() {
+        this.Sound = this.node.getChildByName("Sound").getComponent(Sound);
         this.Start = this.node.getChildByName("Main Camera").getChildByName("Page_Start").getComponent(Start);
         this.Level = this.node.getChildByName("Main Camera").getChildByName("Page_Level").getComponent(Level);
         this.Game = this.node.getChildByName("Page_Game").getComponent(Game);
 
+        this.Sound.Init();
         this.Start.Init();
         this.Level.Init();
         this.Game.Init();

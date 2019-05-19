@@ -1,4 +1,4 @@
-import { EventType, CacheType } from "./commont/Enum";
+import { EventType, CacheType, SoundType } from "./commont/Enum";
 import Shop from "./start/Shop";
 import { EventCenter } from "./commont/EventCenter";
 import { Cache } from "./commont/Cache";
@@ -35,6 +35,8 @@ export default class Start extends cc.Component {
 
         this.Show(this.node);
         this.AddListenter();
+
+        EventCenter.BroadcastOne(EventType.Sound,SoundType.PlayBGM_Start);
     }
 
     /**
@@ -53,6 +55,7 @@ export default class Start extends cc.Component {
      * @param click 点击参数
      */
     private ButtonClick(lv: any, click: string) {
+        EventCenter.BroadcastOne(EventType.Sound,SoundType.Click);
         switch (click) {
             case "play":
                 this.Play();

@@ -1,5 +1,5 @@
 import { EventCenter } from "./commont/EventCenter";
-import { EventType } from "./commont/Enum";
+import { EventType, SoundType } from "./commont/Enum";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -41,6 +41,7 @@ export default class Level extends cc.Component {
      * @param click 点击参数
      */
     private ButtonClick(lv: any, click: string) {
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Click);
         switch (click) {
             case "back":
                 this.Back();
@@ -69,6 +70,9 @@ export default class Level extends cc.Component {
      * @param click 点击参数
      */
     private LevelButtonClick(lv: any, click: string) {
+        EventCenter.BroadcastOne(EventType.Sound,SoundType.Click);
+        EventCenter.BroadcastOne(EventType.Sound,SoundType.StopBGM_Start);
+        EventCenter.BroadcastOne(EventType.Sound,SoundType.PlayBGM_Game);
         console.log(click);
         this.Close(this.node);
         EventCenter.Broadcast(EventType.Page_GameShow);
