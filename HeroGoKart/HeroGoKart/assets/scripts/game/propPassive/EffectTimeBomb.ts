@@ -33,8 +33,10 @@ export class EffectTimeBomb extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        if (role.name === "Player") {
+            GameManage.Instance.IsTouchClick = false;
+        }
         let collider = role.getComponent(cc.BoxCollider);
-        GameManage.Instance.IsTouchClick = false;
         collider.enabled = false;
 
         let type_C = null;
@@ -50,8 +52,11 @@ export class EffectTimeBomb extends PropPassive {
         let act_dt = cc.delayTime(2);
         let act_Scale_small = cc.scaleTo(0.3, 0.4);
         let callback = () => {
-            GameManage.Instance.IsTouchClick = true;
+            if (role.name === "Player") {
+                GameManage.Instance.IsTouchClick = true;
+            }
             collider.enabled = true;
+            type_C.TimeBomb = null;
             type_C.Speed = 0.1;
             type_C.IsSpeedUp = true;
         }

@@ -59,7 +59,7 @@ export class SpeedUp extends PropUseing {
         //加速
         type_Class.IsSpeedUp = false;
         let speed_value = type_Class.Speed;
-        type_Class.Speed = 500;
+        type_Class.Speed = 1000;
 
         let callback = () => {
             speed_Effect.destroy();

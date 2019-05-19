@@ -41,6 +41,16 @@ export default class Animation_WaterPolo extends cc.Component {
         let num = this.node.position.sub(this.Target.position).mag();
         let dis = Math.abs(num);
         if (dis <= 10) {
+            let type_Class = null;
+            let name = this.Target.name;
+            if (name === "AI") {
+                type_Class = this.Target.getComponent(AI);
+            } else if (name === "Player") {
+                type_Class = this.Target.getComponent(Player);
+            }
+            type_Class.IsWaterPolo = true;
+            type_Class.IsSpeedUp = false;
+            type_Class.Speed = 0;
             // this.node.removeFromParent(false);
             // this.Target.addChild(this.node);
             // this.node.setPosition(0, 0);
@@ -88,7 +98,7 @@ export default class Animation_WaterPolo extends cc.Component {
         dir_1.normalizeSelf();
 
         //根据方向向量移动位置
-        let moveSpeed = 500;
+        let moveSpeed = 1000;
         this.node.x += dt * dir_1.x * moveSpeed;
         this.node.y += dt * dir_1.y * moveSpeed;
     }
@@ -111,16 +121,5 @@ export default class Animation_WaterPolo extends cc.Component {
 
         this.Target = target;
         this.Animat.play();
-
-        let type_Class = null;
-        let name = target.name;
-        if (name === "AI") {
-            type_Class = target.getComponent(AI);
-        } else if (name === "Player") {
-            type_Class = target.getComponent(Player);
-        }
-        type_Class.IsWaterPolo = true;
-        type_Class.IsSpeedUp = false;
-        type_Class.Speed = 0;
     }
 }

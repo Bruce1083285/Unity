@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.3122799582449984,
-      "y": 0.3122799582449984,
+      "x": 0.7042360885943905,
+      "y": 0.7042360885943905,
       "z": 1
     },
     "_quat": {
@@ -33351,6 +33351,27 @@
     "Sound_Click": null,
     "Sound_Coin_insufficient": null,
     "Sound_Brake": null,
+    "Sound_Complete": null,
+    "Sound_StartTime": null,
+    "Sound_EndTime": null,
+    "Sound_Question": null,
+    "Sound_BananaSkin": null,
+    "Sound_Bomb": null,
+    "Sound_ClownGift": null,
+    "Sound_WaterPolo": null,
+    "Sound_Frozen": null,
+    "Sound_Protection": null,
+    "Sound_SpeedUp": null,
+    "Sound_Mangnet": null,
+    "Sound_Lightning": null,
+    "Sound_Coin": null,
+    "Sound_Tornado": null,
+    "Sound_Portal": null,
+    "Sound_Paint": null,
+    "Sound_Roadblock": null,
+    "Sound_Piers": null,
+    "Sound_Water": null,
+    "Sound_TimeBomb": null,
     "_id": "4f9kKOW95Efodm1DPGCco1"
   },
   {

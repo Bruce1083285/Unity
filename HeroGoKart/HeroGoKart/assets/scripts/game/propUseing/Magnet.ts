@@ -31,6 +31,21 @@ export class Magnet extends PropUseing {
 
     private SetProp(role: cc.Node, skin_id: string) {
         skin_id = "7"
+
+        let target: cc.Node = null;
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
+            target = GameManage.Instance.Roles[ran];
+            if (target.position.y > role.position.y) {
+                break;
+            } else {
+                target = null;
+            }
+        }
+        if (!target) {
+            return;
+        }
+
         let prop: cc.Node = null;
         for (let i = 0; i < this.Props.length; i++) {
             if (this.Props[i].name === skin_id) {
@@ -49,21 +64,6 @@ export class Magnet extends PropUseing {
         speed_Effect.zIndex = -1;
         let partic = speed_Effect.getComponent(cc.ParticleSystem);
         partic.resetSystem();
-
-        let target: cc.Node = null;
-        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
-            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
-            target = GameManage.Instance.Roles[ran];
-            if (target.position.y > role.position.y) {
-                break;
-            } else {
-                i--;
-                target = null;
-            }
-        }
-        if (!target) {
-            return;
-        }
 
         let target_Class = null;
         let target_name = target.name;

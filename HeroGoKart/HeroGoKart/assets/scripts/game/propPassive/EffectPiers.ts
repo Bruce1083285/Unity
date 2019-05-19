@@ -49,6 +49,9 @@ export class EffectPiers extends PropPassive {
 
         let act_Move = cc.moveBy(0.3, 0, -100);
         let callback = () => {
+            if (role.name === "AI") {
+                role_type.Move(101);
+            }
             GameManage.Instance.IsTouchClick = true;
             collider.enabled = true;
             role_type.Speed = speed_Value;

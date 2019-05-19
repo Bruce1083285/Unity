@@ -63,6 +63,7 @@ export default class Animation_TimeBomb extends cc.Component {
             this.Time.string = num + "";
             if (num <= 0) {
                 GameManage.Instance.IsTime = false;
+                this.node.destroy();
                 this.Effect_TimeBomb.Effect(this.node.parent, this.node);
                 this.unschedule(callback);
             }

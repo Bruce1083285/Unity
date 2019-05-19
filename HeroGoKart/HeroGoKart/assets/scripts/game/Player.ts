@@ -92,7 +92,7 @@ export default class Player extends cc.Component {
     /**
      * @property 是否存在定时炸弹
      */
-    private TimeBomb: cc.Node = null;
+    public TimeBomb: cc.Node = null;
     /**
      * @property 游戏类
      */
@@ -239,6 +239,13 @@ export default class Player extends cc.Component {
 
 
         // this.UpdateSpeed();
+    }
+
+    /**
+     * 重置自身
+     */
+    public ResetSelf() {
+        this.unscheduleAllCallbacks();
     }
 
     /**
@@ -442,8 +449,15 @@ export default class Player extends cc.Component {
         target.removeFromParent(false);
         this.node.addChild(target);
         target.setPosition(0, 0);
+        target.zIndex = 1;
+        let collider = target.getComponent(cc.BoxCollider);
+        collider.enabled = false;
+        // console.log(this.node.children);
         let time_Bomb = target.getComponent(Animation_TimeBomb);
-        time_Bomb.Play();
+        if (!GameManage.Instance.IsTime) {
+            time_Bomb.Play();
+            GameManage.Instance.IsTime = true;
+        }
     }
 
     /**
@@ -546,7 +560,7 @@ export default class Player extends cc.Component {
             this.TimeBomb.removeFromParent(false);
             target.addChild(this.TimeBomb);
             this.TimeBomb.setPosition(0, 0);
-            this.TimeBomb = null;
+            // this.TimeBomb = null;
         }
         let act_seq = cc.sequence(act_move, cc.callFunc(callback));
         this.TimeBomb.runAction(act_seq);
@@ -651,4 +665,6 @@ export default class Player extends cc.Component {
     public SetCameraPos() {
 
     }
+
+
 }

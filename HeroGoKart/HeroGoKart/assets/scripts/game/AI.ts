@@ -56,7 +56,7 @@ export default class AI extends cc.Component {
     /**
      * @property 定时炸弹
      */
-    private TimeBomb: cc.Node = null;
+    public TimeBomb: cc.Node = null;
     /**
       * @property 水平移动速度
       */
@@ -342,6 +342,13 @@ export default class AI extends cc.Component {
     }
 
     /**
+     * 重置自身
+     */
+    public ResetSelf() {
+        this.unscheduleAllCallbacks();
+    }
+
+    /**
      * 更新速度值
      */
     private UpdateSpeed() {
@@ -380,7 +387,7 @@ export default class AI extends cc.Component {
      * 左右移动
      * @param ratio 比例
      */
-    private Move(ratio: number) {
+    public Move(ratio: number) {
         let ran = Math.random() * 100;
         if (ran <= ratio) {
             let left_Or_right = Math.random() * 100;
@@ -466,39 +473,39 @@ export default class AI extends cc.Component {
         switch (str) {
             case "1":
                 //香蕉皮
-                this.Useing_BananaSkin.Useing(this.Game.Player, str);
+                this.Useing_BananaSkin.Useing(this.node, str);
                 break;
             case "2":
                 //炸弹
-                this.Useing_Bomb.Useing(this.Game.Player, str);
+                this.Useing_Bomb.Useing(this.node, str);
                 break;
             case "3":
                 //小丑礼包
-                this.Useing_ClownGift.Useing(this.Game.Player, str);
+                this.Useing_ClownGift.Useing(this.node, str);
                 break;
             case "4":
                 //水球
-                this.Useing_WaterPolo.Useing(this.Game.Player, str);
+                this.Useing_WaterPolo.Useing(this.node, str);
                 break;
             case "5":
                 //冰冻
-                this.Useing_Frozen.Useing(this.Game.Player, str);
+                this.Useing_Frozen.Useing(this.node, str);
                 break;
             case "6":
                 //保护罩
-                this.Useing_Protection.Useing(this.Game.Player, str);
+                this.Useing_Protection.Useing(this.node, str);
                 break;
             case "7":
                 //加速
-                this.Useing_SpeedUp.Useing(this.Game.Player, str);
+                this.Useing_SpeedUp.Useing(this.node, str);
                 break;
             case "8":
                 //吸铁石
-                this.Useing_Mangnet.Useing(this.Game.Player, str);
+                this.Useing_Mangnet.Useing(this.node, str);
                 break;
             case "9":
                 //雷击
-                this.Useing_Lightning.Useing(this.Game.Player, str);
+                this.Useing_Lightning.Useing(this.node, str);
                 break;
             default:
                 break;
@@ -633,6 +640,9 @@ export default class AI extends cc.Component {
         target.removeFromParent(false);
         this.node.addChild(target);
         target.setPosition(0, 0);
+        target.zIndex = 1;
+        let collider = target.getComponent(cc.BoxCollider);
+        collider.enabled = false;
         let time_Bomb = target.getComponent(Animation_TimeBomb);
         if (!GameManage.Instance.IsTime) {
             time_Bomb.Play();
@@ -740,7 +750,7 @@ export default class AI extends cc.Component {
             this.TimeBomb.removeFromParent(false);
             target.addChild(this.TimeBomb);
             this.TimeBomb.setPosition(0, 0);
-            this.TimeBomb = null;
+            // this.TimeBomb = null;
         }
         let act_seq = cc.sequence(act_move, cc.callFunc(callback));
         this.TimeBomb.runAction(act_seq);

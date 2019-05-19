@@ -653,14 +653,14 @@ export default class Game extends cc.Component {
         GameManage.Instance.IsTouchClick = false;
         GameManage.Instance.IsCameraFollow = false;
 
-        let prop_arr = this.Area_Path.children;
-        for (let i = 0; i < prop_arr.length; i++) {
-            let prop = prop_arr[i];
-            if (prop.name === "AI" || prop.name === "Player") {
-                continue;
-            }
-            prop.destroy();
-        }
+        // let prop_arr = this.Area_Path.children;
+        // for (let i = 0; i < prop_arr.length; i++) {
+        //     let prop = prop_arr[i];
+        //     if (prop.name === "AI" || prop.name === "Player") {
+        //         continue;
+        //     }
+        //     prop.destroy();
+        // }
 
         let path_arr = this.BG.children;
         for (let i = 0; i < path_arr.length; i++) {
@@ -685,14 +685,14 @@ export default class Game extends cc.Component {
             let role_AI: AI = null;
             if (role.name === "AI") {
                 role_AI = role.getComponent(AI);
-                role_AI.unscheduleAllCallbacks();
+                role_AI.ResetSelf();
                 role_AI.IsSpeedUp = false;
                 role_AI.Speed = 0;
             }
             if (role.name === "Player") {
                 role_player = role.getComponent(Player);
                 role_player.Camera.setPosition(0, 0);
-                role_player.unscheduleAllCallbacks();
+                role_player.ResetSelf();
                 role_player.IsSpeedUp = false;
                 role_player.Speed = 0;
             }
@@ -939,6 +939,7 @@ export default class Game extends cc.Component {
      */
     private SetPassivePos(pool: cc.NodePool, parent: cc.Node) {
         let ran = Math.random() * 5 + 10
+        let have_arr = [];
         for (let i = 0; i < ran; i++) {
             let prop = pool.get();
             if (!prop) {
@@ -946,10 +947,16 @@ export default class Game extends cc.Component {
                 prop = pool.get();
             }
 
-            // if (prop.name !== "TimeBomb") {
-            //     i--;
-            //     continue;
-            // }
+            if (prop.name !== "TimeBomb") {
+                let ind = have_arr.indexOf(prop.name);
+                if (ind === -1) {
+                    have_arr.indexOf(prop.name);
+                    i--;
+                    continue;
+                } else {
+                    return;
+                }
+            }
 
             // let world_Pos = this.Area_Path.convertToWorldSpaceAR(this.Area_Path.position);
             // let node_Pos = this.ar.convertToNodeSpaceAR(world_Pos);
@@ -1521,6 +1528,14 @@ export default class Game extends cc.Component {
     private GameOver() {
         if (this.Page_EndTime.active) {
             return;
+        }
+        let prop_arr = this.Area_Path.children;
+        for (let i = 0; i < prop_arr.length; i++) {
+            let prop = prop_arr[i];
+            if (prop.name === "AI" || prop.name === "Player") {
+                continue;
+            }
+            prop.destroy();
         }
 
         GameManage.Instance.IsGameClick = false;

@@ -31,19 +31,6 @@ export class WaterPolo extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        let prop: cc.Node = null;
-        let parent = role.parent;
-        for (let i = 0; i < this.Props.length; i++) {
-            if (this.Props[i].name === skin_id) {
-                prop = cc.instantiate(this.Props[i]);
-                parent.addChild(prop);
-                prop.setPosition(role.position);
-                break;
-            }
-        }
-        let box_Collider = prop.getComponent(cc.BoxCollider);
-        box_Collider.enabled = false;
-
         let ran_node: cc.Node = null;
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
             let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
@@ -60,12 +47,24 @@ export class WaterPolo extends PropUseing {
                     break;
                 }
             }
-            i--;
             ran_node = null;
         }
         if (!ran_node) {
             return;
         }
+
+        let prop: cc.Node = null;
+        let parent = role.parent;
+        for (let i = 0; i < this.Props.length; i++) {
+            if (this.Props[i].name === skin_id) {
+                prop = cc.instantiate(this.Props[i]);
+                parent.addChild(prop);
+                prop.setPosition(role.position);
+                break;
+            }
+        }
+        let box_Collider = prop.getComponent(cc.BoxCollider);
+        box_Collider.enabled = false;
 
         let water_polo = prop.getComponent(Animation_WaterPolo);
         water_polo.Play(ran_node);

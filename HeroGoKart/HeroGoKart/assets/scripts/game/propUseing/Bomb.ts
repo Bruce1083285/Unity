@@ -31,6 +31,20 @@ export class Bomb extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
+        let target: cc.Node = null;
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
+            target = GameManage.Instance.Roles[ran];
+            if (target.position.y > role.position.y) {
+                break;
+            } else {
+                target = null;
+            }
+        }
+        if (!target) {
+            return;
+        }
+
         let prop: cc.Node = null;
         let parent = role.parent;
         for (let i = 0; i < this.Props.length; i++) {
@@ -46,21 +60,6 @@ export class Bomb extends PropUseing {
         // setTimeout(() => {
         //     box_Collider.enabled = true;
         // }, 100);
-
-        let target: cc.Node = null;
-        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
-            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
-            target = GameManage.Instance.Roles[ran];
-            if (target.position.y > role.position.y) {
-                break;
-            } else {
-                i--;
-                target = null;
-            }
-        }
-        if (!target) {
-            return;
-        }
 
         let bomb = prop.getComponent(Animation_Bomb);
         bomb.SetTarget(target);
