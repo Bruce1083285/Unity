@@ -53,6 +53,7 @@ export default class Shop extends cc.Component {
         EventCenter.AddListenter(EventType.ShopShow_Role, () => {
             // this.Show(this.node);
             this.ShopRoleShow(this.Shop_Role);
+            EventCenter.Broadcast(EventType.Coin_Amount);
         }, "ShopRole");
         EventCenter.AddListenter(EventType.ShopColse_Role, () => {
             // this.Close(this.node);
@@ -63,6 +64,7 @@ export default class Shop extends cc.Component {
         EventCenter.AddListenter(EventType.ShopShow_Car, () => {
             // this.Show(this.node);
             this.ShopCarShow(this.Shop_Car);
+            EventCenter.Broadcast(EventType.Coin_Amount);
         }, "ShopCar");
         EventCenter.AddListenter(EventType.ShopColse_Car, () => {
             // this.Close(this.node);

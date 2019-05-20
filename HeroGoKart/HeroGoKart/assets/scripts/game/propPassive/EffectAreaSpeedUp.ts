@@ -58,7 +58,7 @@ export class EffectAreaSpeedUp extends PropPassive {
         }
         type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
-        type_C.Speed = 1000;
+        type_C.Speed = 1500;
         let callback = () => {
             prop_1.destroy();
             speed_Effect.destroy();

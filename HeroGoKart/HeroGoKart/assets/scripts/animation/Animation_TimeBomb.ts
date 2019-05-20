@@ -54,12 +54,14 @@ export default class Animation_TimeBomb extends cc.Component {
         this.Time = this.node.getChildByName("time").getComponent(cc.Label);
 
         this.AddListenter();
+        // this.Play();
     }
 
     /**
      * 播放倒计时
      */
     public Play() {
+        this.node.getChildByName("time").active = true;
         let num = 30;
         this.Time.string = num + "";
         let callback = () => {

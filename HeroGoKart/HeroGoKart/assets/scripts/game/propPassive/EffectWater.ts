@@ -39,7 +39,7 @@ export class EffectWater extends PropPassive {
             type_C = role.getComponent(Player);
         }
         type_C.IsSpeedUp = false;
-        type_C.Horizontal_Sensitivity = 500;
+        type_C.Horizontal_Sensitivity = 200;
         let speed_Value = type_C.Speed;
         type_C.Speed = speed_Value - speed_Value * 0.2;
 

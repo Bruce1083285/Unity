@@ -189,7 +189,7 @@ export default class Game extends cc.Component {
     /**
      * @property 空投--->卡
      */
-    private Trans_Card: cc.Node = null;
+    public Trans_Card: cc.Node = null;
     /**
      * @property 排名label
      */
@@ -334,42 +334,42 @@ export default class Game extends cc.Component {
                 /**金币--->1 */
                 {
                     name: "Coin_1",
-                    zInd: -1,
+                    zInd: 1,
                 },
                 /**金币--->2 */
                 {
                     name: "Coin_2",
-                    zInd: -1,
+                    zInd: 1,
                 },
                 /**金币--->3 */
                 {
                     name: "Coin_3",
-                    zInd: -1,
+                    zInd: 1,
                 },
                 /**金币--->4 */
                 {
                     name: "Coin_4",
-                    zInd: -1,
+                    zInd: 1,
                 },
                 /**金币--->5 */
                 {
                     name: "Coin_5",
-                    zInd: -1,
+                    zInd: 1,
                 },
                 /**金币--->6 */
                 {
                     name: "Coin_6",
-                    zInd: -1,
+                    zInd: 1,
                 },
                 /**金币--->7 */
                 {
                     name: "Coin_7",
-                    zInd: -1,
+                    zInd: 1,
                 },
                 /**金币--->8 */
                 {
                     name: "Coin_8",
-                    zInd: -1,
+                    zInd: 1,
                 },
                 /**龙卷风 */
                 {
@@ -419,7 +419,7 @@ export default class Game extends cc.Component {
                 /**定时炸弹 */
                 {
                     name: "TimeBomb",
-                    zInd: -1,
+                    zInd: 1,
                 },
             ],
         }
@@ -454,7 +454,7 @@ export default class Game extends cc.Component {
 
         let manager = cc.director.getCollisionManager();
         manager.enabled = true;
-        // manager.enabledDebugDraw = true;
+        manager.enabledDebugDraw = true;
         this.BG = this.node.getChildByName("BG");
         this.Area_Path = this.node.getChildByName("Area_Path");
         this.Area_Prop = this.node.getChildByName("Area_Prop");
@@ -467,6 +467,7 @@ export default class Game extends cc.Component {
         this.Page_EndTime = this.node.parent.getChildByName("Main Camera").getChildByName("Page_EndTime");
         this.Page_Pause = this.node.parent.getChildByName("Main Camera").getChildByName("Page_Pause");
         this.Label_Ranking = this.node.parent.getChildByName("Main Camera").getChildByName("label_Ranking").getComponent(cc.Label);
+        GameManage.Instance.Finished_Box = this.node.parent.getChildByName("Main Camera").getChildByName("Finished");
         let arr = this.Area_Path.children;
         for (let i = 0; i < arr.length; i++) {
             let role = arr[i];
@@ -570,6 +571,7 @@ export default class Game extends cc.Component {
      */
     private Paues() {
         if (GameManage.Instance.IsGameStart && GameManage.Instance.IsGameClick) {
+            GameManage.Instance.IsPause = true;
             let callback = () => {
                 let role_arr = GameManage.Instance.Roles;
                 for (let i = 0; i < role_arr.length; i++) {
@@ -616,6 +618,7 @@ export default class Game extends cc.Component {
      */
     private GoOn() {
         let callback = () => {
+            GameManage.Instance.IsPause = false;
             let role_arr = GameManage.Instance.Roles;
             for (let i = 0; i < role_arr.length; i++) {
                 let role = role_arr[i];
@@ -637,8 +640,10 @@ export default class Game extends cc.Component {
      * 游戏重置
      */
     private GameReset() {
+        GameManage.Instance.IsPause = false;
         this.unscheduleAllCallbacks();
         this.SetSpeedBar(0);
+        this.Page_EndTime.active = false;
         // this.Trans_Aircraft.destroy();
         // this.Trans_Aircraft = null;
         // this.Trans_Card.destroy();
@@ -685,6 +690,9 @@ export default class Game extends cc.Component {
         let role_arr = GameManage.Instance.Roles;
         for (let i = 0; i < role_arr.length; i++) {
             let role = role_arr[i];
+            let collider = role.getComponent(cc.BoxCollider);
+            collider.enabled = true;
+
             role.opacity = 255;
             role.scale = 0.4;
             if (role.name === "Player") {
@@ -748,7 +756,7 @@ export default class Game extends cc.Component {
             this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
 
             let ran = Math.floor(Math.random() * 3 + 2);
-            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 3);
+            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 18);
             this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
             this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Prop);
@@ -983,19 +991,19 @@ export default class Game extends cc.Component {
                 prop = pool.get();
             }
 
-            // if(prop.name!=="Portal"){
-            //     i--;
-            //     continue;
-            // }
             if (prop.name === "TimeBomb" || prop.name === "Container") {
                 let ind = have_arr.indexOf(prop.name);
                 if (ind === -1) {
-                    have_arr.indexOf(prop.name);
+                    have_arr.push(prop.name);
                 } else {
                     i--;
                     continue;
                 }
             }
+            // if (prop.name !== "Container") {
+            //     i--;
+            //     continue;
+            // }
 
             // let world_Pos = this.Area_Path.convertToWorldSpaceAR(this.Area_Path.position);
             // let node_Pos = this.ar.convertToNodeSpaceAR(world_Pos);
@@ -1019,7 +1027,7 @@ export default class Game extends cc.Component {
                 if (rend_name === name) {
                     prop.zIndex = zind;
                 }
-                console.log(this.RenderOrderConfigurationTable.Prop.Passivity[i].name);
+                // console.log(this.RenderOrderConfigurationTable.Prop.Passivity[i].name);
             }
 
         }
@@ -1388,13 +1396,13 @@ export default class Game extends cc.Component {
         }
 
         for (let i = 0; i < role_arr.length; i++) {
-            let y_i = role_arr[i].position.y;
-            for (let j = i + 1; j < role_arr.length; j++) {
-                let y_j = role_arr[j].position.y;
-                if (y_i < y_j) {
-                    let temp = role_arr[i];
-                    role_arr[i] = role_arr[j];
-                    role_arr[j] = temp
+            for (let j = 0; j < role_arr.length - i - 1; j++) {
+                let y_1 = role_arr[j].position.y;
+                let y_2 = role_arr[j + 1].position.y;
+                if (y_1 < y_2) {
+                    let temp = role_arr[j];
+                    role_arr[j] = role_arr[j + 1];
+                    role_arr[j + 1] = temp
                 }
             }
         }
@@ -1485,7 +1493,7 @@ export default class Game extends cc.Component {
         let ques_x: number = 150;
 
         let ran_max = Math.random() * 5;
-        for (let j = 0; j < ran_max; j++) {
+        for (let j = 0; j < 10; j++) {
             this.Question_Space += 5000;
             for (let i = 0; i < 4; i++) {
                 let question = pool.get();
@@ -1513,6 +1521,7 @@ export default class Game extends cc.Component {
      */
     private SetTransportationAward(pre_Gift: cc.Prefab[], pre_Aircraft: cc.Prefab[], pre_Card: cc.Prefab, spr_Award: cc.SpriteFrame[], parent: cc.Node) {
         let ran_ind = Math.floor(Math.random() * pre_Gift.length);
+        ran_ind = 0;
         this.Trans_Gift = cc.instantiate(pre_Gift[ran_ind]);
         parent.addChild(this.Trans_Gift);
         this.Trans_Gift.active = false;
@@ -1526,8 +1535,8 @@ export default class Game extends cc.Component {
         this.Trans_Card = cc.instantiate(pre_Card);
         parent.addChild(this.Trans_Card);
         this.Trans_Card.active = false;
-        let spr_card = this.Trans_Card.getComponent(cc.Sprite);
-        spr_card.spriteFrame = spr_Award[ran_ind]
+        let spr_card = this.Trans_Card.getChildByName("Card").getComponent(cc.Sprite);
+        spr_card.spriteFrame = spr_Award[ran_ind];
 
         let speed_value = 5;
         let ran_x = Math.random() * 500 + 100;
@@ -1569,7 +1578,7 @@ export default class Game extends cc.Component {
      * 游戏结束
      */
     private GameOver() {
-        if (this.Page_EndTime.active) {
+        if (this.Page_EndTime.active || this.Page_Over.active) {
             return;
         }
         let prop_arr = this.Area_Path.children;
@@ -1589,38 +1598,51 @@ export default class Game extends cc.Component {
         let num = 10;
         label.string = num + "";
         this.Page_EndTimeCallBack = () => {
+            if (GameManage.Instance.Ranking.length >= 4) {
+                this.RunOver();
+                return;
+            }
             EventCenter.BroadcastOne(EventType.Sound, SoundType.EndTime);
             num--;
             label.string = num + "";
             if (num <= 0) {
-                role:
-                for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
-                    let role_arr = GameManage.Instance.Roles[i].children;
-                    for (let i = 0; i < role_arr.length; i++) {
-                        let role_childer = role_arr[i];
-                        if (role_childer.name === "TimeBomb") {
-                            EventCenter.Broadcast(EventType.UnSchedule);
-                            break role;
-                        }
-                    }
-
-                }
-                EventCenter.BroadcastOne(EventType.Sound, SoundType.StopBGM_Game);
-                EventCenter.BroadcastOne(EventType.Sound, SoundType.Complete);
-                GameManage.Instance.IsUpdateProgress = false;
-                GameManage.Instance.IsGameEnd = true;
-
-                this.Page_EndTime.active = false;
-
-                this.SetRanking();
-
-                // GameManage.Instance.IsGameStart = false;
-                PopupBox.CommontPopup(this.Page_Over);
-                // console.log(this.Page_Over);
-                this.unschedule(this.Page_EndTimeCallBack);
+                this.RunOver();
             }
         }
         this.schedule(this.Page_EndTimeCallBack, 1);
+    }
+
+    /**
+     * 执行结束
+     */
+    private RunOver() {
+        role:
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let role_arr = GameManage.Instance.Roles[i].children;
+            for (let i = 0; i < role_arr.length; i++) {
+                let role_childer = role_arr[i];
+                if (role_childer.name === "TimeBomb") {
+                    EventCenter.Broadcast(EventType.UnSchedule);
+                    break role;
+                }
+            }
+
+        }
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.StopBGM_Game);
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Complete);
+
+        PopupBox.CommontBack(GameManage.Instance.Finished_Box);
+        GameManage.Instance.IsUpdateProgress = false;
+        GameManage.Instance.IsGameEnd = true;
+
+        this.Page_EndTime.active = false;
+
+        this.SetRanking();
+
+        // GameManage.Instance.IsGameStart = false;
+        PopupBox.CommontPopup(this.Page_Over);
+        // console.log(this.Page_Over);
+        this.unschedule(this.Page_EndTimeCallBack);
     }
 
     /**
@@ -1636,13 +1658,13 @@ export default class Game extends cc.Component {
         }
 
         for (let i = 0; i < role_arr.length; i++) {
-            let y_i = role_arr[i].position.y;
-            for (let j = i + 1; j < role_arr.length; j++) {
-                let y_j = role_arr[j].position.y;
-                if (y_i < y_j) {
-                    let temp = role_arr[i];
-                    role_arr[i] = role_arr[j];
-                    role_arr[j] = temp
+            for (let j = 0; j < role_arr.length - i - 1; j++) {
+                let y_1 = role_arr[j].position.y;
+                let y_2 = role_arr[j + 1].position.y;
+                if (y_1 < y_2) {
+                    let temp = role_arr[j];
+                    role_arr[j] = role_arr[j + 1];
+                    role_arr[j + 1] = temp
                 }
             }
         }

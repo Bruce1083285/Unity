@@ -284,13 +284,13 @@
     "tag": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": -0.4,
-      "y": 36.1
+      "x": 89,
+      "y": 36
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 564.7,
-      "height": 15.4
+      "width": 3000,
+      "height": 15
     },
     "_id": ""
   },

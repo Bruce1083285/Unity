@@ -47,7 +47,7 @@ export class EffectPiers extends PropPassive {
         let speed_Value = role_type.Speed;
         role_type.Speed = 0;
 
-        let act_Move = cc.moveBy(0.3, 0, -100);
+        let act_Move = cc.moveBy(1, 0, -500);
         let callback = () => {
             if (role.name === "AI") {
                 role_type.Move(101);

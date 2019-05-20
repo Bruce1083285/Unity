@@ -26,6 +26,7 @@ import AI from "./AI";
 import Animation_TimeBomb from "../animation/Animation_TimeBomb";
 import { SpecialCar } from "./SpecialCar";
 import { Pickup } from "./specialcar/Pickup";
+import { PopupBox } from "../commont/PopupBox";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -91,6 +92,10 @@ export default class Player extends cc.Component {
     * @property 是否被雷击
     */
     public IsLightning: boolean = false;
+    /**
+     * @property 自身是否移动
+     */
+    private IsMove: boolean = true;
     /**
      * @property 是否存在定时炸弹
      */
@@ -177,7 +182,7 @@ export default class Player extends cc.Component {
     }
 
     update(dt) {
-        if (!this.Game || !GameManage.Instance.IsGameStart || GameManage.Instance.IsPortal) {
+        if (!this.Game || !GameManage.Instance.IsGameStart || GameManage.Instance.IsPortal || !this.IsMove || GameManage.Instance.IsPause) {
             return;
         }
         if (!this.IsHorizontal) {
@@ -241,8 +246,8 @@ export default class Player extends cc.Component {
         this.EffectWater = new EffectWater(this.Game.Pool_PassiveProps, this.Game);
         this.EffectTimeBomb = new EffectTimeBomb(this.Game.Pool_PassiveProps, this.Game);
         //---------->空投奖励
-        this.TranSpeedUp = new TranSpeedUp();
-        this.TranCoin = new TranCoin();
+        this.TranSpeedUp = new TranSpeedUp(this.Game);
+        this.TranCoin = new TranCoin(this.Game);
         //---------->特殊汽车
         this.Pickup = new Pickup();
 
@@ -254,6 +259,7 @@ export default class Player extends cc.Component {
      * 重置自身
      */
     public ResetSelf() {
+        this.IsMove = true;
         this.unscheduleAllCallbacks();
     }
 
@@ -314,6 +320,17 @@ export default class Player extends cc.Component {
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * 当碰撞结束后调用
+     * @param  {Collider} other 产生碰撞的另一个碰撞组件
+     * @param  {Collider} self  产生碰撞的自身的碰撞组件
+     */
+    private onCollisionExit(other, self) {
+        if (this.TimeBomb) {
+            this.TimeBomb = null;
         }
     }
 
@@ -432,9 +449,6 @@ export default class Player extends cc.Component {
                 if (istrue) {
                     return
                 }
-                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
-                    return;
-                }
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Roadblock);
                 this.EffectHandrail.Effect(self, target);
                 break;
@@ -443,9 +457,6 @@ export default class Player extends cc.Component {
                 istrue = this.GetPretection(target);
                 if (istrue) {
                     return
-                }
-                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
-                    return;
                 }
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Roadblock);
                 this.EffectRoadblock.Effect(self, target);
@@ -621,17 +632,28 @@ export default class Player extends cc.Component {
      * @param target AI节点
      */
     private TransferTimeBomb(target: cc.Node) {
+        let ai: AI = null;
+        ai = target.getComponent(AI);
+        if (ai.TimeBomb) {
+            return;
+        }
         let world_pos = target.parent.convertToWorldSpaceAR(target.position);
         let node_pos = this.TimeBomb.parent.convertToNodeSpaceAR(world_pos);
-        let act_move = cc.moveTo(0.3, node_pos);
-        let callback = () => {
-            this.TimeBomb.removeFromParent(false);
-            target.addChild(this.TimeBomb);
-            this.TimeBomb.setPosition(0, 0);
-            // this.TimeBomb = null;
-        }
-        let act_seq = cc.sequence(act_move, cc.callFunc(callback));
-        this.TimeBomb.runAction(act_seq);
+        // let act_move = cc.moveTo(0.3, node_pos);
+        // let callback = () => {
+        //     this.TimeBomb.removeFromParent(false);
+        //     target.addChild(this.TimeBomb);
+        //     this.TimeBomb.setPosition(0, 0);
+        //     // this.TimeBomb = null;
+        // }
+        // let act_seq = cc.sequence(act_move, cc.callFunc(callback));
+        // this.TimeBomb.runAction(act_seq);
+        this.TimeBomb.setPosition(node_pos);
+        this.TimeBomb.removeFromParent(false);
+        target.addChild(this.TimeBomb);
+        this.TimeBomb.setPosition(0, 0);
+        ai.TimeBomb = this.TimeBomb;
+        // this.TimeBomb = null;
     }
 
     /**
@@ -640,30 +662,42 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionTransportation(target: cc.Node, self: cc.Node) {
-        let spr_target = target.getComponent(cc.Sprite);
+        let spr_target = target.getChildByName("Card").getComponent(cc.Sprite);
         let name = spr_target.spriteFrame.name;
         let cha = name.charAt(0);
         //加速
         if (cha === "7") {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
             this.TranSpeedUp.SetTransportation(self);
+            target.destroy();
         }
         //金币
         if (cha === "2") {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.Coin);
             this.TranCoin.SetTransportation();
         }
-        target.destroy();
     }
 
     /**
      * 碰撞到终点线
      */
     private CollisionEnd(self: cc.Node) {
-        this.unscheduleAllCallbacks();
+        let callback = () => {
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.Roadblock);
+            this.IsMove = false;
+            // this.unscheduleAllCallbacks();
+        }
+        this.scheduleOnce(callback, 0.5);
+
+        let collider = this.node.getComponent(cc.BoxCollider);
+        collider.enabled = false;
+
         let name = self.getChildByName("name").getComponent(cc.Label);
         GameManage.Instance.Ranking.push(name.string);
 
+        if (!GameManage.Instance.IsGameEnd) {
+            PopupBox.CommontPopup(GameManage.Instance.Finished_Box);
+        }
         GameManage.Instance.IsUpdateProgress = false;
         GameManage.Instance.IsGameEnd = true;
 
@@ -702,11 +736,19 @@ export default class Player extends cc.Component {
      */
     private CrossingTheLineProtection(self: cc.Node) {
         this.Game.Horizontal = 0;
-        let dra_role = this.Game.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
-        dra_role.playAnimation("a1", 0);
+        if (GameManage.Instance.Current_SpecialCar) {
+            let dra_role = GameManage.Instance.Current_SpecialCar.getComponent(dragonBones.ArmatureDisplay);
+            dra_role.playAnimation("a1", 0);
 
-        let dra_car = this.Game.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
-        dra_car.playAnimation("a1", 0);
+            let dra_car = GameManage.Instance.Current_SpecialCar.getComponent(dragonBones.ArmatureDisplay);
+            dra_car.playAnimation("a1", 0);
+        } else {
+            let dra_role = this.Game.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
+            dra_role.playAnimation("a1", 0);
+
+            let dra_car = this.Game.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
+            dra_car.playAnimation("a1", 0);
+        }
 
         let collision = this.node.getComponent(cc.BoxCollider);
         collision.enabled = false;
@@ -733,17 +775,23 @@ export default class Player extends cc.Component {
      * 设置特殊车辆
      */
     public SetSpecialCar(prop: cc.Node) {
-        prop.destroy();
-        let commont_car = this.node.getChildByName("Car");
-        commont_car.active = false;
+        let dragon_prop = prop.getComponent(dragonBones.ArmatureDisplay);
+        dragon_prop.playAnimation("a2", 1);
+        let callback = () => {
+            prop.destroy();
+            let commont_car = this.node.getChildByName("Car");
+            commont_car.active = false;
 
-        let arr_Special: cc.Node[] = this.node.getChildByName("SpecialCar").children;
-        let ran = Math.floor(Math.random() * arr_Special.length);
-        GameManage.Instance.Current_SpecialCar = arr_Special[ran];
-        let car = GameManage.Instance.Current_SpecialCar;
-        car.active = true;
-        let dragon = car.getComponent(dragonBones.ArmatureDisplay);
-        dragon.playAnimation("a1", 0);
-        this.Pickup.Effect(this);
+            let arr_Special: cc.Node[] = this.node.getChildByName("SpecialCar").children;
+            let ran = Math.floor(Math.random() * arr_Special.length);
+            GameManage.Instance.Current_SpecialCar = arr_Special[ran];
+            let car = GameManage.Instance.Current_SpecialCar;
+            car.active = true;
+            let dragon = car.getComponent(dragonBones.ArmatureDisplay);
+            dragon.playAnimation("a1", 0);
+            this.Pickup.Effect(this);
+        }
+
+        this.scheduleOnce(callback, 0.3);
     }
 }

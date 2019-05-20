@@ -17,7 +17,7 @@
     "_parent": null,
     "_children": [],
     "_active": true,
-    "_level": 4,
+    "_level": 1,
     "_components": [
       {
         "__id__": 2
@@ -49,14 +49,14 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 938,
-      "y": 1372,
+      "x": 454,
+      "y": 1052,
       "z": 0
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
+      "x": 0.7,
+      "y": 0.7,
       "z": 1
     },
     "_rotationX": 0,

@@ -32,6 +32,7 @@ import { Prop_Passive, EventType, SoundType } from "../commont/Enum";
 import { GameManage } from "../commont/GameManager";
 import { EventCenter } from "../commont/EventCenter";
 import Animation_TimeBomb from "../animation/Animation_TimeBomb";
+import Player from "./Player";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -85,6 +86,10 @@ export default class AI extends cc.Component {
     * @property 是否被雷击
     */
     public IsLightning: boolean = false;
+    /**
+     * @property 是否移动
+     */
+    private IsMove: boolean = true;
     /**
      * @property 加速最大值
      */
@@ -207,7 +212,10 @@ export default class AI extends cc.Component {
      * @property 空投奖励--->金币卡
      */
     private TranCoin: Transportation = null;
-    private MoveRatio: [
+    /**
+     * @property 左右移动比例
+     */
+    private MoveRatio = [
         /**加速带 */
         {
             name: "AreaSpeedUp",
@@ -289,7 +297,7 @@ export default class AI extends cc.Component {
     }
 
     update(dt) {
-        if (!GameManage.Instance.IsGameStart || GameManage.Instance.IsGameEnd) {
+        if (!GameManage.Instance.IsGameStart || !this.IsMove || GameManage.Instance.IsPause) {
             return;
         }
         //垂直移动
@@ -337,14 +345,15 @@ export default class AI extends cc.Component {
         this.EffectWater = new EffectWater(this.Game.Pool_PassiveProps, this.Game);
         this.EffectTimeBomb = new EffectTimeBomb(this.Game.Pool_PassiveProps, this.Game);
         //---------->空投奖励
-        this.TranSpeedUp = new TranSpeedUp();
-        this.TranCoin = new TranCoin();
+        this.TranSpeedUp = new TranSpeedUp(this.Game);
+        this.TranCoin = new TranCoin(this.Game);
     }
 
     /**
      * 重置自身
      */
     public ResetSelf() {
+        this.IsMove = true;
         this.unscheduleAllCallbacks();
     }
 
@@ -373,7 +382,8 @@ export default class AI extends cc.Component {
             let dis = prop.position.sub(this.node.position).mag();
             if (dis <= 200 && dis > 5) {
                 let name = prop.name;
-                for (let j in this.MoveRatio) {
+                console.log(this.MoveRatio);
+                for (let j = 0; j < this.MoveRatio.length; j++) {
                     if (name === this.MoveRatio[j].name) {
                         this.Move(this.MoveRatio[j].ratio);
                         return;
@@ -392,10 +402,10 @@ export default class AI extends cc.Component {
         if (ran <= ratio) {
             let left_Or_right = Math.random() * 100;
             if (left_Or_right <= 50) {
-                let act_move_Left = cc.moveBy(0.5, -100, 0);
+                let act_move_Left = cc.moveBy(0.5, -200, 0);
                 this.node.runAction(act_move_Left);
             } else {
-                let act_move_Left = cc.moveBy(0.5, 100, 0);
+                let act_move_Left = cc.moveBy(0.5, 200, 0);
                 this.node.runAction(act_move_Left);
             }
         }
@@ -439,6 +449,17 @@ export default class AI extends cc.Component {
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * 当碰撞结束后调用
+     * @param  {Collider} other 产生碰撞的另一个碰撞组件
+     * @param  {Collider} self  产生碰撞的自身的碰撞组件
+     */
+    private onCollisionExit(other, self) {
+        if (this.TimeBomb) {
+            this.TimeBomb = null;
         }
     }
 
@@ -564,6 +585,7 @@ export default class AI extends cc.Component {
         switch (name) {
             case "Coin":
                 //金币
+                target.destroy();
                 // this.EffectCoin.Effect(self, target);
                 break;
             case Prop_Passive.Tornado:
@@ -761,17 +783,43 @@ export default class AI extends cc.Component {
      * @param target AI节点
      */
     private TransferTimeBomb(target: cc.Node) {
+        let ai: AI = null;
+        let player: Player = null;
+        if (target.name === "AI") {
+            ai = target.getComponent(AI);
+            if (ai.TimeBomb) {
+                return;
+            }
+        }
+        if (target.name === "Player") {
+            player = target.getComponent(Player);
+            if (player.TimeBomb) {
+                return;
+            }
+        }
+
         let world_pos = target.parent.convertToWorldSpaceAR(target.position);
         let node_pos = this.TimeBomb.parent.convertToNodeSpaceAR(world_pos);
-        let act_move = cc.moveTo(0.3, node_pos);
-        let callback = () => {
-            this.TimeBomb.removeFromParent(false);
-            target.addChild(this.TimeBomb);
-            this.TimeBomb.setPosition(0, 0);
-            // this.TimeBomb = null;
+        // let act_move = cc.moveTo(0.3, node_pos);
+        // let callback = () => {
+        //     this.TimeBomb.removeFromParent(false);
+        //     target.addChild(this.TimeBomb);
+        //     this.TimeBomb.setPosition(0, 0);
+        //     // this.TimeBomb = null;
+        // }
+        // let act_seq = cc.sequence(act_move, cc.callFunc(callback));
+        // this.TimeBomb.runAction(act_seq);
+        this.TimeBomb.setPosition(node_pos);
+        this.TimeBomb.removeFromParent(false);
+        target.addChild(this.TimeBomb);
+        this.TimeBomb.setPosition(0, 0);
+        if (ai) {
+            ai.TimeBomb = this.TimeBomb;
         }
-        let act_seq = cc.sequence(act_move, cc.callFunc(callback));
-        this.TimeBomb.runAction(act_seq);
+        if (player) {
+            player.TimeBomb = this.TimeBomb;
+        }
+        // this.TimeBomb = null;
     }
 
     /**
@@ -780,7 +828,7 @@ export default class AI extends cc.Component {
      * @param self AI节点
      */
     private CollisionTransportation(target: cc.Node, self: cc.Node) {
-        let spr_target = target.getComponent(cc.Sprite);
+        let spr_target = target.getChildByName("Card").getComponent(cc.Sprite);
         let name = spr_target.spriteFrame.name;
         let cha = name.charAt(0);
         //加速
@@ -788,10 +836,10 @@ export default class AI extends cc.Component {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
             this.TranSpeedUp.SetTransportation(self);
         }
-        // //金币
-        // if (cha === "2") {
-        //     this.TranCoin.SetTransportation();
-        // }
+        //金币
+        if (cha === "2") {
+            // this.TranCoin.SetTransportation();
+        }
         target.destroy();
     }
 
@@ -801,7 +849,16 @@ export default class AI extends cc.Component {
      * @param self AI节点
      */
     private CollisionEnd(self: cc.Node) {
-        this.unscheduleAllCallbacks();
+        let callback = () => {
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.Roadblock);
+            this.IsMove = false;
+            // this.unscheduleAllCallbacks();
+        }
+        this.scheduleOnce(callback, 0.5);
+
+        let collider = this.node.getComponent(cc.BoxCollider);
+        collider.enabled = false;
+
         let name = self.getChildByName("name").getComponent(cc.Label);
         GameManage.Instance.Ranking.push(name.string);
         EventCenter.Broadcast(EventType.Game_GameOver);
@@ -825,7 +882,14 @@ export default class AI extends cc.Component {
             } else {
                 target.destroy();
             }
-            let prop = this.node.getChildByName("Prop");
+            let arr = this.node.children;
+            let prop: cc.Node = null;
+            for (let i = 0; i < arr.length; i++) {
+                prop = arr[i];
+                if (prop.name === "6") {
+                    break;
+                }
+            }
             prop.destroy();
             this.IsOpen_Pretection = false;
             return true;

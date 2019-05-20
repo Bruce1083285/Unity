@@ -38,11 +38,15 @@ export class GameManage {
     /**
      * @property 是否开始传送
      */
-    public IsPortal:boolean=false;
+    public IsPortal: boolean = false;
     /**
      * @property 定时炸弹是否正在计时
      */
     public IsTime: boolean = false;
+    /**
+     * @property 是否暂停
+     */
+    public IsPause: boolean = false;
     /**
      * @property 移动速度
      */
@@ -51,6 +55,10 @@ export class GameManage {
      * @property 当前特殊汽车
      */
     public Current_SpecialCar: cc.Node = null;
+    /**
+     * @property 完成弹框
+     */
+    public Finished_Box: cc.Node = null;
     /**
      * @property 排名
      */

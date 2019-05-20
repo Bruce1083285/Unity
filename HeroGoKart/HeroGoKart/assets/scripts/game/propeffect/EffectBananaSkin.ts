@@ -27,8 +27,8 @@ export class EffectBananaSkin extends PropEffect {
      */
     private RunEffect(role: cc.Node, prop: cc.Node) {
         prop.destroy();
-        let collider = role.getComponent(cc.BoxCollider);
-        collider.enabled = false;
+        // let collider = role.getComponent(cc.BoxCollider);
+        // collider.enabled = false;
 
         let name = role.name;
         let type_Class = null;
@@ -44,7 +44,7 @@ export class EffectBananaSkin extends PropEffect {
         type_Class.Speed = speed_Value - speed_Value * 0.3;
         let act_Rotate = cc.rotateTo(1, 1080);
         let act_callback = () => {
-            collider.enabled = true;
+            // collider.enabled = true;
             type_Class.Horizontal_Sensitivity = sens;
             type_Class.IsSpeedUp = true;
             type_Class = speed_Value;

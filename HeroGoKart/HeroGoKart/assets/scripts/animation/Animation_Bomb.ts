@@ -63,7 +63,7 @@ export default class Animation_Bomb extends cc.Component {
         let dis = Math.abs(num);
         if (dis < 100) {
             let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
-            if (car_name && car_name === Special_Car.Pickup) {
+            if (car_name && (car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
                 this.node.destroy();
                 return;
             }
@@ -81,10 +81,10 @@ export default class Animation_Bomb extends cc.Component {
 
             type_Class.IsSpeedUp = false;
             type_Class.Speed = 0;
-            let act_Scale_big = cc.scaleTo(1, 0.6);
-            let act_Rotate = cc.rotateTo(1, 1080);
-            let act_Spawn = cc.spawn(act_Scale_big, act_Rotate);
-            let act_Scale_small = cc.scaleTo(0.3, 0.4);
+            let act_Scale_big = cc.scaleTo(1, 0.4, -0.4);
+            // let act_Rotate = cc.rotateTo(1, 1080);
+            let act_Scale_small = cc.scaleTo(0.3, 0.4, 0.4);
+            let act_Spawn = cc.spawn(act_Scale_big, act_Scale_small);
             let act_callback = () => {
                 collider.enabled = true;
                 type_Class.IsSpeedUp = true;
@@ -121,14 +121,14 @@ export default class Animation_Bomb extends cc.Component {
         // let degree = angle_2 / Math.PI * 180;
 
         // //赋值给节点
-        // this.node.rotation = -degree;
+        // this.node.rotation = degree;
 
 
 
-        // let _dir = cc.v2(this.Target.position.x - this.node.position.x, this.Target.position.y - this.node.position.y);
-        // // degree = -1 * (Math.atan2(_dir) / Math.PI * 180)
-        // degree = (Math.atan2(_dir.y, _dir.x) / Math.PI * 180);
-        // // this.node.rotation = degree;
+        // // let _dir = cc.v2(this.Target.position.x - this.node.position.x, this.Target.position.y - this.node.position.y);
+        // // // degree = -1 * (Math.atan2(_dir) / Math.PI * 180)
+        // // degree = (Math.atan2(_dir.y, _dir.x) / Math.PI * 180);
+        // // // this.node.rotation = degree;
 
 
 
@@ -144,14 +144,14 @@ export default class Animation_Bomb extends cc.Component {
         // let moveSpeed = 500;
         // this.node.x += dt * dir_1.x * moveSpeed;
         // this.node.y += dt * dir_1.y * moveSpeed;
-        // // this.node.x += dir_1.x * moveSpeed;
-        // // this.node.y += dir_1.y * moveSpeed;
+        // this.node.x += dir_1.x * moveSpeed;
+        // this.node.y += dir_1.y * moveSpeed;
 
         // // degree = - Math.atan((currentPos.y - this.lastPosition.y) / (currentPos.x - this.lastPosition.x)) * 180 / 3.14;
 
 
         // console.log(this.node);
-        let v2 = this.node.position.lerp(this.Target.position, 0.1, this.node.position);
+        let v2 = this.node.position.lerp(this.Target.position, 0.05, this.node.position);
         this.node.setPosition(v2.x, v2.y);
     }
 

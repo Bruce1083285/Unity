@@ -3,15 +3,16 @@ import AI from "../AI";
 import Player from "../Player";
 import { GameManage } from "../../commont/GameManager";
 import Game from "../../Game";
+import { Special_Car } from "../../commont/Enum";
 
 /**
  * @class 路障
  */
 export class EffectRoadblock extends PropPassive {
- /**
-     * 构造函数
-     * @param pool_PassiveProp 被动道具对象池
-     */
+    /**
+        * 构造函数
+        * @param pool_PassiveProp 被动道具对象池
+        */
     constructor(pool_PassiveProp: cc.NodePool, game: Game) {
         super(pool_PassiveProp, game);
     }
@@ -37,6 +38,10 @@ export class EffectRoadblock extends PropPassive {
         let act_callback = () => {
             prop.destroy();
         }
+        let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+        if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+            return;
+        }
         let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
         prop.runAction(act_seq);
 
@@ -49,11 +54,11 @@ export class EffectRoadblock extends PropPassive {
         GameManage.Instance.IsTouchClick = false;
         type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
-        type_C.Speed = 0;
+        type_C.Speed = speed_Value * 0.05;
 
         let callback = () => {
             GameManage.Instance.IsTouchClick = true;
-            type_C.Speed = speed_Value * 0.2;
+            type_C.Speed = speed_Value;
             type_C.IsSpeedUp = true;
         }
         setTimeout(callback, 500);

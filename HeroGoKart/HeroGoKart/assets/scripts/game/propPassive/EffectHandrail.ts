@@ -2,6 +2,9 @@ import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
 import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
+import { Special_Car } from "../../commont/Enum";
+
 
 /**
  * @class 栏杆效果
@@ -37,6 +40,10 @@ export class EffectHandrail extends PropPassive {
         let act_callback = () => {
             prop.destroy();
         }
+        let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+        if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+            return;
+        }
         let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
         prop.runAction(act_seq);
 
@@ -48,10 +55,10 @@ export class EffectHandrail extends PropPassive {
         }
         type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
-        type_C.Speed = 0;
+        type_C.Speed = speed_Value * 0.05;
 
         let callback = () => {
-            type_C.Speed = speed_Value * 0.3;
+            type_C.Speed = speed_Value;
             type_C.IsSpeedUp = true;
         }
         setTimeout(callback, 500);

@@ -16,7 +16,7 @@ import { PopupBox } from "../../commont/PopupBox";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
+export default class ShopCar extends cc.Component {
     /**
         * @property [Array]角色名字
         */
