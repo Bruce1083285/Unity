@@ -297,8 +297,15 @@ export default class AI extends cc.Component {
     }
 
     update(dt) {
+        
         if (!GameManage.Instance.IsGameStart || !this.IsMove || GameManage.Instance.IsPause) {
             return;
+        }
+        if ((this.node.position.x <= 0 && this.node.position.x >= -50) || (this.node.position.x >= 600 && this.node.position.x <= 650)) {
+            this.Speed = 100;
+        }
+        if (this.node.position.x < -5 || this.node.position.x > 650) {
+            this.CollisionWall(this.Game, this.node);
         }
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
@@ -422,7 +429,7 @@ export default class AI extends cc.Component {
         let group = target.group;
         switch (group) {
             case "wall":
-                this.CollisionWall(this.Game, self_node);
+                // this.CollisionWall(this.Game, self_node);
                 break;
             case "question":
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Question);
@@ -451,13 +458,30 @@ export default class AI extends cc.Component {
                 break;
         }
     }
+    /**
+        * 当碰撞结束后调用
+        * @param  {Collider} other 产生碰撞的另一个碰撞组件
+        * @param  {Collider} self  产生碰撞的自身的碰撞组件
+        */
+    private onCollisionExit(other, self) {
+        let target: cc.Node = other.node;
+        switch (target.name) {
+            case "Player":
+                // this.ClearTimeBomb();
+                break;
+            case "AI":
+                // this.ClearTimeBomb();
+                break;
+            default:
+                break;
+        }
+
+    }
 
     /**
-     * 当碰撞结束后调用
-     * @param  {Collider} other 产生碰撞的另一个碰撞组件
-     * @param  {Collider} self  产生碰撞的自身的碰撞组件
+     * 清空定时炸弹
      */
-    private onCollisionExit(other, self) {
+    private ClearTimeBomb() {
         if (this.TimeBomb) {
             this.TimeBomb = null;
         }
@@ -819,7 +843,10 @@ export default class AI extends cc.Component {
         if (player) {
             player.TimeBomb = this.TimeBomb;
         }
-        // this.TimeBomb = null;
+        let callback = () => {
+            this.TimeBomb = null;
+        }
+        this.scheduleOnce(callback, 0.3);
     }
 
     /**

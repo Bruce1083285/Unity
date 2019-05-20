@@ -179,6 +179,7 @@ export default class Player extends cc.Component {
 
     onLoad() {
         this.Init();
+        // this.TimeBomb=this.node.getChildByName("TimeBomb");
     }
 
     update(dt) {
@@ -188,10 +189,18 @@ export default class Player extends cc.Component {
         if (!this.IsHorizontal) {
             this.Game.Horizontal = 0;
         }
+
+        if ((this.node.position.x <= 0 && this.node.position.x >= -50) || (this.node.position.x >= 600 && this.node.position.x <= 650)) {
+            this.Speed = 100;
+        }
+        if (this.node.position.x < -5 || this.node.position.x > 650) {
+            this.CollisionWall(this.Game, this.node);
+        }
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
         //水平移动
         let x = this.node.position.x + this.Speed_Horizontal * 1 * this.Horizontal_Sensitivity * this.Game.Horizontal;
+        console.log(this.Horizontal_Sensitivity + "--->灵敏度");
         this.node.setPosition(x, y);
         this.UpdateSpeed();
         if (!GameManage.Instance.IsCameraFollow) {
@@ -200,7 +209,6 @@ export default class Player extends cc.Component {
                 GameManage.Instance.IsCameraFollow = true;
             }
         }
-
 
         // let dis_y = Math.abs(this.Camera.position.y - node_pos.y);
         // if (dis_y <= 50) {
@@ -294,7 +302,7 @@ export default class Player extends cc.Component {
         let group = target.group;
         switch (group) {
             case "wall":
-                this.CollisionWall(this.Game, self_node);
+                // this.CollisionWall(this.Game, self_node);
                 break;
             case "question":
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Question);
@@ -329,6 +337,21 @@ export default class Player extends cc.Component {
      * @param  {Collider} self  产生碰撞的自身的碰撞组件
      */
     private onCollisionExit(other, self) {
+        let target: cc.Node = other.node;
+        switch (target.name) {
+            case "AI":
+                // this.ClearTimeBomb();
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    /**
+     * 清空定时炸弹
+     */
+    private ClearTimeBomb() {
         if (this.TimeBomb) {
             this.TimeBomb = null;
         }
@@ -520,6 +543,7 @@ export default class Player extends cc.Component {
      */
     private SetTimeBomb(target: cc.Node) {
         this.TimeBomb = target;
+        // target.getComponent(cc.BoxCollider).enabled = false;
         target.removeFromParent(false);
         this.node.addChild(target);
         target.setPosition(0, 0);
@@ -545,6 +569,7 @@ export default class Player extends cc.Component {
             this.EffectBoulder.Effect(target);
             return;
         }
+
         if (this.TimeBomb) {
             this.TransferTimeBomb(target);
         }
@@ -653,7 +678,10 @@ export default class Player extends cc.Component {
         target.addChild(this.TimeBomb);
         this.TimeBomb.setPosition(0, 0);
         ai.TimeBomb = this.TimeBomb;
-        // this.TimeBomb = null;
+        let callback=()=>{
+            this.TimeBomb = null;
+        }
+        this.scheduleOnce(callback,0.3);
     }
 
     /**

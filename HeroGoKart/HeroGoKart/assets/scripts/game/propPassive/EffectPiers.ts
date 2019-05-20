@@ -34,8 +34,8 @@ export class EffectPiers extends PropPassive {
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
         let collider = role.getComponent(cc.BoxCollider);
-        GameManage.Instance.IsTouchClick = false;
         collider.enabled = false;
+        // GameManage.Instance.IsTouchClick = false;
 
         let role_type = null;
         if (role.name === "AI") {
@@ -47,12 +47,13 @@ export class EffectPiers extends PropPassive {
         let speed_Value = role_type.Speed;
         role_type.Speed = 0;
 
-        let act_Move = cc.moveBy(1, 0, -500);
+        role.stopAllActions();
+        let act_Move = cc.moveBy(0.3, 0, -300);
         let callback = () => {
             if (role.name === "AI") {
                 role_type.Move(101);
             }
-            GameManage.Instance.IsTouchClick = true;
+            // GameManage.Instance.IsTouchClick = true;
             collider.enabled = true;
             role_type.Speed = speed_Value;
             role_type.IsSpeedUp = true;
