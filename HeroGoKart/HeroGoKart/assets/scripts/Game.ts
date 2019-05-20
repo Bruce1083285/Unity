@@ -454,7 +454,7 @@ export default class Game extends cc.Component {
 
         let manager = cc.director.getCollisionManager();
         manager.enabled = true;
-        manager.enabledDebugDraw = true;
+        // manager.enabledDebugDraw = true;
         this.BG = this.node.getChildByName("BG");
         this.Area_Path = this.node.getChildByName("Area_Path");
         this.Area_Prop = this.node.getChildByName("Area_Prop");

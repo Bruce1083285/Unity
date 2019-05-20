@@ -389,7 +389,7 @@ export default class AI extends cc.Component {
             let dis = prop.position.sub(this.node.position).mag();
             if (dis <= 200 && dis > 5) {
                 let name = prop.name;
-                console.log(this.MoveRatio);
+                // console.log(this.MoveRatio);
                 for (let j = 0; j < this.MoveRatio.length; j++) {
                     if (name === this.MoveRatio[j].name) {
                         this.Move(this.MoveRatio[j].ratio);

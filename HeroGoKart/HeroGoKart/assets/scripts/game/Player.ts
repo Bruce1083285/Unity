@@ -200,7 +200,7 @@ export default class Player extends cc.Component {
         let y = this.node.position.y + this.Speed * dt;
         //水平移动
         let x = this.node.position.x + this.Speed_Horizontal * 1 * this.Horizontal_Sensitivity * this.Game.Horizontal;
-        console.log(this.Horizontal_Sensitivity + "--->灵敏度");
+        // console.log(this.Horizontal_Sensitivity + "--->灵敏度");
         this.node.setPosition(x, y);
         this.UpdateSpeed();
         if (!GameManage.Instance.IsCameraFollow) {
