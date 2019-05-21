@@ -28,11 +28,13 @@ import { EffectWater } from "./propPassive/EffectWater";
 import { EffectTimeBomb } from "./propPassive/EffectTimeBomb";
 import { TranSpeedUp } from "./transportation/TranSpeedUp";
 import { TranCoin } from "./transportation/TranCoin";
-import { Prop_Passive, EventType, SoundType } from "../commont/Enum";
+import { Prop_Passive, EventType, SoundType, Special_Car } from "../commont/Enum";
 import { GameManage } from "../commont/GameManager";
 import { EventCenter } from "../commont/EventCenter";
 import Animation_TimeBomb from "../animation/Animation_TimeBomb";
 import Player from "./Player";
+import { SpecialCar } from "./SpecialCar";
+import { Pickup } from "./specialcar/Pickup";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -212,6 +214,11 @@ export default class AI extends cc.Component {
      * @property 空投奖励--->金币卡
      */
     private TranCoin: Transportation = null;
+    //---------->特殊汽车
+    /**
+     * @property 皮卡车
+     */
+    private Pickup: SpecialCar = null;
     /**
      * @property 左右移动比例
      */
@@ -355,6 +362,8 @@ export default class AI extends cc.Component {
         //---------->空投奖励
         this.TranSpeedUp = new TranSpeedUp(this.Game);
         this.TranCoin = new TranCoin(this.Game);
+        //---------->特殊汽车
+        this.Pickup = new Pickup();
     }
 
     /**
@@ -611,6 +620,16 @@ export default class AI extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionPassiveProp(target: cc.Node, self: cc.Node) {
+        let arr: cc.Node[] = this.node.getChildByName("SpecialCar").children;
+        let car_name: string = null;
+        for (let i = 0; i < arr.length; i++) {
+            let chi = arr[i];
+            if (chi.active && (chi.name === Special_Car.CementTruck || chi.name === Special_Car.Pickup || chi.name === Special_Car.StreetRoller)) {
+                car_name = chi.name;
+                break;
+            }
+        }
+
         let istrue: boolean = null;
         let name = target.name;
         switch (name) {
@@ -624,6 +643,9 @@ export default class AI extends cc.Component {
                 istrue = this.GetPretection(target);
                 if (istrue) {
                     return
+                }
+                if (car_name && (car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+                    return;
                 }
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Tornado);
                 this.EffectTornado.Effect(self, target);
@@ -643,6 +665,9 @@ export default class AI extends cc.Component {
                 istrue = this.GetPretection(target);
                 if (istrue) {
                     return
+                }
+                if (car_name && (car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+                    return;
                 }
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Paint);
                 this.EffectPaint.Effect(self, target);
@@ -685,6 +710,9 @@ export default class AI extends cc.Component {
                 if (istrue) {
                     return
                 }
+                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.StreetRoller)) {
+                    return;
+                }
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Water);
                 this.EffectWater.Effect(self, target);
                 break;
@@ -694,8 +722,15 @@ export default class AI extends cc.Component {
                 if (istrue) {
                     return
                 }
+                if (car_name && car_name === Special_Car.StreetRoller) {
+                    return;
+                }
                 this.SetTimeBomb(target);
                 // this.EffectTimeBomb.Effect(self, target);
+                break;
+            case Prop_Passive.Container:
+                //集装箱
+                this.SetSpecialCar(target);
                 break;
             default:
                 break;
@@ -862,9 +897,12 @@ export default class AI extends cc.Component {
      * @param self AI节点
      */
     private CollisionTransportation(target: cc.Node, self: cc.Node) {
-        let spr_target = target.getChildByName("Card").getComponent(cc.Sprite);
-        let name = spr_target.spriteFrame.name;
-        let cha = name.charAt(0);
+        let arr_str = ["7", "2"];
+        let ran = Math.floor(Math.random() * arr_str.length);
+        let cha = arr_str[ran];
+        // let spr_target = target.getChildByName("Card").getComponent(cc.Sprite);
+        // let name = spr_target.spriteFrame.name;
+        // let cha = name.charAt(0);
         //加速
         if (cha === "7") {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
@@ -902,7 +940,7 @@ export default class AI extends cc.Component {
      * 获取保护罩
      * @returns 保护罩是否打开
      */
-    private GetPretection(target: cc.Node): boolean {
+    public GetPretection(target: cc.Node): boolean {
         if (this.IsOpen_Pretection) {
             if (target.name === "Handrail" || target.name === "Roadblock") {
                 let act_rotate = cc.rotateBy(15, 10000);
@@ -977,5 +1015,32 @@ export default class AI extends cc.Component {
         }
         let act_seq_2 = cc.sequence(act_rep, cc.callFunc(callback));
         self.runAction(act_seq_2);
+    }
+
+    /**
+    * 设置特殊车辆
+    */
+    public SetSpecialCar(prop: cc.Node) {
+        prop.getComponent(cc.BoxCollider).enabled = false;
+
+        let dragon_prop = prop.getComponent(dragonBones.ArmatureDisplay);
+        dragon_prop.playAnimation("a2", 1);
+        let callback = () => {
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.SpecialCar);
+            prop.destroy();
+            let commont_car = this.node.getChildByName("Car");
+            commont_car.active = false;
+
+            let arr_Special: cc.Node[] = this.node.getChildByName("SpecialCar").children;
+            let ran = Math.floor(Math.random() * arr_Special.length);
+            GameManage.Instance.Current_SpecialCar = arr_Special[ran];
+            let car = GameManage.Instance.Current_SpecialCar;
+            car.active = true;
+            let dragon = car.getComponent(dragonBones.ArmatureDisplay);
+            dragon.playAnimation("a1", 0);
+            this.Pickup.Effect(this);
+        }
+
+        this.scheduleOnce(callback, 0.3);
     }
 }

@@ -7,11 +7,11 @@ import { GameManage } from "../../commont/GameManager";
  */
 export class Pickup extends SpecialCar {
 
-    public Effect(role: Player) {
+    public Effect(role: any) {
         this.SetEffect(role);
     }
 
-    private SetEffect(role: Player) {
+    private SetEffect(role: any) {
         let speed_value = role.Speed;
         role.IsSpeedUp = false;
         role.Speed = 1500;

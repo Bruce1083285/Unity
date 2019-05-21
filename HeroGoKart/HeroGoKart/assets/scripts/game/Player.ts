@@ -191,10 +191,10 @@ export default class Player extends cc.Component {
             this.Game.Horizontal = 0;
         }
 
-        if ((this.node.position.x <= 0 && this.node.position.x >= -50) || (this.node.position.x >= 600 && this.node.position.x <= 650)) {
+        if ((this.node.position.x <= 50 && this.node.position.x >= -50) || (this.node.position.x >= 600 && this.node.position.x <= 650)) {
             this.Speed = 100;
         }
-        if (this.node.position.x < -5 || this.node.position.x > 650) {
+        if (this.node.position.x < -100 || this.node.position.x > 650) {
             this.CollisionWall(this.Game, this.node);
             return;
         }
@@ -695,8 +695,11 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionTransportation(target: cc.Node, self: cc.Node) {
+        target.getComponent(cc.BoxCollider).enabled = false;
+
         let arr_str = ["7", "2"];
         let ran = Math.floor(Math.random() * arr_str.length);
+        ran = 1;
         let cha = arr_str[ran];
         // let spr_target = target.getChildByName("Card").getComponent(cc.Sprite);
         // let name = spr_target.spriteFrame.name;
@@ -750,7 +753,7 @@ export default class Player extends cc.Component {
      * 获取保护罩
      * @returns 保护罩是否打开
      */
-    private GetPretection(target: cc.Node): boolean {
+    public GetPretection(target: cc.Node): boolean {
         if (this.IsOpen_Pretection) {
             if (target.name === "Handrail" || target.name === "Roadblock") {
                 let act_rotate = cc.rotateBy(15, 10000);
@@ -833,9 +836,12 @@ export default class Player extends cc.Component {
      * 设置特殊车辆
      */
     public SetSpecialCar(prop: cc.Node) {
+        prop.getComponent(cc.BoxCollider).enabled=false;
+
         let dragon_prop = prop.getComponent(dragonBones.ArmatureDisplay);
         dragon_prop.playAnimation("a2", 1);
         let callback = () => {
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.SpecialCar);
             prop.destroy();
             let commont_car = this.node.getChildByName("Car");
             commont_car.active = false;

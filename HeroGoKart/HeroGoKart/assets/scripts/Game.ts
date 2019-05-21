@@ -471,6 +471,7 @@ export default class Game extends cc.Component {
         this.Page_Over = this.node.parent.getChildByName("Main Camera").getChildByName("Page_Over");
         this.Page_EndTime = this.node.parent.getChildByName("Main Camera").getChildByName("Page_EndTime");
         this.Page_Pause = this.node.parent.getChildByName("Main Camera").getChildByName("Page_Pause");
+        GameManage.Instance.Page_Alarm = this.node.parent.getChildByName("Main Camera").getChildByName("Page_Alarm");
         this.Label_Ranking = this.node.parent.getChildByName("Main Camera").getChildByName("label_Ranking").getComponent(cc.Label);
         GameManage.Instance.Finished_Box = this.node.parent.getChildByName("Main Camera").getChildByName("Finished");
         let arr = this.Area_Path.children;
@@ -721,35 +722,33 @@ export default class Game extends cc.Component {
 
             role.opacity = 255;
             role.scale = 0.4;
-            if (role.name === "Player") {
-                let commont_car = role.getChildByName("Car");
-                commont_car.active = true;
-                let arr_car = commont_car.children;
-                let car_skin = Cache.GetCache(CacheType.Current_Car_ID);
-                for (let i = 0; i < arr_car.length; i++) {
-                    let car = arr_car[i];
-                    if (car.name === car_skin) {
-                        car.active = true;
-                    } else {
-                        car.active = false;
-                    }
+            let commont_car = role.getChildByName("Car");
+            commont_car.active = true;
+            let arr_car = commont_car.children;
+            let car_skin = Cache.GetCache(CacheType.Current_Car_ID);
+            for (let i = 0; i < arr_car.length; i++) {
+                let car = arr_car[i];
+                if (car.name === car_skin) {
+                    car.active = true;
+                } else {
+                    car.active = false;
                 }
+            }
 
-                let arr_role = role.getChildByName("Role").children;
-                let role_skin = Cache.GetCache(CacheType.Current_Role_ID);
-                for (let i = 0; i < arr_role.length; i++) {
-                    let role = arr_role[i];
-                    if (role.name === role_skin) {
-                        role.active = true;
-                    } else {
-                        role.active = false;
-                    }
+            let arr_role = role.getChildByName("Role").children;
+            let role_skin = Cache.GetCache(CacheType.Current_Role_ID);
+            for (let i = 0; i < arr_role.length; i++) {
+                let role = arr_role[i];
+                if (role.name === role_skin) {
+                    role.active = true;
+                } else {
+                    role.active = false;
                 }
+            }
 
-                let arr_special = role.getChildByName("SpecialCar").children;
-                for (let i = 0; i < arr_special.length; i++) {
-                    arr_special[i].active = false;
-                }
+            let arr_special = role.getChildByName("SpecialCar").children;
+            for (let i = 0; i < arr_special.length; i++) {
+                arr_special[i].active = false;
             }
 
             let role_player: Player = null;
@@ -808,7 +807,7 @@ export default class Game extends cc.Component {
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
             this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Path);
 
-            EventCenter.BroadcastOne(EventType.Sound, SoundType.Go);
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.StartTime);
 
             for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
                 let role = GameManage.Instance.Roles[i];
@@ -817,6 +816,7 @@ export default class Game extends cc.Component {
             }
 
             let callback = () => {
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.Go);
                 for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
                     let role = GameManage.Instance.Roles[i];
                     let collider = role.getComponent(cc.BoxCollider);
@@ -1603,7 +1603,6 @@ export default class Game extends cc.Component {
      */
     private SetTransportationAward(pre_Gift: cc.Prefab[], pre_Aircraft: cc.Prefab[], pre_Card: cc.Prefab, spr_Award: cc.SpriteFrame[], parent: cc.Node) {
         let ran_ind = Math.floor(Math.random() * pre_Gift.length);
-        ran_ind = 1;
         this.Trans_Gift = cc.instantiate(pre_Gift[ran_ind]);
         parent.addChild(this.Trans_Gift);
         this.Trans_Gift.active = false;
@@ -1611,7 +1610,7 @@ export default class Game extends cc.Component {
         this.Trans_Aircraft = cc.instantiate(pre_Aircraft[ran_ind]);
         parent.addChild(this.Trans_Aircraft);
         let size_Hight = parent.getContentSize().height;
-        let y = Math.random() * (size_Hight - 800) + 800;
+        let y = Math.random() * 400 + 1000;
         this.Trans_Aircraft.setPosition(-500, y);
 
         this.Trans_Card = cc.instantiate(pre_Card);
@@ -1698,6 +1697,10 @@ export default class Game extends cc.Component {
      * 执行结束
      */
     private RunOver() {
+        if (GameManage.Instance.Page_Alarm.active) {
+            GameManage.Instance.Page_Alarm.active = false;
+        }
+
         role:
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
             let role_arr = GameManage.Instance.Roles[i].children;

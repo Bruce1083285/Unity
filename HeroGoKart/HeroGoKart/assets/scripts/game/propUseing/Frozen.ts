@@ -42,7 +42,6 @@ export class Frozen extends PropUseing {
             return;
         }
 
-        let type_Class = null;
         let ran = Math.floor(Math.random() * arr_y.length);
         let ran_node: cc.Node = arr_y[ran];
 
@@ -63,10 +62,23 @@ export class Frozen extends PropUseing {
                 break;
             }
         }
-        let istrue = type_Class.GetPretection(prop);
-        if (istrue) {
-            return
+        let ai: AI = null;
+        let player: Player = null;
+        if (ran_node.name === "AI") {
+            ai=ran_node.getComponent(AI);
+            let istrue = ai.GetPretection(prop);
+            if (istrue) {
+                return
+            }
         }
+        if (ran_node.name === "Player") {
+            player=ran_node.getComponent(Player);
+            let istrue = player.GetPretection(prop);
+            if (istrue) {
+                return
+            }
+        }
+    
 
         let box_Collider = prop.getComponent(cc.BoxCollider);
         box_Collider.enabled = false;

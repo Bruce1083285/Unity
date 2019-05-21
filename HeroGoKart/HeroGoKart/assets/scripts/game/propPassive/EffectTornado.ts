@@ -49,6 +49,24 @@ export class EffectTornado extends PropPassive {
         type_C.IsSpeedUp = false;
         type_C.Speed = 0;
 
+        // let arr = role.children;
+        // let car_speacil: cc.Node = null;
+        // let car: cc.Node = null;
+        // let role_skin: cc.Node = null;
+        // for (let i = 0; i < arr.length; i++) {
+        //     let chi = arr[i];
+        //     if (chi.name === "SpecialCar") {
+        //         car_speacil = chi;
+        //     }
+        //     if (chi.name === "Car") {
+        //         car = chi;
+        //     }
+        //     if (chi.name === "Role") {
+        //         role_skin = chi;
+        //     }
+        // }
+
+
         let act_Scale_big = cc.scaleTo(0.3, 0.6);
         let act_Rotate = cc.rotateTo(3, 1080);
         let act_Scale_small = cc.scaleTo(0.3, 0.4);

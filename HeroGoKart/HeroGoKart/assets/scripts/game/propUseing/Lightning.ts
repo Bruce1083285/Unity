@@ -2,7 +2,7 @@
 import AI from "../AI";
 import Player from "../Player";
 import { EventCenter } from "../../commont/EventCenter";
-import { EventType } from "../../commont/Enum";
+import { EventType, Special_Car, SoundType } from "../../commont/Enum";
 import { PropUseing } from "../PropUseing";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
@@ -32,6 +32,7 @@ export class Lightning extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Lightning);
         let arr_role: cc.Node[] = [];
 
         role:
@@ -47,10 +48,10 @@ export class Lightning extends PropUseing {
             for (let i = 0; i < arr.length; i++) {
                 if (arr[i].name === "6") {
                     arr[i].destroy();
-                    continue role;
                 } else {
                     arr_role.push(target);
                 }
+                continue role;
             }
 
             // let target_Class = null;
@@ -65,8 +66,23 @@ export class Lightning extends PropUseing {
             // }
         }
 
-        if (arr_role.length >= 3) {
+        if (arr_role.length <= 0) {
             return;
+        }
+
+        for (let i = 0; i < arr_role.length; i++) {
+            let arr_car = arr_role[i].getChildByName("SpecialCar").children;
+            let car_name: string = null;
+            for (let i = 0; i < arr_car.length; i++) {
+                let car = arr_car[i];
+                if (car.active) {
+                    car_name = car.name;
+                    break;
+                }
+            }
+            if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+                return;
+            }
         }
 
         let pre_prop: cc.Prefab = null;
@@ -103,7 +119,7 @@ export class Lightning extends PropUseing {
             target_Class.IsLightning = true;
             target_Class.IsSpeedUp = false;
             let target_Speed_value = target_Class.Speed;
-            target_Class.Speed = target_Speed_value * 0.6;
+            target_Class.Speed = target_Speed_value * 0.5;
 
             let callback = () => {
                 prop.destroy();

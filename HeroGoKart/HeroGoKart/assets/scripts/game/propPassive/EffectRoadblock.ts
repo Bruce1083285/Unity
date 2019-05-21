@@ -38,12 +38,22 @@ export class EffectRoadblock extends PropPassive {
         let act_callback = () => {
             prop.destroy();
         }
-        let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+        let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
+        prop.runAction(act_seq);
+        
+        let arr_car = role.getChildByName("SpecialCar").children;
+        let car_name: string = null;
+        for (let i = 0; i < arr_car.length; i++) {
+            let car = arr_car[i];
+            if (car.active) {
+                car_name = car.name;
+                break;
+            }
+        }
         if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
             return;
         }
-        let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
-        prop.runAction(act_seq);
+ 
 
         let type_C = null;
         if (role.name === "AI") {

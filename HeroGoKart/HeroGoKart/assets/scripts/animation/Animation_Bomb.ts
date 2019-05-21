@@ -63,7 +63,18 @@ export default class Animation_Bomb extends cc.Component {
         let num = this.node.position.sub(this.Target.position).mag();
         let dis = Math.abs(num);
         if (dis < 100) {
-            let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+            GameManage.Instance.Page_Alarm.stopAllActions();
+            GameManage.Instance.Page_Alarm.active=false;
+            let arr_car = this.Target.getChildByName("SpecialCar").children;
+            // let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+            let car_name: string = null;
+            for (let i = 0; i < arr_car.length; i++) {
+                let car = arr_car[i];
+                if (car.active) {
+                    car_name = car.name;
+                    break;
+                }
+            }
             if (car_name && (car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
                 this.node.destroy();
                 return;
@@ -167,7 +178,7 @@ export default class Animation_Bomb extends cc.Component {
         dir_1.normalizeSelf();
 
         //根据方向向量移动位置
-        let moveSpeed = 30;
+        let moveSpeed = 50;
         this.node.x += dt * dir_1.x * moveSpeed;
         this.node.y += dt * dir_1.y * moveSpeed;
         this.node.x += dir_1.x * moveSpeed;
@@ -199,6 +210,14 @@ export default class Animation_Bomb extends cc.Component {
     public SetTarget(target: cc.Node) {
         this.node.rotation = 0;
         this.Target = target;
+
+        if (target.name === "Player") {
+            let act_fOut = cc.fadeOut(0.2);
+            let act_fIn = cc.fadeIn(0.2);
+            let act_seq = cc.sequence(act_fOut, act_fIn).repeatForever();
+            GameManage.Instance.Page_Alarm.active = true;
+            GameManage.Instance.Page_Alarm.runAction(act_seq);
+        }
     }
 
     /**

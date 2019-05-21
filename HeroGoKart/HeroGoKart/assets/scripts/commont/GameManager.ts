@@ -8,6 +8,10 @@ export class GameManage {
      */
     public static Instance: GameManage = new GameManage();
     /**
+     * @property 报警页
+     */
+    public Page_Alarm: cc.Node = null;
+    /**
      * @property 游戏是否开始
      */
     public IsGameStart: boolean = false;

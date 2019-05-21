@@ -1,6 +1,6 @@
 
 import { EventCenter } from "../../commont/EventCenter";
-import { EventType } from "../../commont/Enum";
+import { EventType, Special_Car } from "../../commont/Enum";
 import AI from "../AI";
 import Player from "../Player";
 import { PropUseing } from "../PropUseing";
@@ -43,6 +43,19 @@ export class Magnet extends PropUseing {
 
         let ran = Math.floor(Math.random() * arr_y.length);
         let target: cc.Node = arr_y[ran];
+
+        let arr_car = target.getChildByName("SpecialCar").children;
+        let car_name: string = null;
+        for (let i = 0; i < arr_car.length; i++) {
+            let car = arr_car[i];
+            if (car.active) {
+                car_name = car.name;
+                break;
+            }
+        }
+        if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+            return;
+        }
 
         let arr = target.children;
         for (let i = 0; i < arr.length; i++) {

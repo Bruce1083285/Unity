@@ -2,6 +2,8 @@ import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
 import Game from "../../Game";
+import { SoundType, EventType } from "../../commont/Enum";
+import { EventCenter } from "../../commont/EventCenter";
 
 /**
  * @class 加速带效果
@@ -31,6 +33,7 @@ export class EffectAreaSpeedUp extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
         let prop_1: cc.Node = null;
         for (let i = 0; i < this.Game.Pre_InitiativeProp.length; i++) {
             if (this.Game.Pre_InitiativeProp[i].name === "7") {

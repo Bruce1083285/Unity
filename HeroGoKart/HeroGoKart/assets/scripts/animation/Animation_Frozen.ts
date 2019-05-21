@@ -1,6 +1,8 @@
 import AI from "../game/AI";
 import Player from "../game/Player";
 import { GameManage } from "../commont/GameManager";
+import { SoundType, EventType } from "../commont/Enum";
+import { EventCenter } from "../commont/EventCenter";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -60,6 +62,7 @@ export default class Animation_Frozen extends cc.Component {
      * 播放开始动画
      */
     public PlayBegin(target: cc.Node) {
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
         this.node.zIndex = 1;
         this.Target = target;
 
@@ -98,6 +101,7 @@ export default class Animation_Frozen extends cc.Component {
      * 播放结束动画
      */
     public PlayEnd() {
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
         this.Index_End = this.Fram_Frozen.length - 1;
         let callback = () => {
             this.Spri_Img.spriteFrame = this.Fram_Frozen[this.Index_End];
@@ -113,7 +117,6 @@ export default class Animation_Frozen extends cc.Component {
                 if (name === "AI") {
                     type_Class = this.Target.getComponent(AI);
                 } else if (name === "Player") {
-                    GameManage.Instance.IsTouchClick = true;
                     type_Class = this.Target.getComponent(Player);
                     GameManage.Instance.IsTouchClick = true;
 

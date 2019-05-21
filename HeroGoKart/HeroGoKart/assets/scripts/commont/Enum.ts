@@ -197,6 +197,8 @@ export enum SoundType {
     Water,
     /**定时炸弹 */
     TimeBomb,
+    /**特殊汽车 */
+    SpecialCar,
 }
 
 /**@enum 特殊汽车 */

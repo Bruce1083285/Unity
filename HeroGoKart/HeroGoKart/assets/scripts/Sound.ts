@@ -156,11 +156,11 @@ export default class Sound extends cc.Component {
     */
     @property({ type: cc.AudioClip })
     private Sound_TimeBomb: cc.AudioClip = null;
-    // /**
-    //  * @property 水滩
-    //  */
-    // @property({ type: cc.AudioClip })
-    // private Sound_Water: cc.AudioClip = null;
+    /**
+     * @property 特殊汽车
+     */
+    @property({ type: cc.AudioClip })
+    private Sound_SpecialCar: cc.AudioClip = null;
     // /**
     //  * @property 水滩
     //  */
@@ -274,6 +274,9 @@ export default class Sound extends cc.Component {
                 break;
             case SoundType.TimeBomb:
                 this.Play(this.Sound_TimeBomb, false);
+                break;
+            case SoundType.SpecialCar:
+                this.Play(this.Sound_SpecialCar, false);
                 break;
             default:
                 break;

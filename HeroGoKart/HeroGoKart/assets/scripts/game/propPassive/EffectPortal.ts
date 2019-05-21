@@ -2,6 +2,8 @@ import { PropPassive } from "../PropPassive";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
 import Player from "../Player";
+import { SoundType, EventType } from "../../commont/Enum";
+import { EventCenter } from "../../commont/EventCenter";
 
 /**
  * @class 传送门效果
@@ -31,6 +33,7 @@ export class EffectPortal extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Portal);
         if (role.name === "Player") {
             GameManage.Instance.IsTouchClick = false;
             this.Game.Horizontal = 0;

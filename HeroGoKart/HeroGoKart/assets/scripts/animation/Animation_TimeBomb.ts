@@ -95,7 +95,35 @@ export default class Animation_TimeBomb extends cc.Component {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.EndTime);
             num--;
             this.Time.string = num + "";
+            if (num <= 5) {
+                if (this.node.parent.name === "Player") {
+                    let act_fOut = cc.fadeOut(0.2);
+                    let act_fIn = cc.fadeIn(0.2);
+                    let act_seq = cc.sequence(act_fOut, act_fIn).repeatForever();
+                    GameManage.Instance.Page_Alarm.active = true;
+                    GameManage.Instance.Page_Alarm.runAction(act_seq);
+                }
+            }
             if (num <= 0) {
+                GameManage.Instance.Page_Alarm.stopAllActions();
+                GameManage.Instance.Page_Alarm.active=false;
+
+                //特殊汽车
+                let arr_car = this.node.parent.getChildByName("SpecialCar").children;
+                let car_name: string = null;
+                for (let i = 0; i < arr_car.length; i++) {
+                    let car = arr_car[i];
+                    if (car.active) {
+                        car_name = car.name;
+                        break;
+                    }
+                }
+                if (car_name && car_name === Special_Car.StreetRoller) {
+                    this.node.destroy();
+                    return;
+                }
+
+                //保护罩
                 let arr = this.node.parent.children;
                 for (let i = 0; i < arr.length; i++) {
                     if (arr[i].name === "6") {
@@ -106,6 +134,26 @@ export default class Animation_TimeBomb extends cc.Component {
                         return;
                     }
                 }
+
+                // //保护罩
+                // let ai: AI = null;
+                // let player: Player = null;
+                // let name = this.node.parent.name;
+                // if (name === "AI") {
+                //     ai = this.node.parent.getComponent(AI);
+                //     let istrue = ai.GetPretection(this.node);
+                //     if (istrue) {
+                //         return
+                //     }
+                // } else if (name === "Player") {
+                //     player = this.node.parent.getComponent(Player);
+                //     let istrue = player.GetPretection(this.node);
+                //     if (istrue) {
+                //         return
+                //     }
+                //     // GameManage.Instance.IsTouchClick = false;
+                //     // player.Game.Horizontal = 0;
+                // }
 
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.TimeBomb);
                 GameManage.Instance.IsTime = false;

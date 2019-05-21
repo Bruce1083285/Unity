@@ -28,7 +28,9 @@ export class TranCoin extends Transportation {
      * 设置金币卡
      */
     private SetCoin() {
-        let act_move = cc.moveBy(0.3, 0, 50);
+        this.Game.Trans_Card.scale = 0;
+        let act_move = cc.moveBy(0.3, 0, 100);
+        let act_scale = cc.scaleTo(0.3, 1.5);
         let act_callback = () => {
             this.Game.Trans_Card.getChildByName("Card").active = false;
             this.Game.Trans_Card.getChildByName("label").active = true;
@@ -38,7 +40,7 @@ export class TranCoin extends Transportation {
             }
             setTimeout(callback, 500);
         }
-        let act_seq = cc.sequence(act_move, cc.callFunc(act_callback));
+        let act_seq = cc.sequence(act_move, act_scale, cc.callFunc(act_callback));
         this.Game.Trans_Card.runAction(act_seq);
 
         let coin = Cache.GetCache(CacheType.Coin_Amount);

@@ -48,7 +48,14 @@ export class ClownGift extends PropUseing {
         let box_Collider = prop.getComponent(cc.BoxCollider);
         box_Collider.enabled = false;
 
-        let y = Math.floor(Math.random() * 500 + (role.position.y + 100));
+        let dir = 0;
+        let ran = Math.floor(Math.random() * 100);
+        if (ran > 50) {
+            dir = 1;
+        } else {
+            dir = -1;
+        }
+        let y = Math.floor(Math.random() * 500 * dir + (role.position.y + 300 * dir));
         let x = Math.floor(Math.random() * 300 + 100);
         let act_Move = cc.moveTo(0.3, x, y);
         let callback = () => {

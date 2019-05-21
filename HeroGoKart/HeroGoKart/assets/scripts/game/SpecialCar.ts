@@ -5,5 +5,5 @@ import Player from "./Player";
  */
 export abstract class SpecialCar {
 
-    public abstract Effect(role: Player);
+    public abstract Effect(role: any);
 }

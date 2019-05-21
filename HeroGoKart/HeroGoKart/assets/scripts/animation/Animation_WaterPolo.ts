@@ -1,7 +1,8 @@
 import AI from "../game/AI";
 import Player from "../game/Player";
 import { GameManage } from "../commont/GameManager";
-import { Special_Car } from "../commont/Enum";
+import { Special_Car, SoundType, EventType } from "../commont/Enum";
+import { EventCenter } from "../commont/EventCenter";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -43,7 +44,18 @@ export default class Animation_WaterPolo extends cc.Component {
         let num = this.node.position.sub(this.Target.position).mag();
         let dis = Math.abs(num);
         if (dis <= 10) {
-            let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
+            EventCenter.BroadcastOne(EventType.Sound, SoundType.WaterPolo);
+            GameManage.Instance.Page_Alarm.stopAllActions();
+            GameManage.Instance.Page_Alarm.active=false;
+            let arr_car = this.Target.getChildByName("SpecialCar").children;
+            let car_name: string = null;
+            for (let i = 0; i < arr_car.length; i++) {
+                let car = arr_car[i];
+                if (car.active) {
+                    car_name = car.name;
+                    break;
+                }
+            }
             if (car_name && car_name === Special_Car.Pickup) {
                 this.node.destroy();
                 return;
@@ -151,6 +163,14 @@ export default class Animation_WaterPolo extends cc.Component {
     public Play(target: cc.Node) {
         // let collider = target.getComponent(cc.BoxCollider);
         // collider.enabled = false;
+
+        if (target.name === "Player") {
+            let act_fOut = cc.fadeOut(0.2);
+            let act_fIn = cc.fadeIn(0.2);
+            let act_seq = cc.sequence(act_fOut, act_fIn).repeatForever();
+            GameManage.Instance.Page_Alarm.active = true;
+            GameManage.Instance.Page_Alarm.runAction(act_seq);
+        }
 
         this.Target = target;
         this.Animat.play();
