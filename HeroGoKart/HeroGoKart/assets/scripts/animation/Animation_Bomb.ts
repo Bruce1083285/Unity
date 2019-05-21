@@ -109,18 +109,18 @@ export default class Animation_Bomb extends cc.Component {
         // this.node.rotation = -degree;
         // // this.node.position.lerp(this.Target.position,degree);
 
-        // // //计算出朝向
-        // let dx = this.Target.x - this.node.position.x;
-        // let dy = this.Target.y - this.node.position.y;
-        // let dir_2 = cc.v2(dx, dy);
+        // //计算出朝向
+        let dx = this.Target.x - this.node.position.x;
+        let dy = this.Target.y - this.node.position.y;
+        let dir_2 = cc.v2(dx, dy);
         // let v = this.Target.position.sub(this.node.position);
-        // //根据朝向计算出夹角弧度
-        // let angle_2 = v.signAngle(cc.v2(1, 0));
+        //根据朝向计算出夹角弧度
+        let angle_2 = dir_2.signAngle(cc.v2(1, 0));
 
-        // //将弧度转换为欧拉角
-        // let degree = angle_2 / Math.PI * 180;
+        //将弧度转换为欧拉角
+        let degree = angle_2 / Math.PI * 180;
 
-        // //赋值给节点
+        //赋值给节点
         // this.node.rotation = degree;
 
 
@@ -132,27 +132,27 @@ export default class Animation_Bomb extends cc.Component {
 
 
 
-        // // 由于Math函数接受的是孤度，所以我们先节节点的旋转转化为弧度
-        // let angle_1 = degree / 180 * Math.PI;
-        // // let angle_1 = radian;
-        // //合成基于 X正方向的方向向量
-        // let dir_1 = cc.v2(Math.cos(angle_1), Math.sin(angle_1));
-        // //单位化向量
-        // dir_1.normalizeSelf();
+        // 由于Math函数接受的是孤度，所以我们先节节点的旋转转化为弧度
+        let angle_1 = degree / 180 * Math.PI;
+        // let angle_1 = radian;
+        //合成基于 X正方向的方向向量
+        let dir_1 = cc.v2(Math.cos(angle_1), Math.sin(angle_1));
+        //单位化向量
+        dir_1.normalizeSelf();
 
-        // //根据方向向量移动位置
-        // let moveSpeed = 500;
-        // this.node.x += dt * dir_1.x * moveSpeed;
-        // this.node.y += dt * dir_1.y * moveSpeed;
-        // this.node.x += dir_1.x * moveSpeed;
-        // this.node.y += dir_1.y * moveSpeed;
+        //根据方向向量移动位置
+        let moveSpeed = 10;
+        this.node.x += dt * dir_1.x * moveSpeed;
+        this.node.y += dt * dir_1.y * moveSpeed;
+        this.node.x += dir_1.x * moveSpeed;
+        this.node.y += dir_1.y * moveSpeed;
 
-        // // degree = - Math.atan((currentPos.y - this.lastPosition.y) / (currentPos.x - this.lastPosition.x)) * 180 / 3.14;
+        // degree = - Math.atan((currentPos.y - this.lastPosition.y) / (currentPos.x - this.lastPosition.x)) * 180 / 3.14;
 
 
         // console.log(this.node);
-        let v2 = this.node.position.lerp(this.Target.position, 0.05, this.node.position);
-        this.node.setPosition(v2.x, v2.y);
+        // let v2 = this.node.position.lerp(this.Target.position, 0.05, this.node.position);
+        // this.node.setPosition(v2.x, v2.y);
     }
 
     /**

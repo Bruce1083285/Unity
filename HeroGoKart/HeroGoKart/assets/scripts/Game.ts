@@ -66,7 +66,7 @@ export default class Game extends cc.Component {
      * @property 空投--->奖励精灵帧
      */
     @property([cc.SpriteFrame])
-    private Spr_TransportationAward: cc.SpriteFrame[] = [];
+    public Spr_TransportationAward: cc.SpriteFrame[] = [];
     /**
      * @property 空投--->礼包预制体
      */
@@ -271,6 +271,10 @@ export default class Game extends cc.Component {
      */
     public Pool_PassiveProps: cc.NodePool = null;
     /**
+     * @property 回收对象池
+     */
+    private Pool_Recycle: cc.NodePool = null;
+    /**
      * @property 水平移动值   -1：左  0：不变  1：右
      */
     public Horizontal: number = 0;
@@ -447,14 +451,15 @@ export default class Game extends cc.Component {
         this.SetPool(this.Pool_AI, this.Pool_InitCount, this.Pre_AI);
         this.Pool_Question = new cc.NodePool();
         this.SetPool(this.Pool_Question, this.Pool_InitCount, this.Pre_Question);
-        // this.Pool_InitiativeProp = new cc.NodePool();
+        this.Pool_InitiativeProp = new cc.NodePool();
         // this.SetPool(this.Pool_InitiativeProp, this.Pool_InitCount, this.Pre_InitiativeProp);
         this.Pool_PassiveProps = new cc.NodePool();
         this.SetPoolPassive(this.Pre_PassiveProps, this.Pool_PassiveProps);
+        this.Pool_Recycle = new cc.NodePool();
 
         let manager = cc.director.getCollisionManager();
         manager.enabled = true;
-        // manager.enabledDebugDraw = true;
+        manager.enabledDebugDraw = true;
         this.BG = this.node.getChildByName("BG");
         this.Area_Path = this.node.getChildByName("Area_Path");
         this.Area_Prop = this.node.getChildByName("Area_Prop");
@@ -663,14 +668,35 @@ export default class Game extends cc.Component {
         GameManage.Instance.IsTouchClick = false;
         GameManage.Instance.IsCameraFollow = false;
 
+        for (let y = 0; y < this.Questions.length; y++) {
+            for (let x = 0; x < this.Questions[y].length; x++) {
+                let prop = this.Questions[y][x];
+                prop.removeFromParent();
+                this.Pool_Question.put(prop);
+            }
+        }
+        this.Pool_Question.clear();
+        this.Questions = [];
+
         let prop_arr = this.Area_Path.children;
         for (let i = 0; i < prop_arr.length; i++) {
             let prop = prop_arr[i];
             if (prop.name === "AI" || prop.name === "Player") {
                 continue;
             }
-            prop.destroy();
+            // prop.removeFromParent();
+            // let num = parseInt(prop.name);
+            // if (num === NaN || num === null) {
+            //     this.Pool_PassiveProps.put(prop);
+            // } else {
+            //     this.Pool_InitiativeProp.put(prop);
+            // }
+            this.Pool_Recycle.put(prop);
+            i--;
         }
+        this.Pool_Recycle.clear();
+        // this.Pool_PassiveProps.clear();
+        // this.Pool_InitiativeProp.clear();
 
         let path_arr = this.BG.children;
         for (let i = 0; i < path_arr.length; i++) {
@@ -698,10 +724,31 @@ export default class Game extends cc.Component {
             if (role.name === "Player") {
                 let commont_car = role.getChildByName("Car");
                 commont_car.active = true;
+                let arr_car = commont_car.children;
+                let car_skin = Cache.GetCache(CacheType.Current_Car_ID);
+                for (let i = 0; i < arr_car.length; i++) {
+                    let car = arr_car[i];
+                    if (car.name === car_skin) {
+                        car.active = true;
+                    } else {
+                        car.active = false;
+                    }
+                }
 
-                let arr = role.getChildByName("SpecialCar").children;
-                for (let i = 0; i < arr.length; i++) {
-                    arr[i].active = false;
+                let arr_role = role.getChildByName("Role").children;
+                let role_skin = Cache.GetCache(CacheType.Current_Role_ID);
+                for (let i = 0; i < arr_role.length; i++) {
+                    let role = arr_role[i];
+                    if (role.name === role_skin) {
+                        role.active = true;
+                    } else {
+                        role.active = false;
+                    }
+                }
+
+                let arr_special = role.getChildByName("SpecialCar").children;
+                for (let i = 0; i < arr_special.length; i++) {
+                    arr_special[i].active = false;
                 }
             }
 
@@ -759,17 +806,30 @@ export default class Game extends cc.Component {
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 18);
             this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
-            this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Prop);
+            this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Path);
 
             EventCenter.BroadcastOne(EventType.Sound, SoundType.Go);
+
+            for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+                let role = GameManage.Instance.Roles[i];
+                let collider = role.getComponent(cc.BoxCollider);
+                collider.enabled = false;
+            }
+
             let callback = () => {
+                for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+                    let role = GameManage.Instance.Roles[i];
+                    let collider = role.getComponent(cc.BoxCollider);
+                    collider.enabled = true;
+                }
+
                 this.Page_StartTime.active = false;
                 GameManage.Instance.IsGameStart = true;
                 GameManage.Instance.IsTouchClick = true;
                 //测试
                 this.Player = this.Area_Path.getChildByName("Player");
 
-                this.SetQuestion(this.Pool_Question, this.Area_Prop);
+                this.SetQuestion(this.Pool_Question, this.Area_Path);
 
                 // this.UpdateSpeed();
                 // this.RunPathMove(this.BG);
@@ -1017,7 +1077,7 @@ export default class Game extends cc.Component {
                 prop.setPosition(300, i * value + value / 2);
             } else {
                 let ran_x = Math.random() * 300 + 200;
-                prop.setPosition(ran_x, i * value + value / 2);
+                prop.setPosition(ran_x, i * value + value / 2 + 1000);
             }
 
             //修改渲染顺序
@@ -1123,9 +1183,20 @@ export default class Game extends cc.Component {
         }
 
         this.Current_Player_RoleID = Cache.GetCache(CacheType.Current_Role_ID);
+        if (!this.Current_Player_RoleID) {
+            this.Current_Player_RoleID = "1";
+            Cache.SetCache(CacheType.Current_Role_ID, this.Current_Player_RoleID);
+        }
         this.Current_Player_CarID = Cache.GetCache(CacheType.Current_Car_ID);
+        if (!this.Current_Player_CarID) {
+            this.Current_Player_CarID = "1";
+            Cache.SetCache(CacheType.Current_Car_ID, this.Current_Player_CarID);
+        }
 
         //角色
+        console.log("玩家角色设置");
+        console.log("角色父节点" + player.getChildByName("Role").active);
+        console.log(this.Current_Player_RoleID);
         let arr_role = player.getChildByName("Role").children;
         for (let i = 0; i < arr_role.length; i++) {
             let role: cc.Node = arr_role[i];
@@ -1137,10 +1208,14 @@ export default class Game extends cc.Component {
             } else {
                 role.active = false;
             }
+            console.log(role.active);
         }
         // this.SetPlayerDragonBones(display_role, this.Current_Player_RoleAsset, this.Current_Player_RoleAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Role);
 
         //汽车
+        console.log("玩家汽车设置");
+        console.log("汽车父节点" + player.getChildByName("Car").active);
+        console.log(this.Current_Player_CarID);
         let arr_car = player.getChildByName("Car").children;
         for (let i = 0; i < arr_car.length; i++) {
             let car: cc.Node = arr_car[i];
@@ -1152,10 +1227,15 @@ export default class Game extends cc.Component {
             } else {
                 car.active = false;
             }
+            console.log(car.active);
         }
+
+        console.log("玩家特殊汽车设置");
+        console.log("特殊汽车父节点" + player.getChildByName("SpecialCar").active);
         let arr_SpecialCar = player.getChildByName("SpecialCar").children;
         for (let i = 0; i < arr_SpecialCar.length; i++) {
             arr_SpecialCar[i].active = false;
+            console.log(arr_SpecialCar[i].active);
         }
         // let display_car = player.getChildByName("Car").getChildByName("car").getComponent(dragonBones.ArmatureDisplay);
         // this.SetPlayerDragonBones(display_car, this.Current_Player_CarAsset, this.Current_Player_CarAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Car);
@@ -1508,6 +1588,7 @@ export default class Game extends cc.Component {
                 arr.push(question);
             }
             this.Questions.push(arr);
+            arr = [];
         }
     }
 
@@ -1521,7 +1602,6 @@ export default class Game extends cc.Component {
      */
     private SetTransportationAward(pre_Gift: cc.Prefab[], pre_Aircraft: cc.Prefab[], pre_Card: cc.Prefab, spr_Award: cc.SpriteFrame[], parent: cc.Node) {
         let ran_ind = Math.floor(Math.random() * pre_Gift.length);
-        ran_ind = 0;
         this.Trans_Gift = cc.instantiate(pre_Gift[ran_ind]);
         parent.addChild(this.Trans_Gift);
         this.Trans_Gift.active = false;
@@ -1535,8 +1615,8 @@ export default class Game extends cc.Component {
         this.Trans_Card = cc.instantiate(pre_Card);
         parent.addChild(this.Trans_Card);
         this.Trans_Card.active = false;
-        let spr_card = this.Trans_Card.getChildByName("Card").getComponent(cc.Sprite);
-        spr_card.spriteFrame = spr_Award[ran_ind];
+        // let spr_card = this.Trans_Card.getChildByName("Card").getComponent(cc.Sprite);
+        // spr_card.spriteFrame = spr_Award[ran_ind];
 
         let speed_value = 5;
         let ran_x = Math.random() * 500 + 100;
@@ -1581,14 +1661,14 @@ export default class Game extends cc.Component {
         if (this.Page_EndTime.active || this.Page_Over.active) {
             return;
         }
-        let prop_arr = this.Area_Path.children;
-        for (let i = 0; i < prop_arr.length; i++) {
-            let prop = prop_arr[i];
-            if (prop.name === "AI" || prop.name === "Player") {
-                continue;
-            }
-            prop.destroy();
-        }
+        // let prop_arr = this.Area_Path.children;
+        // for (let i = 0; i < prop_arr.length; i++) {
+        //     let prop = prop_arr[i];
+        //     if (prop.name === "AI" || prop.name === "Player") {
+        //         continue;
+        //     }
+        //     prop.destroy();
+        // }
 
         GameManage.Instance.IsGameClick = false;
 

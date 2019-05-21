@@ -88,28 +88,28 @@ export default class Animation_WaterPolo extends cc.Component {
             return;
         }
 
-        // let x = this.Target.position.x - this.node.position.x;
-        // let y = this.Target.position.y - this.node.position.y;
-        // let dirVec = cc.v2(x, y);    // 方向向量
-        // let radian = this.node.position.signAngle(dirVec);    // 求弧度
-        // let degree = cc.misc.radiansToDegrees(radian);    // 将弧度转换为角度
-        // let _dir = cc.v2(this.Target.position.x - this.node.position.x, this.Target.position.y - this.node.position.y);
-        // degree = (Math.atan2(_dir.y, _dir.x) / Math.PI * 180);
+        let x = this.Target.position.x - this.node.position.x;
+        let y = this.Target.position.y - this.node.position.y;
+        let dirVec = cc.v2(x, y);    // 方向向量
+        let radian = this.node.position.signAngle(dirVec);    // 求弧度
+        let degree = cc.misc.radiansToDegrees(radian);    // 将弧度转换为角度
+        let _dir = cc.v2(this.Target.position.x - this.node.position.x, this.Target.position.y - this.node.position.y);
+        degree = (Math.atan2(_dir.y, _dir.x) / Math.PI * 180);
 
-        // // 由于Math函数接受的是孤度，所以我们先节节点的旋转转化为弧度
-        // let angle_1 = degree / 180 * Math.PI;
-        // // let angle_1 = radian;
-        // //合成基于 X正方向的方向向量
-        // let dir_1 = cc.v2(Math.cos(angle_1), Math.sin(angle_1));
-        // //单位化向量
-        // dir_1.normalizeSelf();
+        // 由于Math函数接受的是孤度，所以我们先节节点的旋转转化为弧度
+        let angle_1 = degree / 180 * Math.PI;
+        // let angle_1 = radian;
+        //合成基于 X正方向的方向向量
+        let dir_1 = cc.v2(Math.cos(angle_1), Math.sin(angle_1));
+        //单位化向量
+        dir_1.normalizeSelf();
 
-        // //根据方向向量移动位置
-        // let moveSpeed = 1000;
-        // this.node.x += dt * dir_1.x * moveSpeed;
-        // this.node.y += dt * dir_1.y * moveSpeed;
-        let v2 = this.node.position.lerp(this.Target.position, 0.1, this.node.position);
-        this.node.setPosition(v2.x, v2.y);
+        //根据方向向量移动位置
+        let moveSpeed = 1000;
+        this.node.x += dt * dir_1.x * moveSpeed;
+        this.node.y += dt * dir_1.y * moveSpeed;
+        // let v2 = this.node.position.lerp(this.Target.position, 0.5, this.node.position);
+        // this.node.setPosition(v2.x, v2.y);
     }
 
     /**

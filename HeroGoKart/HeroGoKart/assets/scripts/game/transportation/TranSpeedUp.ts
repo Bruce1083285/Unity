@@ -59,7 +59,7 @@ export class TranSpeedUp extends Transportation {
         }
         let speed_value = role_type.Speed;
         role_type.IsSpeedUp = false;
-        role_type.Speed = 1000;
+        role_type.Speed = speed_value * 2;
         let callback = () => {
             prop_1.destroy();
             speed_Effect.destroy();

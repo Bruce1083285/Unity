@@ -297,7 +297,7 @@ export default class AI extends cc.Component {
     }
 
     update(dt) {
-        
+
         if (!GameManage.Instance.IsGameStart || !this.IsMove || GameManage.Instance.IsPause) {
             return;
         }
@@ -306,6 +306,7 @@ export default class AI extends cc.Component {
         }
         if (this.node.position.x < -5 || this.node.position.x > 650) {
             this.CollisionWall(this.Game, this.node);
+            return;
         }
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
@@ -385,6 +386,9 @@ export default class AI extends cc.Component {
         let arr = this.Game.Area_Path.children;
         for (let i = 0; i < arr.length; i++) {
             let prop = arr[i];
+            if (prop.name === "AI" || prop.name === "Player") {
+                continue;
+            }
             //计算亮点距离
             let dis = prop.position.sub(this.node.position).mag();
             if (dis <= 200 && dis > 5) {
@@ -957,12 +961,11 @@ export default class AI extends cc.Component {
         this.IsSpeedUp = false;
         this.Speed = 0;
 
-        let size_hight = cc.winSize.height;
-        self.setPosition(300, size_hight / 2);
+        self.setPosition(300, self.position.y);
         let act_fadOut = cc.fadeOut(0.5);
         let act_fadIn = cc.fadeIn(0.5);
         let act_seq_1 = cc.sequence(act_fadOut, act_fadIn);
-        let act_rep = cc.repeat(act_seq_1, 5);
+        let act_rep = cc.repeat(act_seq_1, 3);
         let callback = () => {
             GameManage.Instance.IsListenterDis = true;
             collision.enabled = true;

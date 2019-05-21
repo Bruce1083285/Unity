@@ -195,6 +195,7 @@ export default class Player extends cc.Component {
         }
         if (this.node.position.x < -5 || this.node.position.x > 650) {
             this.CollisionWall(this.Game, this.node);
+            return;
         }
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
@@ -678,10 +679,10 @@ export default class Player extends cc.Component {
         target.addChild(this.TimeBomb);
         this.TimeBomb.setPosition(0, 0);
         ai.TimeBomb = this.TimeBomb;
-        let callback=()=>{
+        let callback = () => {
             this.TimeBomb = null;
         }
-        this.scheduleOnce(callback,0.3);
+        this.scheduleOnce(callback, 0.3);
     }
 
     /**
@@ -690,9 +691,12 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionTransportation(target: cc.Node, self: cc.Node) {
-        let spr_target = target.getChildByName("Card").getComponent(cc.Sprite);
-        let name = spr_target.spriteFrame.name;
-        let cha = name.charAt(0);
+        let arr_str = ["7", "2"];
+        let ran = Math.floor(Math.random() * arr_str.length);
+        let cha = arr_str[ran];
+        // let spr_target = target.getChildByName("Card").getComponent(cc.Sprite);
+        // let name = spr_target.spriteFrame.name;
+        // let cha = name.charAt(0);
         //加速
         if (cha === "7") {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
@@ -701,6 +705,8 @@ export default class Player extends cc.Component {
         }
         //金币
         if (cha === "2") {
+            let spr_target = target.getChildByName("Card").getComponent(cc.Sprite);
+            spr_target.spriteFrame = this.Game.Spr_TransportationAward[0];
             EventCenter.BroadcastOne(EventType.Sound, SoundType.Coin);
             this.TranCoin.SetTransportation();
         }
@@ -763,6 +769,8 @@ export default class Player extends cc.Component {
      * @param self 玩家节点
      */
     private CrossingTheLineProtection(self: cc.Node) {
+        GameManage.Instance.IsTouchClick = false;
+
         this.Game.Horizontal = 0;
         if (GameManage.Instance.Current_SpecialCar) {
             let dra_role = GameManage.Instance.Current_SpecialCar.getComponent(dragonBones.ArmatureDisplay);
@@ -771,16 +779,30 @@ export default class Player extends cc.Component {
             let dra_car = GameManage.Instance.Current_SpecialCar.getComponent(dragonBones.ArmatureDisplay);
             dra_car.playAnimation("a1", 0);
         } else {
-            let dra_role = this.Game.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
-            dra_role.playAnimation("a1", 0);
+            console.log("当前玩家节点");
+            let arr_role = this.node.getChildByName("Role").children;
+            for (let i = 0; i < arr_role.length; i++) {
+                let role = arr_role[i];
+                if (role.active) {
+                    let dra_role = role.getComponent(dragonBones.ArmatureDisplay);
+                    dra_role.playAnimation("a1", 0);
+                    break;
+                }
+            }
 
-            let dra_car = this.Game.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
-            dra_car.playAnimation("a1", 0);
+            let arr_car = this.node.getChildByName("Car").children;
+            for (let i = 0; i < arr_car.length; i++) {
+                let car = arr_car[i];
+                if (car.active) {
+                    let dra_car = car.getComponent(dragonBones.ArmatureDisplay);
+                    dra_car.playAnimation("a1", 0);
+                    break;
+                }
+            }
         }
 
         let collision = this.node.getComponent(cc.BoxCollider);
         collision.enabled = false;
-        GameManage.Instance.IsTouchClick = false;
         this.IsSpeedUp = false;
         this.Speed = 0;
 
@@ -790,8 +812,8 @@ export default class Player extends cc.Component {
         let act_seq_1 = cc.sequence(act_fadOut, act_fadIn);
         let act_rep = cc.repeat(act_seq_1, 3);
         let callback = () => {
-            collision.enabled = true;
             GameManage.Instance.IsTouchClick = true;
+            collision.enabled = true;
             this.IsSpeedUp = true;
             this.Speed = 0;
         }

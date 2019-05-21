@@ -14,7 +14,7 @@ export class Pickup extends SpecialCar {
     private SetEffect(role: Player) {
         let speed_value = role.Speed;
         role.IsSpeedUp = false;
-        role.Speed = speed_value * 5;
+        role.Speed = speed_value + speed_value;
         let callback = () => {
             role.IsSpeedUp = true;
             role.Speed = speed_value;

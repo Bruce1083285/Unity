@@ -48,7 +48,7 @@ export class EffectTimeBomb extends PropPassive {
         type_C.IsSpeedUp = false;
         type_C.Speed = 0;
 
-        let act_Scale_big = cc.scaleTo(0.3, 0.4, 0.6);
+        let act_Scale_big = cc.scaleTo(0.3, 0.8, 0.8);
         let act_dt = cc.delayTime(2);
         let act_Scale_small = cc.scaleTo(0.3, 0.4, 0.4);
         let callback = () => {
