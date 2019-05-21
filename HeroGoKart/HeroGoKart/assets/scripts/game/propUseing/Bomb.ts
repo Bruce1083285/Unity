@@ -31,19 +31,19 @@ export class Bomb extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        let target: cc.Node = null;
+        let arr_y: cc.Node[] = [];
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
-            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
-            target = GameManage.Instance.Roles[ran];
-            if (target.position.y > role.position.y) {
-                break;
-            } else {
-                target = null;
+            let patch_node = GameManage.Instance.Roles[i];
+            if (patch_node.position.y > role.position.y) {
+                arr_y.push(patch_node);
             }
         }
-        if (!target) {
+        if (arr_y.length <= 0) {
             return;
         }
+
+        let ran = Math.floor(Math.random() * arr_y.length);
+        let target: cc.Node = arr_y[ran];
 
         let prop: cc.Node = null;
         let parent = role.parent;

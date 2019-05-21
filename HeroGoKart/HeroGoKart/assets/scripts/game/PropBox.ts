@@ -1,5 +1,5 @@
 import { EventCenter } from "../commont/EventCenter";
-import { EventType } from "../commont/Enum";
+import { EventType, SoundType } from "../commont/Enum";
 import { PropUseing } from "./PropUseing";
 import Game from "../Game";
 import { BananaSkin } from "./propUseing/BananaSkin";
@@ -11,6 +11,10 @@ import { SpeedUp } from "./propUseing/SpeedUp";
 import { ClownGift } from "./propUseing/ClownGift";
 import { Magnet } from "./propUseing/Magnet";
 import { Lightning } from "./propUseing/Lightning";
+import { TranSpeedUp } from "./transportation/TranSpeedUp";
+import { Transportation } from "./Transportation";
+import { GameManage } from "../commont/GameManager";
+import Player from "./Player";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -31,11 +35,15 @@ export default class PropBox extends cc.Component {
       * @property [Array]道具
       */
     @property([cc.SpriteFrame])
-    private Fra_InitiativeProp: cc.SpriteFrame[] = [];
+    public Fra_InitiativeProp: cc.SpriteFrame[] = [];
     /**
      * @property 游戏类
      */
     private Game: Game = null;
+    /**
+     * @property 空投奖励--->超级加速卡
+     */
+    private TranSpeedUp: Transportation = null;
     /**
      * @property 香蕉皮
      */
@@ -75,7 +83,7 @@ export default class PropBox extends cc.Component {
     /**
      * @property 道具盒子
      */
-    private Props: cc.Node[] = [];
+    public Props: cc.Node[] = [];
 
     /**
      * 初始化
@@ -91,6 +99,8 @@ export default class PropBox extends cc.Component {
         this.SpeedUp = new SpeedUp(this.Game.Pre_InitiativeProp, this.Game);
         this.Mangnet = new Magnet(this.Game.Pre_InitiativeProp, this.Game);
         this.Lightning = new Lightning(this.Game.Pre_InitiativeProp, this.Game);
+        //---------->空投奖励
+        this.TranSpeedUp = new TranSpeedUp(this.Game);
 
         this.Props = this.node.getChildByName("Prop").children;
 
@@ -104,6 +114,10 @@ export default class PropBox extends cc.Component {
     * @param click 点击参数
     */
     private PropButtonClick(lv: any, click: string) {
+        // let player = this.Game.Player.getComponent(Player);
+        if (!GameManage.Instance.IsUseingProp) {
+            return;
+        }
         let prop: cc.Node = null;
         for (let i = 0; i < this.Props.length; i++) {
             prop = this.Props[i];
@@ -169,6 +183,11 @@ export default class PropBox extends cc.Component {
             case "9":
                 //雷击
                 this.Lightning.Useing(this.Game.Player, prop_name);
+                break;
+            case "10":
+                //超级加速卡
+                EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
+                this.TranSpeedUp.SetTransportation(this.Game.Player);
                 break;
             default:
                 break;
@@ -279,7 +298,7 @@ export default class PropBox extends cc.Component {
             console.log("是否跳出");
             return
         }
-        if (index >= fra_props.length) {
+        if (index >= fra_props.length - 1) {
             index = 0;
         }
         let callback = () => {

@@ -35,6 +35,7 @@ export class EffectTimeBomb extends PropPassive {
     private SetProp(role: cc.Node, prop: cc.Node) {
         if (role.name === "Player") {
             GameManage.Instance.IsTouchClick = false;
+            this.Game.Horizontal = 0;
         }
         let collider = role.getComponent(cc.BoxCollider);
         collider.enabled = false;
@@ -48,8 +49,10 @@ export class EffectTimeBomb extends PropPassive {
         type_C.IsSpeedUp = false;
         type_C.Speed = 0;
 
-        let act_Scale_big = cc.scaleTo(0.3, 0.8, 0.8);
-        let act_dt = cc.delayTime(2);
+        let act_Scale_big = cc.scaleTo(0.5, 0.8, 0.8);
+        let act_Overturn_big = cc.scaleTo(0.5, 0.8, -0.8);
+        let act_spw = cc.spawn(act_Scale_big, act_Overturn_big);
+        // let act_dt = cc.delayTime(2);
         let act_Scale_small = cc.scaleTo(0.3, 0.4, 0.4);
         let callback = () => {
             if (role.name === "Player") {
@@ -60,7 +63,7 @@ export class EffectTimeBomb extends PropPassive {
             type_C.Speed = 0.1;
             type_C.IsSpeedUp = true;
         }
-        let act_Seq = cc.sequence(act_Scale_big, act_dt, act_Scale_small, cc.callFunc(callback));
+        let act_Seq = cc.sequence(act_spw, act_Scale_small, cc.callFunc(callback));
         role.runAction(act_Seq);
     }
 }

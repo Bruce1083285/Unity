@@ -60,10 +60,9 @@ export default class Animation_Frozen extends cc.Component {
      * 播放开始动画
      */
     public PlayBegin(target: cc.Node) {
+        this.node.zIndex = 1;
         this.Target = target;
-        if (target.name === "Player") {
-            GameManage.Instance.IsTouchClick = false;
-        }
+
         let collider = target.getComponent(cc.BoxCollider);
         collider.enabled = false;
 
@@ -71,8 +70,14 @@ export default class Animation_Frozen extends cc.Component {
         let name = this.Target.name;
         if (name === "AI") {
             type_Class = this.Target.getComponent(AI);
+            let istrue = type_Class.GetPretection(this.node);
+            if (istrue) {
+                return
+            }
         } else if (name === "Player") {
             type_Class = this.Target.getComponent(Player);
+            GameManage.Instance.IsTouchClick = false;
+            type_Class.Game.Horizontal = 0;
         }
         type_Class.IsWaterPolo = true;
         type_Class.IsSpeedUp = false;
@@ -103,12 +108,15 @@ export default class Animation_Frozen extends cc.Component {
                 // this.unschedule(callback);
                 // this.Spri_Img.spriteFrame = null;
                 let type_Class = null;
+                this.Target.opacity = 255;
                 let name = this.Target.name;
                 if (name === "AI") {
                     type_Class = this.Target.getComponent(AI);
                 } else if (name === "Player") {
                     GameManage.Instance.IsTouchClick = true;
                     type_Class = this.Target.getComponent(Player);
+                    GameManage.Instance.IsTouchClick = true;
+
                 }
                 type_Class.IsWaterPolo = false;
                 type_Class.IsSpeedUp = true;

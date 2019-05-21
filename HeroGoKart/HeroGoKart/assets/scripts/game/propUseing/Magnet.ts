@@ -30,20 +30,36 @@ export class Magnet extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        skin_id = "7"
-
-        let target: cc.Node = null;
+        let arr_y: cc.Node[] = [];
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
-            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
-            target = GameManage.Instance.Roles[ran];
-            if (target.position.y > role.position.y) {
-                break;
-            } else {
-                target = null;
+            let patch_node = GameManage.Instance.Roles[i];
+            if (patch_node.position.y > role.position.y) {
+                arr_y.push(patch_node);
             }
         }
-        if (!target) {
+        if (arr_y.length <= 0) {
             return;
+        }
+
+        let ran = Math.floor(Math.random() * arr_y.length);
+        let target: cc.Node = arr_y[ran];
+
+        let arr = target.children;
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].name === "6") {
+                arr[i].destroy();
+                return;
+            }
+        }
+
+        skin_id = "7"
+
+        let target_Class = null;
+        let target_name = target.name;
+        if (target_name === "AI") {
+            target_Class = target.getComponent(AI);
+        } else if (target_name === "Player") {
+            target_Class = target.getComponent(Player);
         }
 
         let prop: cc.Node = null;
@@ -65,13 +81,6 @@ export class Magnet extends PropUseing {
         let partic = speed_Effect.getComponent(cc.ParticleSystem);
         partic.resetSystem();
 
-        let target_Class = null;
-        let target_name = target.name;
-        if (target_name === "AI") {
-            target_Class = target.getComponent(AI);
-        } else if (target_name === "Player") {
-            target_Class = target.getComponent(Player);
-        }
         target_Class.IsSpeedUp = false;
         let target_Speed_value = target_Class.Speed;
         target_Class.Speed = target_Speed_value - target_Speed_value * 0.2;

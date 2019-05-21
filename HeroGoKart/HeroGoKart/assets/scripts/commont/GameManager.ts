@@ -48,6 +48,10 @@ export class GameManage {
      */
     public IsPause: boolean = false;
     /**
+     * @property 是否可以使用道具
+     */
+    public IsUseingProp: boolean = true;
+    /**
      * @property 移动速度
      */
     public Speed: number = 0;

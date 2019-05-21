@@ -1,9 +1,14 @@
+import Game from "../Game";
 
 /**
  * @class 道具影响效果
  */
 export abstract class PropEffect {
 
+    /**
+     * @property 游戏类
+     */
+    protected Game: Game = null;
     /**
      * @property 道具对象池
      */
@@ -13,7 +18,8 @@ export abstract class PropEffect {
      * 构造函数
      * @param pool_prop 道具对象池
      */
-    constructor() {
+    constructor(game: Game) {
+        this.Game = game;
     }
 
     /**

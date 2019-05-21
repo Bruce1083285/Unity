@@ -59,13 +59,13 @@ export class SpeedUp extends PropUseing {
         //加速
         type_Class.IsSpeedUp = false;
         let speed_value = type_Class.Speed;
-        type_Class.Speed = speed_value + speed_value * 0.5;
+        type_Class.Speed = 1500;
 
         let callback = () => {
             speed_Effect.destroy();
             prop.destroy();
             type_Class.IsSpeedUp = true;
-            type_Class.Speed = speed_value;
+            type_Class.Speed = 1000;
         }
 
         setTimeout(callback, 5000);

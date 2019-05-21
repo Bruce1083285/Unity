@@ -32,19 +32,41 @@ export class Lightning extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
+        let arr_role: cc.Node[] = [];
+
+        role:
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
             let target = GameManage.Instance.Roles[i];
-            let target_Class = null;
-            let name = target.name;
-            if (name === "AI") {
-                target_Class = target.getComponent(AI);
-            } else if (name === "Player") {
-                target_Class = target.getComponent(Player);
-            }
-            if (target_Class.IsLightning) {
-                return;
+            let num = role.position.sub(target.position).mag();
+            let dis = Math.abs(num);
+            if (dis <= 10) {
+                continue;
             }
 
+            let arr = target.children;
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].name === "6") {
+                    arr[i].destroy();
+                    continue role;
+                } else {
+                    arr_role.push(target);
+                }
+            }
+
+            // let target_Class = null;
+            // let name = target.name;
+            // if (name === "AI") {
+            //     target_Class = target.getComponent(AI);
+            // } else if (name === "Player") {
+            //     target_Class = target.getComponent(Player);
+            // }
+            // if (target_Class.IsLightning) {
+            //     return;
+            // }
+        }
+
+        if (arr_role.length >= 3) {
+            return;
         }
 
         let pre_prop: cc.Prefab = null;
@@ -55,16 +77,16 @@ export class Lightning extends PropUseing {
             }
         }
 
-        let patch_arr: cc.Node[] = [];
-        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
-            let node = GameManage.Instance.Roles[i];
-            if (node.uuid !== role.uuid) {
-                patch_arr.push(node);
-            }
-        }
+        // let patch_arr: cc.Node[] = [];
+        // for (let i = 0; i < arr_role.length; i++) {
+        //     let node = arr_role[i];
+        //     if (node.uuid !== role.uuid) {
+        //         patch_arr.push(node);
+        //     }
+        // }
 
-        for (let i = 0; i < patch_arr.length; i++) {
-            let target = patch_arr[i];
+        for (let i = 0; i < arr_role.length; i++) {
+            let target = arr_role[i];
             let prop = cc.instantiate(pre_prop);
             target.addChild(prop);
             target.scale = 0.2;

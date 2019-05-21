@@ -1,6 +1,7 @@
 import { EventType, SoundType, Special_Car } from "../commont/Enum";
 import { EventCenter } from "../commont/EventCenter";
 import { GameManage } from "../commont/GameManager";
+import Player from "../game/Player";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -67,16 +68,37 @@ export default class Animation_Bomb extends cc.Component {
                 this.node.destroy();
                 return;
             }
+
+            let arr = this.Target.children;
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].name === "6") {
+                    arr[i].destroy();
+                    this.node.destroy();
+                    return;
+                }
+            }
+
             EventCenter.BroadcastOne(EventType.Sound, SoundType.Bomb);
-            this.node.destroy();
             let collider = this.Target.getComponent(cc.BoxCollider);
             collider.enabled = false;
             let name = this.Target.name;
             let type_Class = null;
             if (name === "AI") {
                 type_Class = this.Target.getComponent("AI");
+                let istrue = type_Class.GetPretection(this.node);
+                if (istrue) {
+                    this.node.destroy();
+                    return
+                }
             } else if (name === "Player") {
                 type_Class = this.Target.getComponent("Player");
+                let istrue = type_Class.GetPretection(this.node);
+                if (istrue) {
+                    this.node.destroy();
+                    return
+                }
+                GameManage.Instance.IsTouchClick = false;
+                type_Class.Game.Horizontal = 0;
             }
 
             type_Class.IsSpeedUp = false;
@@ -86,13 +108,17 @@ export default class Animation_Bomb extends cc.Component {
             let act_Scale_small = cc.scaleTo(0.3, 0.4, 0.4);
             let act_Spawn = cc.spawn(act_Scale_big, act_Scale_small);
             let act_callback = () => {
+                if (name === "Player") {
+                    GameManage.Instance.IsTouchClick = true;
+                }
                 collider.enabled = true;
                 type_Class.IsSpeedUp = true;
-                type_Class = 0;
+                type_Class.Speed = 0;
+                this.Target = null;
             }
             let act_Seq = cc.sequence(act_Spawn, act_Scale_small, cc.callFunc(act_callback));
             this.Target.runAction(act_Seq);
-            this.Target = null;
+            this.node.destroy();
             return;
         }
         // let self_y = this.node.position.y + 20;
@@ -133,7 +159,7 @@ export default class Animation_Bomb extends cc.Component {
 
 
         // 由于Math函数接受的是孤度，所以我们先节节点的旋转转化为弧度
-        let angle_1 = degree / 180 * Math.PI;
+        let angle_1 = -degree / 180 * Math.PI;
         // let angle_1 = radian;
         //合成基于 X正方向的方向向量
         let dir_1 = cc.v2(Math.cos(angle_1), Math.sin(angle_1));
@@ -141,7 +167,7 @@ export default class Animation_Bomb extends cc.Component {
         dir_1.normalizeSelf();
 
         //根据方向向量移动位置
-        let moveSpeed = 10;
+        let moveSpeed = 30;
         this.node.x += dt * dir_1.x * moveSpeed;
         this.node.y += dt * dir_1.y * moveSpeed;
         this.node.x += dir_1.x * moveSpeed;

@@ -48,12 +48,34 @@ export default class Animation_WaterPolo extends cc.Component {
                 this.node.destroy();
                 return;
             }
+
+            let arr = this.Target.children;
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].name === "6") {
+                    arr[i].destroy();
+                    this.node.destroy();
+                    return;
+                }
+            }
+
+            GameManage.Instance.IsUseingProp = false;
+
             let type_Class = null;
             let name = this.Target.name;
             if (name === "AI") {
                 type_Class = this.Target.getComponent(AI);
+                let istrue = type_Class.GetPretection(this.node);
+                if (istrue) {
+                    return
+                }
             } else if (name === "Player") {
                 type_Class = this.Target.getComponent(Player);
+                let istrue = type_Class.GetPretection(this.node);
+                if (istrue) {
+                    return
+                }
+                GameManage.Instance.IsTouchClick = false;
+                type_Class.Game.Horizontal = 0;
             }
             type_Class.IsWaterPolo = true;
             type_Class.IsSpeedUp = false;
@@ -68,6 +90,7 @@ export default class Animation_WaterPolo extends cc.Component {
             img.scale = 1;
             let target = this.Target;
             let callback = () => {
+                GameManage.Instance.IsUseingProp = true;
                 let collider = target.getComponent(cc.BoxCollider);
                 collider.enabled = true;
 
@@ -77,6 +100,7 @@ export default class Animation_WaterPolo extends cc.Component {
                     type_Class = target.getComponent(AI);
                 } else if (name === "Player") {
                     type_Class = target.getComponent(Player);
+                    GameManage.Instance.IsTouchClick = true;
                 }
                 type_Class.IsWaterPolo = false;
                 type_Class.IsSpeedUp = true;

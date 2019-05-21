@@ -59,12 +59,12 @@ export class TranSpeedUp extends Transportation {
         }
         let speed_value = role_type.Speed;
         role_type.IsSpeedUp = false;
-        role_type.Speed = speed_value * 2;
+        role_type.Speed = 1500;
         let callback = () => {
             prop_1.destroy();
             speed_Effect.destroy();
             role_type.IsSpeedUp = true;
-            role_type.Speed = speed_value;
+            role_type.Speed = 1000;
             GameManage.Instance.Current_SpecialCar = null;
         }
         setTimeout(callback, 20000);

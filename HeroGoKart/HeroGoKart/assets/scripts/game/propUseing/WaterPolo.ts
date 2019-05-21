@@ -31,26 +31,25 @@ export class WaterPolo extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        let ran_node: cc.Node = null;
+        let arr_y: cc.Node[] = [];
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
-            let ran = Math.floor(Math.random() * GameManage.Instance.Roles.length);
-            ran_node = GameManage.Instance.Roles[ran];
-            if (ran_node.position.y > role.position.y) {
-                let type_Class = null;
-                let name = ran_node.name;
-                if (name === "AI") {
-                    type_Class = ran_node.getComponent(AI);
-                } else if (name === "Player") {
-                    type_Class = ran_node.getComponent(Player);
-                }
-                if (!type_Class.IsWaterPolo) {
-                    break;
-                }
+            let patch_node = GameManage.Instance.Roles[i];
+            if (patch_node.position.y > role.position.y) {
+                arr_y.push(patch_node);
             }
-            ran_node = null;
         }
-        if (!ran_node) {
+        if (arr_y.length <= 0) {
             return;
+        }
+
+        let ran = Math.floor(Math.random() * arr_y.length);
+        let ran_node: cc.Node = arr_y[ran];
+        let type_Class = null;
+        let name = ran_node.name;
+        if (name === "AI") {
+            type_Class = ran_node.getComponent(AI);
+        } else if (name === "Player") {
+            type_Class = ran_node.getComponent(Player);
         }
 
         let prop: cc.Node = null;
@@ -63,6 +62,12 @@ export class WaterPolo extends PropUseing {
                 break;
             }
         }
+
+        let istrue = type_Class.GetPretection(prop);
+        if (istrue) {
+            return
+        }
+
         let box_Collider = prop.getComponent(cc.BoxCollider);
         box_Collider.enabled = false;
 

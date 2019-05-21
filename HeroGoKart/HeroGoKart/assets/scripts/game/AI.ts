@@ -109,7 +109,7 @@ export default class AI extends cc.Component {
     /**
      * @property 游戏类
      */
-    private Game: Game = null;
+    public Game: Game = null;
     /**
      * @property 香蕉皮效果
      */
@@ -298,7 +298,7 @@ export default class AI extends cc.Component {
 
     update(dt) {
 
-        if (!GameManage.Instance.IsGameStart || !this.IsMove || GameManage.Instance.IsPause) {
+        if (!GameManage.Instance.IsGameStart || !this.IsMove || GameManage.Instance.IsPause || GameManage.Instance.IsGameEnd) {
             return;
         }
         if ((this.node.position.x <= 0 && this.node.position.x >= -50) || (this.node.position.x >= 600 && this.node.position.x <= 650)) {
@@ -326,9 +326,9 @@ export default class AI extends cc.Component {
         this.Game = this.node.parent.parent.getComponent(Game);
 
         //道具效果
-        this.Effect_BananaSkin = new EffectBananaSkin();
-        this.Effect_Bomb = new EffectBomb();
-        this.Effect_ClownGift = new EffectClownGift();
+        this.Effect_BananaSkin = new EffectBananaSkin(this.Game);
+        this.Effect_Bomb = new EffectBomb(this.Game);
+        this.Effect_ClownGift = new EffectClownGift(this.Game);
 
         //道具使用
         this.Useing_BananaSkin = new BananaSkin(this.Game.Pre_InitiativeProp, this.Game);
@@ -361,6 +361,9 @@ export default class AI extends cc.Component {
      * 重置自身
      */
     public ResetSelf() {
+        this.node.scale = 0.4;
+        this.node.rotation = 0;
+        this.node.opacity = 255;
         this.IsMove = true;
         this.unscheduleAllCallbacks();
     }
@@ -372,7 +375,7 @@ export default class AI extends cc.Component {
         if (!this.IsSpeedUp || !GameManage.Instance.IsGameStart) {
             return;
         }
-        let ran = Math.random() * 3;
+        let ran = Math.random() * 3 + 1;
         this.Speed += ran;
         if (this.Speed >= this.Speed_Max) {
             this.Speed = this.Speed_Max;

@@ -33,6 +33,11 @@ export class EffectPiers extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        if (role.name === "Player") {
+            GameManage.Instance.IsTouchClick = false;
+            this.Game.Horizontal = 0;
+        }
+
         let collider = role.getComponent(cc.BoxCollider);
         collider.enabled = false;
         // GameManage.Instance.IsTouchClick = false;
@@ -50,6 +55,9 @@ export class EffectPiers extends PropPassive {
         role.stopAllActions();
         let act_Move = cc.moveBy(0.3, 0, -300);
         let callback = () => {
+            if (role.name === "Player") {
+                GameManage.Instance.IsTouchClick = true;
+            }
             if (role.name === "AI") {
                 role_type.Move(101);
             }

@@ -1,18 +1,18 @@
 import { PropEffect } from "../PropEffect";
+import Game from "../../Game";
 
 /**
  * @class 香蕉皮效果
  */
 export class EffectBananaSkin extends PropEffect {
 
-    // /**
-    //     * 构造函数
-    //     * @param pool_prop 道具对象池
-    //     */
-    // constructor(pool_prop: cc.NodePool) {
-    //     super(pool_prop);
-    // }
 
+    /**
+     * 构造函数
+     */
+    constructor(game: Game) {
+        super(game);
+    }
     /**
      * 影响效果
      * @param role 被影响角色

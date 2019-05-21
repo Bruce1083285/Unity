@@ -125,7 +125,7 @@ export default class Game extends cc.Component {
     /**
      * @property 道具盒子类
      */
-    private Prop_Box: PropBox = null
+    public Prop_Box: PropBox = null
     /**
      * @property 背景
      */
@@ -459,7 +459,7 @@ export default class Game extends cc.Component {
 
         let manager = cc.director.getCollisionManager();
         manager.enabled = true;
-        manager.enabledDebugDraw = true;
+        // manager.enabledDebugDraw = true;
         this.BG = this.node.getChildByName("BG");
         this.Area_Path = this.node.getChildByName("Area_Path");
         this.Area_Prop = this.node.getChildByName("Area_Prop");
@@ -716,8 +716,8 @@ export default class Game extends cc.Component {
         let role_arr = GameManage.Instance.Roles;
         for (let i = 0; i < role_arr.length; i++) {
             let role = role_arr[i];
-            let collider = role.getComponent(cc.BoxCollider);
-            collider.enabled = true;
+            // let collider = role.getComponent(cc.BoxCollider);
+            // collider.enabled = true;
 
             role.opacity = 255;
             role.scale = 0.4;
@@ -803,7 +803,7 @@ export default class Game extends cc.Component {
             this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
 
             let ran = Math.floor(Math.random() * 3 + 2);
-            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 18);
+            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 23);
             this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
             this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Path);
@@ -1042,9 +1042,10 @@ export default class Game extends cc.Component {
      * @param parent 父节点
      */
     private SetPassivePos(pool: cc.NodePool, parent: cc.Node) {
-        let ran = Math.random() * 5 + 10
-        let have_arr = [];
-        for (let i = 0; i < ran; i++) {
+        let value = 1500;
+        let ran = Math.floor(Math.random() * 5 + 10)
+        let have_arr = ["TimeBomb"]; //-------------------------------------------->测试完需清空
+        for (let i = 0; i < 35; i++) {
             let prop = pool.get();
             if (!prop) {
                 this.SetPoolPassive(this.Pre_PassiveProps, this.Pool_PassiveProps);
@@ -1071,10 +1072,9 @@ export default class Game extends cc.Component {
             let name = prop.name;
             let cha = name.charAt(name.length - 1);
             let num = parseInt(cha);
-            let value = 1500;
             if (num === NaN || num === null) {
                 i--;
-                prop.setPosition(300, i * value + value / 2);
+                prop.setPosition(300, i * value + value / 2 + 1000);
             } else {
                 let ran_x = Math.random() * 300 + 200;
                 prop.setPosition(ran_x, i * value + value / 2 + 1000);
@@ -1590,6 +1590,7 @@ export default class Game extends cc.Component {
             this.Questions.push(arr);
             arr = [];
         }
+        this.Question_Space = 0;
     }
 
     /**
@@ -1602,6 +1603,7 @@ export default class Game extends cc.Component {
      */
     private SetTransportationAward(pre_Gift: cc.Prefab[], pre_Aircraft: cc.Prefab[], pre_Card: cc.Prefab, spr_Award: cc.SpriteFrame[], parent: cc.Node) {
         let ran_ind = Math.floor(Math.random() * pre_Gift.length);
+        ran_ind = 1;
         this.Trans_Gift = cc.instantiate(pre_Gift[ran_ind]);
         parent.addChild(this.Trans_Gift);
         this.Trans_Gift.active = false;

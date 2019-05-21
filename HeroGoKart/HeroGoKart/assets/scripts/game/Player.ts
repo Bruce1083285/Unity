@@ -27,6 +27,7 @@ import Animation_TimeBomb from "../animation/Animation_TimeBomb";
 import { SpecialCar } from "./SpecialCar";
 import { Pickup } from "./specialcar/Pickup";
 import { PopupBox } from "../commont/PopupBox";
+import PropBox from "./PropBox";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -103,7 +104,7 @@ export default class Player extends cc.Component {
     /**
      * @property 游戏类
      */
-    private Game: Game = null;
+    public Game: Game = null;
     //------------------------------------------------>主动道具效果
     /**
      * @property 香蕉皮效果
@@ -239,9 +240,9 @@ export default class Player extends cc.Component {
         this.Game = this.node.parent.parent.getComponent(Game);
 
         //---------->主动道具效果
-        this.BananaSkin = new EffectBananaSkin();
-        this.Bomb = new EffectBomb();
-        this.ClownGift = new EffectClownGift();
+        this.BananaSkin = new EffectBananaSkin(this.Game);
+        this.Bomb = new EffectBomb(this.Game);
+        this.ClownGift = new EffectClownGift(this.Game);
         //---------->被动道具效果
         this.EffectCoin = new EffectCoin(this.Game.Pool_PassiveProps, this.Game);
         this.EffectTornado = new EffectTornado(this.Game.Pool_PassiveProps, this.Game);
@@ -268,6 +269,9 @@ export default class Player extends cc.Component {
      * 重置自身
      */
     public ResetSelf() {
+        this.node.scale = 0.4;
+        this.node.rotation = 0;
+        this.node.opacity = 255;
         this.IsMove = true;
         this.unscheduleAllCallbacks();
     }
@@ -699,8 +703,11 @@ export default class Player extends cc.Component {
         // let cha = name.charAt(0);
         //加速
         if (cha === "7") {
-            EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
-            this.TranSpeedUp.SetTransportation(self);
+            // EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
+            // this.TranSpeedUp.SetTransportation(self);
+            let box = this.Game.Prop_Box.getComponent(PropBox)
+            let box_spr = box.Props[0].getComponent(cc.Sprite);
+            box_spr.spriteFrame = box.Fra_InitiativeProp[box.Fra_InitiativeProp.length - 1]
             target.destroy();
         }
         //金币
@@ -733,7 +740,8 @@ export default class Player extends cc.Component {
             PopupBox.CommontPopup(GameManage.Instance.Finished_Box);
         }
         GameManage.Instance.IsUpdateProgress = false;
-        GameManage.Instance.IsGameEnd = true;
+        GameManage.Instance.IsCameraFollow = false;
+        // GameManage.Instance.IsGameEnd = true;
 
         EventCenter.Broadcast(EventType.Game_GameOver);
     }

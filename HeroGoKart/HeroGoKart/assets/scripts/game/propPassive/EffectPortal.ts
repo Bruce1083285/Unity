@@ -31,12 +31,21 @@ export class EffectPortal extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        if (role.name === "Player") {
+            GameManage.Instance.IsTouchClick = false;
+            this.Game.Horizontal = 0;
+        }
+
         let collider = prop.getComponent(cc.BoxCollider);
         collider.enabled = false;
         role.setPosition(role.position.x, role.position.y + 500);
         let dragon = prop.getComponent(dragonBones.ArmatureDisplay);
         dragon.playAnimation("a3", 1);
         if (role.name === "Player") {
+            if (role.name === "Player") {
+                GameManage.Instance.IsTouchClick = true;
+            }
+            
             GameManage.Instance.IsPortal = true;
             let player = role.getComponent(Player);
             let speed_value = player.Speed;

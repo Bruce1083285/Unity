@@ -35,7 +35,10 @@ export class EffectTornado extends PropPassive {
     private SetProp(role: cc.Node, prop: cc.Node) {
         let collider = role.getComponent(cc.BoxCollider);
         collider.enabled = false;
-        GameManage.Instance.IsTouchClick = false;
+        if (role.name === "Player") {
+            GameManage.Instance.IsTouchClick = false;
+            this.Game.Horizontal = 0;
+        }
         // this.Pool_PassiveProp.put(prop);
         let type_C = null;
         if (role.name === "AI") {
@@ -50,7 +53,9 @@ export class EffectTornado extends PropPassive {
         let act_Rotate = cc.rotateTo(3, 1080);
         let act_Scale_small = cc.scaleTo(0.3, 0.4);
         let act_callback = () => {
-            GameManage.Instance.IsTouchClick = true;
+            if (role.name === "Player") {
+                GameManage.Instance.IsTouchClick = true;
+            }
             collider.enabled = true;
             type_C.IsSpeedUp = true;
             type_C.Speed = 0;

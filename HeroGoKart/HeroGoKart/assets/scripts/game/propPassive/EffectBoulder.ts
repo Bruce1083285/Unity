@@ -35,7 +35,7 @@ export class EffectBoulder extends PropPassive {
         let collider = role.getComponent(cc.BoxCollider);
         GameManage.Instance.IsTouchClick = false;
         collider.enabled = false;
-        role.scaleX = 0.8;
+        role.scaleX = 0.6;
 
         let type_C = null;
         if (role.name === "AI") {

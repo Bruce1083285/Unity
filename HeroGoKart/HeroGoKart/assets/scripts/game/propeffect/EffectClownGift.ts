@@ -1,17 +1,18 @@
 import { PropEffect } from "../PropEffect";
+import { GameManage } from "../../commont/GameManager";
+import Game from "../../Game";
 
 /**
  * @class 小丑礼包效果
  */
 export class EffectClownGift extends PropEffect {
 
-    // /**
-    //  * 构造函数
-    //  * @param pool_prop 道具对象池
-    //  */
-    // constructor(pool_prop: cc.NodePool) {
-    //     super(pool_prop);
-    // }
+    /**
+     * 构造函数
+     */
+    constructor(game: Game) {
+        super(game);
+    }
 
     /**
      * 影响效果
@@ -26,6 +27,10 @@ export class EffectClownGift extends PropEffect {
      * @param role 被影响角色
      */
     private RunEffect(role: cc.Node, prop: cc.Node) {
+        if (role.name === "Player") {
+            GameManage.Instance.IsTouchClick = false;
+            this.Game.Horizontal = 0;
+        }
         let collider = role.getComponent(cc.BoxCollider);
         collider.enabled = false;
         let dragon = prop.getChildByName("gift").getComponent(dragonBones.ArmatureDisplay);
@@ -47,6 +52,10 @@ export class EffectClownGift extends PropEffect {
         let act_Scale_big = cc.scaleTo(1, 0.6);
         let act_Scale_small = cc.scaleTo(0.3, 0.4);
         let act_callback = () => {
+            if (role.name === "Player") {
+                GameManage.Instance.IsTouchClick = true;
+
+            }
             collider.enabled = true;
             type_Class.IsSpeedUp = true;
             type_Class = 0;
