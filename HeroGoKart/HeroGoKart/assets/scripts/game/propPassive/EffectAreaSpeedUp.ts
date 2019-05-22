@@ -5,6 +5,7 @@ import Game from "../../Game";
 import { SoundType, EventType } from "../../commont/Enum";
 import { EventCenter } from "../../commont/EventCenter";
 import Role from "../Role";
+import { GameManage } from "../../commont/GameManager";
 
 /**
  * @class 加速带效果
@@ -34,6 +35,9 @@ export class EffectAreaSpeedUp extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        GameManage.Instance.IsTouchClick = true;
+        // GameManage.Instance.StopTargetAction(role);
+
         EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
         let prop_1: cc.Node = null;
         for (let i = 0; i < this.Game.Pre_InitiativeProp.length; i++) {

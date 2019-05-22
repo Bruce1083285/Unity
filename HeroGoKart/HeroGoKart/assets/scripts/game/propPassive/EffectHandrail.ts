@@ -35,6 +35,8 @@ export class EffectHandrail extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        GameManage.Instance.StopTargetAction(role);
+
         let act_rotate = cc.rotateBy(15, 10000);
         let act_move = cc.moveBy(15, 10000, 10000);
         let act_spa = cc.spawn(act_rotate, act_move);

@@ -27,6 +27,8 @@ export class EffectClownGift extends PropEffect {
      * @param role 被影响角色
      */
     private RunEffect(role: cc.Node, prop: cc.Node) {
+        GameManage.Instance.StopTargetAction(role);
+
         if (role.name === "Player") {
             GameManage.Instance.IsTouchClick = false;
             this.Game.Horizontal = 0;

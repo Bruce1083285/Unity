@@ -36,6 +36,8 @@ export class EffectPortal extends PropPassive {
     private SetProp(role: cc.Node, prop: cc.Node) {
         EventCenter.BroadcastOne(EventType.Sound, SoundType.Portal);
 
+        GameManage.Instance.StopTargetAction(role);
+
         let collider = prop.getComponent(cc.BoxCollider);
         collider.enabled = false;
         role.setPosition(role.position.x, role.position.y + 500);

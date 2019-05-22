@@ -2,6 +2,7 @@ import { PropPassive } from "../PropPassive";
 import AI from "../AI";
 import Player from "../Player";
 import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
 
 /**
  * @class 水滩效果
@@ -32,6 +33,8 @@ export class EffectWater extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        GameManage.Instance.StopTargetAction(role);
+
         let type_C = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);

@@ -1517,26 +1517,26 @@ export default class Game extends cc.Component {
      * 更新排名
      */
     private UpdateRanking() {
-        let role_arr: cc.Node[] = [];
-        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
-            role_arr.push(GameManage.Instance.Roles[i]);
-        }
+        // let role_arr: cc.Node[] = [];
+        // for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+        //     role_arr.push(GameManage.Instance.Roles[i]);
+        // }
 
-        for (let i = 0; i < role_arr.length; i++) {
-            for (let j = 0; j < role_arr.length - i - 1; j++) {
-                let y_1 = role_arr[j].position.y;
-                let y_2 = role_arr[j + 1].position.y;
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            for (let j = 0; j < GameManage.Instance.Roles.length - i - 1; j++) {
+                let y_1 = GameManage.Instance.Roles[j].position.y;
+                let y_2 = GameManage.Instance.Roles[j + 1].position.y;
                 if (y_1 < y_2) {
-                    let temp = role_arr[j];
-                    role_arr[j] = role_arr[j + 1];
-                    role_arr[j + 1] = temp
+                    let temp = GameManage.Instance.Roles[j];
+                    GameManage.Instance.Roles[j] = GameManage.Instance.Roles[j + 1];
+                    GameManage.Instance.Roles[j + 1] = temp
                 }
             }
         }
 
         let str: string = null;
-        for (let i = 0; i < role_arr.length; i++) {
-            let role = role_arr[i];
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let role = GameManage.Instance.Roles[i];
             if (role.name === "Player") {
                 if (i + 1 === 1) {
                     str = "st"
@@ -1749,14 +1749,13 @@ export default class Game extends cc.Component {
         //     GameManage.Instance.Page_Alarm.active = false;
         // }
 
-        role:
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
             let role_arr = GameManage.Instance.Roles[i].children;
             for (let i = 0; i < role_arr.length; i++) {
                 let role_childer = role_arr[i];
                 if (role_childer.name === "TimeBomb") {
                     EventCenter.Broadcast(EventType.UnSchedule);
-                    break role;
+                    break;
                 }
             }
 
@@ -1785,22 +1784,22 @@ export default class Game extends cc.Component {
      * @param isComplete 是否完成
      */
     private SetRanking() {
-        let role_arr: cc.Node[] = [];
-        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
-            role_arr.push(GameManage.Instance.Roles[i]);
-        }
+        let role_arr: cc.Node[] = GameManage.Instance.Roles;
+        // for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+        //     role_arr.push(GameManage.Instance.Roles[i]);
+        // }
 
-        for (let i = 0; i < role_arr.length; i++) {
-            for (let j = 0; j < role_arr.length - i - 1; j++) {
-                let y_1 = role_arr[j].position.y;
-                let y_2 = role_arr[j + 1].position.y;
-                if (y_1 < y_2) {
-                    let temp = role_arr[j];
-                    role_arr[j] = role_arr[j + 1];
-                    role_arr[j + 1] = temp
-                }
-            }
-        }
+        // for (let i = 0; i < role_arr.length; i++) {
+        //     for (let j = 0; j < role_arr.length - i - 1; j++) {
+        //         let y_1 = role_arr[j].position.y;
+        //         let y_2 = role_arr[j + 1].position.y;
+        //         if (y_1 < y_2) {
+        //             let temp = role_arr[j];
+        //             role_arr[j] = role_arr[j + 1];
+        //             role_arr[j + 1] = temp
+        //         }
+        //     }
+        // }
 
         let list: cc.Node[] = this.Page_Over.getChildByName("Box").getChildByName("List").children;
         for (let i = 0; i < list.length; i++) {
