@@ -28,6 +28,7 @@ import { SpecialCar } from "./SpecialCar";
 import { Pickup } from "./specialcar/Pickup";
 import { PopupBox } from "../commont/PopupBox";
 import PropBox from "./PropBox";
+import Role from "./Role";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -42,7 +43,7 @@ import PropBox from "./PropBox";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class Player extends cc.Component {
+export default class Player extends Role {
 
     /**
      * @property 摄像机
@@ -53,57 +54,18 @@ export default class Player extends cc.Component {
      * @property 水平移动速度
      */
     private Speed_Horizontal: number = 0.1;
-    /**
-     * @property 移动速度
-     */
-    public Speed: number = 0;
+
     /**
      * @property 速度最大值
      */
     private Speed_Max: number = 1000;
     /**
-     * @property 灵敏度
-     */
-    public Horizontal_Sensitivity: number = 100;
-    /**
-     * @property 当前速度值
-     */
-    public Current_SpeedValue: number = 0;
-    /**
-     * @property 保护罩是否开启
-     */
-    public IsOpen_Pretection: boolean = false;
-    /**
-     * @property 水平移动开关
-     */
-    public IsHorizontal: boolean = true;
-    /**
-     * @property 是否加速
-     */
-    public IsSpeedUp: boolean = true;
-    /**
-     * @property 是否被水泡困住
-     */
-    public IsWaterPolo: boolean = false;
-    /**
-    * @property 是否被冰冻
-    */
-    public IsFrozen: boolean = false;
-    /**
-    * @property 是否被雷击
-    */
-    public IsLightning: boolean = false;
-    /**
      * @property 自身是否移动
      */
     private IsMove: boolean = true;
     /**
-     * @property 是否存在定时炸弹
-     */
-    public TimeBomb: cc.Node = null;
-    /**
-     * @property 游戏类
-     */
+      * @property 游戏类
+      */
     public Game: Game = null;
     //------------------------------------------------>主动道具效果
     /**
@@ -375,7 +337,12 @@ export default class Player extends cc.Component {
      * @param target 问号节点
      */
     private CollisionQuestion(target: cc.Node) {
-        this.Game.Pool_Question.put(target);
+        target.active = false;
+        let callback = () => {
+            target.active = true;
+        }
+        this.scheduleOnce(callback, 5);
+        // this.Game.Pool_Question.put(target);
         EventCenter.Broadcast(EventType.Game_ExtractProp);
     }
 
@@ -781,6 +748,7 @@ export default class Player extends cc.Component {
      */
     private CrossingTheLineProtection(self: cc.Node) {
         GameManage.Instance.IsTouchClick = false;
+        GameManage.Instance.IsUseingProp = false;
 
         this.Game.Horizontal = 0;
         if (GameManage.Instance.Current_SpecialCar) {
@@ -791,7 +759,7 @@ export default class Player extends cc.Component {
             dra_car.playAnimation("a1", 0);
         } else {
             console.log("当前玩家节点");
-            let arr_role = this.node.getChildByName("Role").children;
+            let arr_role = this.node.getChildByName("Box").getChildByName("Role").children;
             for (let i = 0; i < arr_role.length; i++) {
                 let role = arr_role[i];
                 if (role.active) {
@@ -801,7 +769,7 @@ export default class Player extends cc.Component {
                 }
             }
 
-            let arr_car = this.node.getChildByName("Car").children;
+            let arr_car = this.node.getChildByName("Box").getChildByName("Car").children;
             for (let i = 0; i < arr_car.length; i++) {
                 let car = arr_car[i];
                 if (car.active) {
@@ -824,6 +792,8 @@ export default class Player extends cc.Component {
         let act_rep = cc.repeat(act_seq_1, 3);
         let callback = () => {
             GameManage.Instance.IsTouchClick = true;
+            GameManage.Instance.IsUseingProp = true;
+
             collision.enabled = true;
             this.IsSpeedUp = true;
             this.Speed = 0;
@@ -836,17 +806,17 @@ export default class Player extends cc.Component {
      * 设置特殊车辆
      */
     public SetSpecialCar(prop: cc.Node) {
-        prop.getComponent(cc.BoxCollider).enabled=false;
+        prop.getComponent(cc.BoxCollider).enabled = false;
 
         let dragon_prop = prop.getComponent(dragonBones.ArmatureDisplay);
         dragon_prop.playAnimation("a2", 1);
         let callback = () => {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.SpecialCar);
             prop.destroy();
-            let commont_car = this.node.getChildByName("Car");
+            let commont_car = this.node.getChildByName("Box").getChildByName("Car");
             commont_car.active = false;
 
-            let arr_Special: cc.Node[] = this.node.getChildByName("SpecialCar").children;
+            let arr_Special: cc.Node[] = this.node.getChildByName("Box").getChildByName("SpecialCar").children;
             let ran = Math.floor(Math.random() * arr_Special.length);
             GameManage.Instance.Current_SpecialCar = arr_Special[ran];
             let car = GameManage.Instance.Current_SpecialCar;

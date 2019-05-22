@@ -4,6 +4,7 @@ import Player from "../Player";
 import Game from "../../Game";
 import { SoundType, EventType } from "../../commont/Enum";
 import { EventCenter } from "../../commont/EventCenter";
+import Role from "../Role";
 
 /**
  * @class 加速带效果
@@ -53,19 +54,21 @@ export class EffectAreaSpeedUp extends PropPassive {
         let partic = speed_Effect.getComponent(cc.ParticleSystem);
         partic.resetSystem();
 
-        let type_C = null;
+        let type_C: Role = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);
         } else if (role.name === "Player") {
             type_C = role.getComponent(Player);
         }
         type_C.IsSpeedUp = false;
+        type_C.IsSpeedUping = true;
         let speed_Value = type_C.Speed;
         type_C.Speed = 1500;
         let callback = () => {
             prop_1.destroy();
             speed_Effect.destroy();
             type_C.IsSpeedUp = true;
+            type_C.IsSpeedUping = true;
             type_C.Speed = 1000;
         }
         setTimeout(callback, 2000);

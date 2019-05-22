@@ -33,6 +33,10 @@ export class EffectTimeBomb extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        let box = role.getChildByName("Box");
+        box.stopAllActions();
+        box.scale = 1;
+
         if (role.name === "Player") {
             GameManage.Instance.IsTouchClick = false;
             this.Game.Horizontal = 0;
@@ -49,12 +53,15 @@ export class EffectTimeBomb extends PropPassive {
         type_C.IsSpeedUp = false;
         type_C.Speed = 0;
 
+        GameManage.Instance.IsUseingProp=true;
+
         let act_Scale_big = cc.scaleTo(0.5, 0.8, 0.8);
         let act_Overturn_big = cc.scaleTo(0.5, 0.8, -0.8);
         let act_spw = cc.spawn(act_Scale_big, act_Overturn_big);
         // let act_dt = cc.delayTime(2);
         let act_Scale_small = cc.scaleTo(0.3, 0.4, 0.4);
         let callback = () => {
+            GameManage.Instance.IsUseingProp=false;
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
             }
@@ -64,6 +71,6 @@ export class EffectTimeBomb extends PropPassive {
             type_C.IsSpeedUp = true;
         }
         let act_Seq = cc.sequence(act_spw, act_Scale_small, cc.callFunc(callback));
-        role.runAction(act_Seq);
+        box.runAction(act_Seq);
     }
 }

@@ -47,13 +47,16 @@ export class EffectBoulder extends PropPassive {
         let speed_Value = type_C.Speed;
         type_C.Speed = speed_Value * 0.5;
 
-        let callback = () => {
+        let callback_1 = () => {
             GameManage.Instance.IsTouchClick = true;
-            collider.enabled = true;
             type_C.Speed = speed_Value;
             type_C.IsSpeedUp = true;
             role.scaleX = 0.4;
         }
-        setTimeout(callback, 3000);
+        let callback_2=()=>{
+            collider.enabled = true;
+        }
+        setTimeout(callback_1, 3000);
+        setTimeout(callback_2, 1000);
     }
 }

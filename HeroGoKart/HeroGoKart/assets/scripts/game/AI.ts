@@ -35,6 +35,7 @@ import Animation_TimeBomb from "../animation/Animation_TimeBomb";
 import Player from "./Player";
 import { SpecialCar } from "./SpecialCar";
 import { Pickup } from "./specialcar/Pickup";
+import Role from "./Role";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -49,7 +50,7 @@ import { Pickup } from "./specialcar/Pickup";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class AI extends cc.Component {
+export default class AI extends Role {
 
     /**
      * @property 道具精灵帧
@@ -65,30 +66,6 @@ export default class AI extends cc.Component {
       */
     private Speed_Horizontal: number = 1;
     /**
-     * @property 移动速度
-     */
-    public Speed: number = 0;
-    /**
-     * @property 保护罩是否开启
-     */
-    public IsOpen_Pretection: boolean = false;
-    /**
-     * @property 是否开启加速
-     */
-    public IsSpeedUp: boolean = true;
-    /**
-   * @property 是否被水泡困住
-   */
-    public IsWaterPolo: boolean = false;
-    /**
-    * @property 是否被冰冻
-    */
-    public IsFrozen: boolean = false;
-    /**
-    * @property 是否被雷击
-    */
-    public IsLightning: boolean = false;
-    /**
      * @property 是否移动
      */
     private IsMove: boolean = true;
@@ -101,17 +78,10 @@ export default class AI extends cc.Component {
      */
     public Current_SpeedValue: number = 0;
     /**
-     * @property 是否在空中
-     */
-    public IsSky: boolean = false;
-    /**
      * @property 水平移动值   -1：左  0：不变  1：右
      */
     private Horizontal: number = 0;
-    /**
-     * @property 游戏类
-     */
-    public Game: Game = null;
+
     /**
      * @property 香蕉皮效果
      */
@@ -516,10 +486,15 @@ export default class AI extends cc.Component {
      * @param target 问号节点
      */
     private CollisionQuestion(target: cc.Node) {
-        this.Game.Pool_Question.put(target);
+        target.active = false;
+        let callback = () => {
+            target.active = true;
+        }
+        this.scheduleOnce(callback, 5);
+        // this.Game.Pool_Question.put(target);
         let ran = Math.floor(Math.random() * this.Fra_InitiativeProp.length);
         let str = ran.toString();
-        let arr = this.node.getChildByName("Role").children;
+        let arr = this.node.getChildByName("Box").getChildByName("Role").children;
         let role: cc.Node = null;
         for (let i = 0; i < arr.length; i++) {
             role = arr[i];
@@ -620,7 +595,7 @@ export default class AI extends cc.Component {
      * @param self 玩家节点
      */
     private CollisionPassiveProp(target: cc.Node, self: cc.Node) {
-        let arr: cc.Node[] = this.node.getChildByName("SpecialCar").children;
+        let arr: cc.Node[] = this.node.getChildByName("Box").getChildByName("SpecialCar").children;
         let car_name: string = null;
         for (let i = 0; i < arr.length; i++) {
             let chi = arr[i];
@@ -975,7 +950,7 @@ export default class AI extends cc.Component {
      */
     private CrossingTheLineProtection(self: cc.Node) {
         this.Horizontal = 0;
-        let role_arr = this.node.getChildByName("Role").children;
+        let role_arr = this.node.getChildByName("Box").getChildByName("Role").children;
         for (let i = 0; i < role_arr.length; i++) {
             let role = role_arr[i];
             if (role.active) {
@@ -985,7 +960,7 @@ export default class AI extends cc.Component {
             }
         }
 
-        let car_arr = this.node.getChildByName("Car").children;
+        let car_arr = this.node.getChildByName("Box").getChildByName("Car").children;
         for (let i = 0; i < car_arr.length; i++) {
             let car = car_arr[i];
             if (car.active) {
@@ -1028,10 +1003,10 @@ export default class AI extends cc.Component {
         let callback = () => {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.SpecialCar);
             prop.destroy();
-            let commont_car = this.node.getChildByName("Car");
+            let commont_car = this.node.getChildByName("Box").getChildByName("Car");
             commont_car.active = false;
 
-            let arr_Special: cc.Node[] = this.node.getChildByName("SpecialCar").children;
+            let arr_Special: cc.Node[] = this.node.getChildByName("Box").getChildByName("SpecialCar").children;
             let ran = Math.floor(Math.random() * arr_Special.length);
             GameManage.Instance.Current_SpecialCar = arr_Special[ran];
             let car = GameManage.Instance.Current_SpecialCar;

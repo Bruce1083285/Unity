@@ -62,9 +62,15 @@ export default class Animation_Frozen extends cc.Component {
      * 播放开始动画
      */
     public PlayBegin(target: cc.Node) {
-        EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
-        this.node.zIndex = 1;
         this.Target = target;
+        this.node.zIndex = 1;
+
+        let box = target.getChildByName("Box");
+        box.stopAllActions();
+        box.scale = 1;
+
+        EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
+        GameManage.Instance.IsUseingProp = false;
 
         let collider = target.getComponent(cc.BoxCollider);
         collider.enabled = false;
@@ -86,6 +92,9 @@ export default class Animation_Frozen extends cc.Component {
         type_Class.IsSpeedUp = false;
         type_Class.Speed = 0;
         let callback = () => {
+            if (GameManage.Instance.IsPause) {
+                return;
+            }
             this.Spri_Img.spriteFrame = this.Fram_Frozen[this.Index_Begin];
             this.Index_Begin++;
             if (this.Index_Begin >= this.Fram_Frozen.length) {
@@ -104,9 +113,13 @@ export default class Animation_Frozen extends cc.Component {
         EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
         this.Index_End = this.Fram_Frozen.length - 1;
         let callback = () => {
+            if (GameManage.Instance.IsPause) {
+                return;
+            }
             this.Spri_Img.spriteFrame = this.Fram_Frozen[this.Index_End];
             this.Index_End--;
             if (this.Index_End < 0) {
+                GameManage.Instance.IsUseingProp = false;
                 let collider = this.Target.getComponent(cc.BoxCollider);
                 collider.enabled = true;
                 // this.unschedule(callback);

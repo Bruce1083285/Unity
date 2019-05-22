@@ -3,6 +3,7 @@ import Player from "../game/Player";
 import { GameManage } from "../commont/GameManager";
 import { Special_Car, SoundType, EventType } from "../commont/Enum";
 import { EventCenter } from "../commont/EventCenter";
+import Role from "../game/Role";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -37,7 +38,7 @@ export default class Animation_WaterPolo extends cc.Component {
     }
 
     update(dt) {
-        if (!this.Target) {
+        if (!this.Target || GameManage.Instance.IsPause) {
             return;
         }
 
@@ -46,8 +47,8 @@ export default class Animation_WaterPolo extends cc.Component {
         if (dis <= 10) {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.WaterPolo);
             GameManage.Instance.Page_Alarm.stopAllActions();
-            GameManage.Instance.Page_Alarm.active=false;
-            let arr_car = this.Target.getChildByName("SpecialCar").children;
+            GameManage.Instance.Page_Alarm.active = false;
+            let arr_car = this.Target.getChildByName("Box").getChildByName("SpecialCar").children;
             let car_name: string = null;
             for (let i = 0; i < arr_car.length; i++) {
                 let car = arr_car[i];
@@ -70,9 +71,13 @@ export default class Animation_WaterPolo extends cc.Component {
                 }
             }
 
+            let box = this.Target.getChildByName("Box");
+            box.stopAllActions();
+            box.scale = 1;
+
             GameManage.Instance.IsUseingProp = false;
 
-            let type_Class = null;
+            let type_Class: Role = null;
             let name = this.Target.name;
             if (name === "AI") {
                 type_Class = this.Target.getComponent(AI);
@@ -103,6 +108,7 @@ export default class Animation_WaterPolo extends cc.Component {
             let target = this.Target;
             let callback = () => {
                 GameManage.Instance.IsUseingProp = true;
+
                 let collider = target.getComponent(cc.BoxCollider);
                 collider.enabled = true;
 
@@ -141,7 +147,7 @@ export default class Animation_WaterPolo extends cc.Component {
         dir_1.normalizeSelf();
 
         //根据方向向量移动位置
-        let moveSpeed = 1000;
+        let moveSpeed = 2000;
         this.node.x += dt * dir_1.x * moveSpeed;
         this.node.y += dt * dir_1.y * moveSpeed;
         // let v2 = this.node.position.lerp(this.Target.position, 0.5, this.node.position);

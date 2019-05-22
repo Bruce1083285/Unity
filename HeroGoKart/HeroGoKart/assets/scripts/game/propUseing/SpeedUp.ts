@@ -5,6 +5,7 @@ import AI from "../AI";
 import Player from "../Player";
 import { PropUseing } from "../PropUseing";
 import Game from "../../Game";
+import Role from "../Role";
 
 
 /**
@@ -49,7 +50,7 @@ export class SpeedUp extends PropUseing {
         let partic = speed_Effect.getComponent(cc.ParticleSystem);
         partic.resetSystem();
 
-        let type_Class = null;
+        let type_Class: Role = null;
         let name = role.name;
         if (name === "AI") {
             type_Class = role.getComponent(AI);
@@ -58,6 +59,7 @@ export class SpeedUp extends PropUseing {
         }
         //加速
         type_Class.IsSpeedUp = false;
+        type_Class.IsSpeedUping = true;
         let speed_value = type_Class.Speed;
         type_Class.Speed = 1500;
 
@@ -65,6 +67,7 @@ export class SpeedUp extends PropUseing {
             speed_Effect.destroy();
             prop.destroy();
             type_Class.IsSpeedUp = true;
+            type_Class.IsSpeedUping = false;
             type_Class.Speed = 1000;
         }
 

@@ -155,7 +155,7 @@ export default class PropBox extends cc.Component {
             return;
         }
 
-        let arr = this.Game.Player.getChildByName("Role").children;
+        let arr = this.Game.Player.getChildByName("Box").getChildByName("Role").children;
         let role: cc.Node = null;
         for (let i = 0; i < arr.length; i++) {
             role = arr[i];

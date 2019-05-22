@@ -49,7 +49,7 @@ export default class Animation_Bomb extends cc.Component {
     }
 
     update(dt) {
-        if (!this.Target) {
+        if (!this.Target|| GameManage.Instance.IsPause) {
             return;
         }
         let target_x = this.Target.position.x;
@@ -64,8 +64,8 @@ export default class Animation_Bomb extends cc.Component {
         let dis = Math.abs(num);
         if (dis < 100) {
             GameManage.Instance.Page_Alarm.stopAllActions();
-            GameManage.Instance.Page_Alarm.active=false;
-            let arr_car = this.Target.getChildByName("SpecialCar").children;
+            GameManage.Instance.Page_Alarm.active = false;
+            let arr_car = this.Target.getChildByName("Box").getChildByName("SpecialCar").children;
             // let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
             let car_name: string = null;
             for (let i = 0; i < arr_car.length; i++) {
@@ -111,14 +111,20 @@ export default class Animation_Bomb extends cc.Component {
                 GameManage.Instance.IsTouchClick = false;
                 type_Class.Game.Horizontal = 0;
             }
+            GameManage.Instance.IsUseingProp = true;
+
+            let box = this.Target.getChildByName("Box");
+            box.stopAllActions();
+            box.scale = 1;
 
             type_Class.IsSpeedUp = false;
             type_Class.Speed = 0;
-            let act_Scale_big = cc.scaleTo(1, 0.4, -0.4);
+            let act_Scale_big = cc.scaleTo(1, 1, -1);
             // let act_Rotate = cc.rotateTo(1, 1080);
-            let act_Scale_small = cc.scaleTo(0.3, 0.4, 0.4);
+            let act_Scale_small = cc.scaleTo(0.3, 1, 1);
             let act_Spawn = cc.spawn(act_Scale_big, act_Scale_small);
             let act_callback = () => {
+                GameManage.Instance.IsUseingProp = false;
                 if (name === "Player") {
                     GameManage.Instance.IsTouchClick = true;
                 }
@@ -128,7 +134,7 @@ export default class Animation_Bomb extends cc.Component {
                 this.Target = null;
             }
             let act_Seq = cc.sequence(act_Spawn, act_Scale_small, cc.callFunc(act_callback));
-            this.Target.runAction(act_Seq);
+            box.runAction(act_Seq);
             this.node.destroy();
             return;
         }
@@ -178,7 +184,7 @@ export default class Animation_Bomb extends cc.Component {
         dir_1.normalizeSelf();
 
         //根据方向向量移动位置
-        let moveSpeed = 50;
+        let moveSpeed = 100;
         this.node.x += dt * dir_1.x * moveSpeed;
         this.node.y += dt * dir_1.y * moveSpeed;
         this.node.x += dir_1.x * moveSpeed;
@@ -224,6 +230,9 @@ export default class Animation_Bomb extends cc.Component {
      * 播放动画
      */
     private Play() {
+        if (GameManage.Instance.IsPause) {
+            return;
+        }
         this.Sprite_Img.spriteFrame = this.Bomb_Skins[this.Index]
         this.Index++;
         if (this.Index >= this.Bomb_Skins.length) {

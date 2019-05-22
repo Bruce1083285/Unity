@@ -71,7 +71,7 @@ export class Lightning extends PropUseing {
         }
 
         for (let i = 0; i < arr_role.length; i++) {
-            let arr_car = arr_role[i].getChildByName("SpecialCar").children;
+            let arr_car = arr_role[i].getChildByName("Box").getChildByName("SpecialCar").children;
             let car_name: string = null;
             for (let i = 0; i < arr_car.length; i++) {
                 let car = arr_car[i];

@@ -20,8 +20,8 @@ export class Pickup extends SpecialCar {
             role.Speed = 1000;
             GameManage.Instance.Current_SpecialCar = null;
 
-            role.node.getChildByName("Car").active = true;
-            let arr = role.node.getChildByName("SpecialCar").children;
+            role.node.getChildByName("Box").getChildByName("Car").active = true;
+            let arr = role.node.getChildByName("Box").getChildByName("SpecialCar").children;
             for (let i = 0; i < arr.length; i++) {
                 arr[i].active = false;
             }

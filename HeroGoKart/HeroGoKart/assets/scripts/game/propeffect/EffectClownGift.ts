@@ -47,20 +47,25 @@ export class EffectClownGift extends PropEffect {
             type_Class = role.getComponent("Player");
         }
 
+        GameManage.Instance.IsUseingProp=true;
+
         type_Class.IsSpeedUp = false;
         type_Class.Speed = 0;
-        let act_Scale_big = cc.scaleTo(1, 0.6);
-        let act_Scale_small = cc.scaleTo(0.3, 0.4);
+        let act_Scale_big = cc.scaleTo(1, 1.5);
+        let act_Scale_small = cc.scaleTo(0.3,1);
         let act_callback = () => {
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
-
             }
+
+            GameManage.Instance.IsUseingProp=false;
+
             collider.enabled = true;
             type_Class.IsSpeedUp = true;
             type_Class = 0;
         }
         let act_Seq = cc.sequence(act_Scale_big, act_Scale_small, cc.callFunc(act_callback));
-        role.runAction(act_Seq);
+        let box=role.getChildByName("Box");
+        box.runAction(act_Seq);
     }
 }

@@ -722,7 +722,9 @@ export default class Game extends cc.Component {
 
             role.opacity = 255;
             role.scale = 0.4;
-            let commont_car = role.getChildByName("Car");
+            role.rotation = 0;
+
+            let commont_car = role.getChildByName("Box").getChildByName("Car");
             commont_car.active = true;
             let arr_car = commont_car.children;
             let car_skin = Cache.GetCache(CacheType.Current_Car_ID);
@@ -735,7 +737,7 @@ export default class Game extends cc.Component {
                 }
             }
 
-            let arr_role = role.getChildByName("Role").children;
+            let arr_role = role.getChildByName("Box").getChildByName("Role").children;
             let role_skin = Cache.GetCache(CacheType.Current_Role_ID);
             for (let i = 0; i < arr_role.length; i++) {
                 let role = arr_role[i];
@@ -746,7 +748,7 @@ export default class Game extends cc.Component {
                 }
             }
 
-            let arr_special = role.getChildByName("SpecialCar").children;
+            let arr_special = role.getChildByName("Box").getChildByName("SpecialCar").children;
             for (let i = 0; i < arr_special.length; i++) {
                 arr_special[i].active = false;
             }
@@ -767,7 +769,7 @@ export default class Game extends cc.Component {
                 role_player.Speed = 0;
             }
 
-            let arr = role.children;
+            let arr = role.getChildByName("Box").children;
             for (let i = 0; i < arr.length; i++) {
                 let arr_node = arr[i];
                 if (arr_node.name === "Car" || arr_node.name === "Role" || arr_node.name === "name" || arr_node.name === "SpecialCar") {
@@ -1061,10 +1063,11 @@ export default class Game extends cc.Component {
                     continue;
                 }
             }
-            // if (prop.name !== "Container") {
-            //     i--;
-            //     continue;
-            // }
+
+            if (prop.name === "Boulder") {
+                i--;
+                continue;
+            }
 
             // let world_Pos = this.Area_Path.convertToWorldSpaceAR(this.Area_Path.position);
             // let node_Pos = this.ar.convertToNodeSpaceAR(world_Pos);
@@ -1090,6 +1093,33 @@ export default class Game extends cc.Component {
                 // console.log(this.RenderOrderConfigurationTable.Prop.Passivity[i].name);
             }
 
+        }
+
+        //单独设置大石头
+        let pre_Boulder: cc.Prefab = null;
+        for (let i = 0; i < this.Pre_PassiveProps.length; i++) {
+            let pre = this.Pre_PassiveProps[i];
+            if (pre.name === "Boulder") {
+                pre_Boulder = pre;
+                break;
+            }
+        }
+        for (let i = 0; i < 2; i++) {
+            let prop = cc.instantiate(pre_Boulder);
+            parent.addChild(prop);
+            let ran_x = Math.random() * 300 + 200;
+            prop.setPosition(200, i * 15000 + 15000);
+
+            //修改渲染顺序
+            let prop_name = prop.name;
+            for (let i in this.RenderOrderConfigurationTable.Prop.Passivity) {
+                let rend_name = this.RenderOrderConfigurationTable.Prop.Passivity[i].name;
+                let zind = this.RenderOrderConfigurationTable.Prop.Passivity[i].zInd;
+                if (rend_name === prop_name) {
+                    prop.zIndex = zind;
+                }
+                // console.log(this.RenderOrderConfigurationTable.Prop.Passivity[i].name);
+            }
         }
     }
 
@@ -1194,10 +1224,10 @@ export default class Game extends cc.Component {
         }
 
         //角色
-        console.log("玩家角色设置");
-        console.log("角色父节点" + player.getChildByName("Role").active);
+        // console.log("玩家角色设置");
+        // console.log("角色父节点" + player.getChildByName("Role").active);
         console.log(this.Current_Player_RoleID);
-        let arr_role = player.getChildByName("Role").children;
+        let arr_role = player.getChildByName("Box").getChildByName("Role").children;
         for (let i = 0; i < arr_role.length; i++) {
             let role: cc.Node = arr_role[i];
             if (role.name === this.Current_Player_RoleID) {
@@ -1213,10 +1243,10 @@ export default class Game extends cc.Component {
         // this.SetPlayerDragonBones(display_role, this.Current_Player_RoleAsset, this.Current_Player_RoleAtlasAsset, DragonBonesAnimation_Car.a1, DragonBonesAnimation_PlayTimes.Loop, this.Armature_Role);
 
         //汽车
-        console.log("玩家汽车设置");
-        console.log("汽车父节点" + player.getChildByName("Car").active);
+        // console.log("玩家汽车设置");
+        // console.log("汽车父节点" + player.getChildByName("Box").getChildByName("Car").active);
         console.log(this.Current_Player_CarID);
-        let arr_car = player.getChildByName("Car").children;
+        let arr_car = player.getChildByName("Box").getChildByName("Car").children;
         for (let i = 0; i < arr_car.length; i++) {
             let car: cc.Node = arr_car[i];
             if (car.name === this.Current_Player_CarID) {
@@ -1230,9 +1260,9 @@ export default class Game extends cc.Component {
             console.log(car.active);
         }
 
-        console.log("玩家特殊汽车设置");
-        console.log("特殊汽车父节点" + player.getChildByName("SpecialCar").active);
-        let arr_SpecialCar = player.getChildByName("SpecialCar").children;
+        // console.log("玩家特殊汽车设置");
+        // console.log("特殊汽车父节点" + player.getChildByName("SpecialCar").active);
+        let arr_SpecialCar = player.getChildByName("Box").getChildByName("SpecialCar").children;
         for (let i = 0; i < arr_SpecialCar.length; i++) {
             arr_SpecialCar[i].active = false;
             console.log(arr_SpecialCar[i].active);
@@ -1326,7 +1356,7 @@ export default class Game extends cc.Component {
             }
 
             //角色
-            let role_arr = AI.getChildByName("Role").children;
+            let role_arr = AI.getChildByName("Box").getChildByName("Role").children;
             let ran_role = Math.floor(Math.random() * role_arr.length);
             let role = role_arr[ran_role];
             role.active = true;
@@ -1346,7 +1376,7 @@ export default class Game extends cc.Component {
             // }
 
             //汽车
-            let car_arr = AI.getChildByName("Car").children;
+            let car_arr = AI.getChildByName("Box").getChildByName("Car").children;
             let ran_car = Math.floor(Math.random() * car_arr.length);
             let car = car_arr[ran_car];
             car.active = true;

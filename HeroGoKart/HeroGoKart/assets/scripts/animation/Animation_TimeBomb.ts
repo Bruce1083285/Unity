@@ -107,9 +107,9 @@ export default class Animation_TimeBomb extends cc.Component {
             if (num <= 0) {
                 GameManage.Instance.Page_Alarm.stopAllActions();
                 GameManage.Instance.Page_Alarm.active=false;
-
+                
                 //特殊汽车
-                let arr_car = this.node.parent.getChildByName("SpecialCar").children;
+                let arr_car = this.node.parent.getChildByName("Box").getChildByName("SpecialCar").children;
                 let car_name: string = null;
                 for (let i = 0; i < arr_car.length; i++) {
                     let car = arr_car[i];

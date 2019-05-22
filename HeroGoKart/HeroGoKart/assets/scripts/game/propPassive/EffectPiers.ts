@@ -57,6 +57,7 @@ export class EffectPiers extends PropPassive {
         let callback = () => {
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
+                this.Game.Horizontal = 0;
             }
             if (role.name === "AI") {
                 role_type.Move(101);

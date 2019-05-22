@@ -44,7 +44,7 @@ export class Magnet extends PropUseing {
         let ran = Math.floor(Math.random() * arr_y.length);
         let target: cc.Node = arr_y[ran];
 
-        let arr_car = target.getChildByName("SpecialCar").children;
+        let arr_car = target.getChildByName("Box").getChildByName("SpecialCar").children;
         let car_name: string = null;
         for (let i = 0; i < arr_car.length; i++) {
             let car = arr_car[i];

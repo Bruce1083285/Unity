@@ -43,7 +43,7 @@ export class EffectHandrail extends PropPassive {
         let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
         prop.runAction(act_seq);
         
-        let arr_car = role.getChildByName("SpecialCar").children;
+        let arr_car = role.getChildByName("Box").getChildByName("SpecialCar").children;
         let car_name: string = null;
         for (let i = 0; i < arr_car.length; i++) {
             let car = arr_car[i];

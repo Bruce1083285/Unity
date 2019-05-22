@@ -1,3 +1,5 @@
+import { GameManage } from "../commont/GameManager";
+
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
@@ -61,6 +63,9 @@ export default class Animation_Coin extends cc.Component {
      * @param coin_Skins [Array]金币皮肤
      */
     private Play(sprite_Coin: cc.Sprite, coin_Skins: cc.SpriteFrame[]) {
+        if (GameManage.Instance.IsPause) {
+            return;
+        }
         sprite_Coin.spriteFrame = coin_Skins[this.Index];
         this.Index++;
         if (this.Index >= this.Coin_Skins.length) {

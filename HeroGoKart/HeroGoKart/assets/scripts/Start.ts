@@ -27,6 +27,7 @@ export default class Start extends cc.Component {
      * 初始化
      */
     Init() {
+        EventCenter.BroadcastOne(EventType.Sound,SoundType.PlayBGM_Start);
         // this.Test();
 
         this.Shop = this.node.getChildByName("Shop").getComponent(Shop);
@@ -36,7 +37,6 @@ export default class Start extends cc.Component {
         this.Show(this.node);
         this.AddListenter();
 
-        EventCenter.BroadcastOne(EventType.Sound,SoundType.PlayBGM_Start);
     }
 
     /**

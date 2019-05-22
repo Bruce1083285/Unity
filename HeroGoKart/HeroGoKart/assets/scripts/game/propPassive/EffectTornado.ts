@@ -3,6 +3,7 @@ import AI from "../AI";
 import Player from "../Player";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
+import Role from "../Role";
 
 /**
  * @class 龙卷风效果
@@ -35,51 +36,56 @@ export class EffectTornado extends PropPassive {
     private SetProp(role: cc.Node, prop: cc.Node) {
         let collider = role.getComponent(cc.BoxCollider);
         collider.enabled = false;
+
+        let arr = role.children;
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].name === "6") {
+                arr[i].destroy();
+                let callback = () => {
+                    collider.enabled = true;
+                }
+                setTimeout(callback, 1000);
+                return;
+            }
+        }
+
+        let box = role.getChildByName("Box");
+        box.stopAllActions();
+        box.scale = 1;
+
         if (role.name === "Player") {
             GameManage.Instance.IsTouchClick = false;
             this.Game.Horizontal = 0;
         }
         // this.Pool_PassiveProp.put(prop);
-        let type_C = null;
+        let type_C: Role = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);
         } else if (role.name === "Player") {
             type_C = role.getComponent(Player);
         }
+        let speed_value = type_C.Speed;
         type_C.IsSpeedUp = false;
         type_C.Speed = 0;
 
-        // let arr = role.children;
-        // let car_speacil: cc.Node = null;
-        // let car: cc.Node = null;
-        // let role_skin: cc.Node = null;
-        // for (let i = 0; i < arr.length; i++) {
-        //     let chi = arr[i];
-        //     if (chi.name === "SpecialCar") {
-        //         car_speacil = chi;
-        //     }
-        //     if (chi.name === "Car") {
-        //         car = chi;
-        //     }
-        //     if (chi.name === "Role") {
-        //         role_skin = chi;
-        //     }
-        // }
+        GameManage.Instance.IsUseingProp = false;
 
-
-        let act_Scale_big = cc.scaleTo(0.3, 0.6);
-        let act_Rotate = cc.rotateTo(3, 1080);
-        let act_Scale_small = cc.scaleTo(0.3, 0.4);
+        let act_Scale_big = cc.scaleTo(0.3, 1.5);
+        let act_Rotate = cc.rotateTo(1.5, 1080);
+        let act_Scale_small = cc.scaleTo(0.3, 1);
         let act_callback = () => {
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
             }
+            GameManage.Instance.IsUseingProp = true;
             collider.enabled = true;
-            type_C.IsSpeedUp = true;
-            type_C.Speed = 0;
+            if (!type_C.IsSpeedUping) {
+                type_C.IsSpeedUp = true;
+            }
+            type_C.Speed = speed_value;
             role.setPosition(role.position.x, role.position.y + 500);
         }
         let act_Seq = cc.sequence(act_Scale_big, act_Rotate, act_Scale_small, cc.callFunc(act_callback));
-        role.runAction(act_Seq);
+        box.runAction(act_Seq);
     }
 }

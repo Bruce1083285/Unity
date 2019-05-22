@@ -41,11 +41,22 @@ export default class Animation_Boulder extends cc.Component {
     }
 
     update(dt) {
+        if (GameManage.Instance.IsPause) {
+            return;
+        }
         if (this.Boulder && GameManage.Instance.IsGameStart) {
             this.Boulder.rotation = this.Boulder.rotation + this.Rotate_Speed * dt * this.Horizontal;
 
             let x = this.node.position.x + this.Speed * this.Horizontal * dt;
             this.node.setPosition(x, this.node.y);
+            // console.log(this.node.position);
+        }
+
+        if (this.node.position.x <= -100) {
+            this.Horizontal = 1;
+        }
+        if (this.node.position.x >= 700) {
+            this.Horizontal = -1;
         }
     }
 
@@ -62,6 +73,7 @@ export default class Animation_Boulder extends cc.Component {
     * @param self 自身
     */
     private onCollisionEnter(other, self) {
+        return;
         let target: cc.Node = other.node;
         let self_node: cc.Node = self.node;
         let group = target.group;
