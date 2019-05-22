@@ -6,6 +6,7 @@ import Player from "../Player";
 import { PropUseing } from "../PropUseing";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
+import Role from "../Role";
 /**
  * @class 吸铁石
  */
@@ -67,7 +68,7 @@ export class Magnet extends PropUseing {
 
         skin_id = "7"
 
-        let target_Class = null;
+        let target_Class:Role = null;
         let target_name = target.name;
         if (target_name === "AI") {
             target_Class = target.getComponent(AI);
@@ -102,7 +103,7 @@ export class Magnet extends PropUseing {
         let act_seq = cc.sequence(act_fadeOut, act_fadeIn).repeatForever();
         target.runAction(act_seq);
 
-        let role_Class = null;
+        let role_Class:Role = null;
         let role_name = role.name;
         if (role_name === "AI") {
             role_Class = role.getComponent(AI);

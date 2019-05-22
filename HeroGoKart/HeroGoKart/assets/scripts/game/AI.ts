@@ -410,6 +410,10 @@ export default class AI extends Role {
      * @param self 自身
      */
     private onCollisionEnter(other, self) {
+        if (GameManage.Instance.IsPause) {
+            // this.unscheduleAllCallbacks();
+            return;
+        }
         let target: cc.Node = other.node;
         let self_node: cc.Node = self.node;
         let group = target.group;
@@ -507,6 +511,7 @@ export default class AI extends Role {
         this.scheduleOnce(() => {
             dragon.playAnimation("a1", 0);
         }, 0.5);
+        // str = "5";
         switch (str) {
             case "1":
                 //香蕉皮

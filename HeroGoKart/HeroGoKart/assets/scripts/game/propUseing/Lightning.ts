@@ -109,27 +109,39 @@ export class Lightning extends PropUseing {
             prop.scale = 2;
             prop.setPosition(0, 400);
 
+            let callbalc_time = 10000;
             let target_Class = null;
             let name = target.name;
             if (name === "AI") {
                 target_Class = target.getComponent(AI);
             } else if (name === "Player") {
                 target_Class = target.getComponent(Player);
+                let act_fOut = cc.fadeOut(0.2);
+                let act_fIn = cc.fadeIn(0.2);
+                let act_seq = cc.sequence(act_fOut, act_fIn).repeatForever();
+                GameManage.Instance.Page_Alarm.active = true;
+                GameManage.Instance.Page_Alarm.runAction(act_seq);
+                callbalc_time = 11000;
+                let callback_1 = () => {
+                    if (GameManage.Instance.Page_Alarm.active) {
+                        GameManage.Instance.Page_Alarm.stopAllActions();
+                        GameManage.Instance.Page_Alarm.active = false;
+                    }
+                }
+                setTimeout(callback_1, 1000);
             }
             target_Class.IsLightning = true;
             target_Class.IsSpeedUp = false;
             let target_Speed_value = target_Class.Speed;
             target_Class.Speed = target_Speed_value * 0.5;
-
-            let callback = () => {
+            let callback_2 = () => {
                 prop.destroy();
                 target.scale = 0.4;
                 target_Class.IsLightning = false;
                 target_Class.IsSpeedUp = true;
                 target_Class.Speed = target_Speed_value;
             }
-            setTimeout(callback, 10000);
+            setTimeout(callback_2, callbalc_time);
         }
-
     }
 }

@@ -65,32 +65,53 @@ export class Frozen extends PropUseing {
         let ai: AI = null;
         let player: Player = null;
         if (ran_node.name === "AI") {
-            ai=ran_node.getComponent(AI);
+            ai = ran_node.getComponent(AI);
             let istrue = ai.GetPretection(prop);
             if (istrue) {
                 return
             }
         }
         if (ran_node.name === "Player") {
-            player=ran_node.getComponent(Player);
+            player = ran_node.getComponent(Player);
             let istrue = player.GetPretection(prop);
             if (istrue) {
                 return
             }
         }
-    
+
+        let callback_1_time: number = 0;
+        let callback_2_time: number = 3000;
+        if (ran_node.name === "Player") {
+            let act_fOut = cc.fadeOut(0.2);
+            let act_fIn = cc.fadeIn(0.2);
+            let act_seq = cc.sequence(act_fOut, act_fIn).repeatForever();
+            GameManage.Instance.Page_Alarm.active = true;
+            GameManage.Instance.Page_Alarm.runAction(act_seq);
+            callback_1_time = 1000;
+            callback_2_time = 4000;
+        }
 
         let box_Collider = prop.getComponent(cc.BoxCollider);
         box_Collider.enabled = false;
 
-        prop.setPosition(ran_node.position);
+        prop.setPosition(ran_node.position.x, ran_node.position.y);
+        // console.log("冰冻是否成功");
+        // console.log(ran_node.position);
+        // console.log(prop.position);
+        // console.log(prop.active);
         let frozen = prop.getComponent(Animation_Frozen);
-        frozen.PlayBegin(ran_node);
-
-        let callback = () => {
-            frozen.PlayEnd();
+        let callback_1 = () => {
+            if (GameManage.Instance.Page_Alarm.active) {
+                GameManage.Instance.Page_Alarm.stopAllActions();
+                GameManage.Instance.Page_Alarm.active = false;
+            }
+            frozen.PlayBegin(ran_node);
         }
 
-        setTimeout(callback, 3000);
+        let callback_2 = () => {
+            frozen.PlayEnd();
+        }
+        setTimeout(callback_1, callback_1_time);
+        setTimeout(callback_2, callback_2_time);
     }
 }

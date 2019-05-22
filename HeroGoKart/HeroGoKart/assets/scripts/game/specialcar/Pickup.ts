@@ -14,7 +14,7 @@ export class Pickup extends SpecialCar {
     private SetEffect(role: any) {
         let speed_value = role.Speed;
         role.IsSpeedUp = false;
-        role.Speed = 1500;
+        role.Speed = 1300;
         let callback = () => {
             role.IsSpeedUp = true;
             role.Speed = 1000;
@@ -26,6 +26,6 @@ export class Pickup extends SpecialCar {
                 arr[i].active = false;
             }
         }
-        role.scheduleOnce(callback, 15);
+        role.scheduleOnce(callback, 10);
     }
 }

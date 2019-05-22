@@ -430,6 +430,12 @@ export default class Game extends cc.Component {
     }
 
     update(dt) {
+
+        // console.log(GameManage.Instance.IsUseingProp);
+        // if (!GameManage.Instance.IsUseingProp) {
+        //     console.error("道具点击被关闭");
+        // }
+
         if (this.Player && GameManage.Instance.IsUpdateProgress) {
             //进度条
             this.UpdateProgresBar();
@@ -577,6 +583,9 @@ export default class Game extends cc.Component {
      */
     private Paues() {
         if (GameManage.Instance.IsGameStart && GameManage.Instance.IsGameClick) {
+            if (GameManage.Instance.Page_Alarm.active) {
+                GameManage.Instance.Page_Alarm.pauseAllActions();
+            }
             GameManage.Instance.IsPause = true;
             let callback = () => {
                 let role_arr = GameManage.Instance.Roles;
@@ -624,6 +633,9 @@ export default class Game extends cc.Component {
      */
     private GoOn() {
         let callback = () => {
+            if (GameManage.Instance.Page_Alarm.active) {
+                GameManage.Instance.Page_Alarm.pauseAllActions();
+            }
             GameManage.Instance.IsPause = false;
             let role_arr = GameManage.Instance.Roles;
             for (let i = 0; i < role_arr.length; i++) {
@@ -646,6 +658,11 @@ export default class Game extends cc.Component {
      * 游戏重置
      */
     private GameReset() {
+        if (GameManage.Instance.Page_Alarm.active) {
+            GameManage.Instance.Page_Alarm.stopAllActions();
+            GameManage.Instance.Page_Alarm.active = false;
+        }
+
         GameManage.Instance.IsPause = false;
         this.unscheduleAllCallbacks();
         this.SetSpeedBar(0);
@@ -804,7 +821,7 @@ export default class Game extends cc.Component {
             this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
 
             let ran = Math.floor(Math.random() * 3 + 2);
-            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 23);
+            this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 38);
             this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
             this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Path);
@@ -1727,9 +1744,10 @@ export default class Game extends cc.Component {
      * 执行结束
      */
     private RunOver() {
-        if (GameManage.Instance.Page_Alarm.active) {
-            GameManage.Instance.Page_Alarm.active = false;
-        }
+        // if (GameManage.Instance.Page_Alarm.active) {
+        //     GameManage.Instance.Page_Alarm.stopAllActions();
+        //     GameManage.Instance.Page_Alarm.active = false;
+        // }
 
         role:
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {

@@ -4,6 +4,7 @@ import { GameManage } from "../../commont/GameManager";
 import Player from "../Player";
 import { SoundType, EventType } from "../../commont/Enum";
 import { EventCenter } from "../../commont/EventCenter";
+import Role from "../Role";
 
 /**
  * @class 传送门效果
@@ -34,10 +35,6 @@ export class EffectPortal extends PropPassive {
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
         EventCenter.BroadcastOne(EventType.Sound, SoundType.Portal);
-        if (role.name === "Player") {
-            GameManage.Instance.IsTouchClick = false;
-            this.Game.Horizontal = 0;
-        }
 
         let collider = prop.getComponent(cc.BoxCollider);
         collider.enabled = false;
@@ -45,12 +42,11 @@ export class EffectPortal extends PropPassive {
         let dragon = prop.getComponent(dragonBones.ArmatureDisplay);
         dragon.playAnimation("a3", 1);
         if (role.name === "Player") {
-            if (role.name === "Player") {
-                GameManage.Instance.IsTouchClick = true;
-            }
-            
+            GameManage.Instance.IsTouchClick = false;
+            this.Game.Horizontal = 0;
+
             GameManage.Instance.IsPortal = true;
-            let player = role.getComponent(Player);
+            let player: Player = role.getComponent(Player);
             let speed_value = player.Speed;
             player.IsSpeedUp = false;
             player.Speed = 0;
@@ -58,6 +54,7 @@ export class EffectPortal extends PropPassive {
             let node_pos = player.Camera.parent.convertToNodeSpaceAR(world_pos);
             let act_move = cc.moveTo(0.3, player.Camera.position.x, node_pos.y + 200);
             let callback = () => {
+                GameManage.Instance.IsTouchClick = true;
                 collider.enabled = true;
                 this.Pool_PassiveProp.put(prop);
                 GameManage.Instance.IsPortal = false;
@@ -74,8 +71,5 @@ export class EffectPortal extends PropPassive {
             }
             setTimeout(callback, 1000);
         }
-
-
-
     }
 }

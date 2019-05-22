@@ -131,7 +131,7 @@ export default class PropBox extends cc.Component {
         if (!GameManage.Instance.IsUseingProp || !GameManage.Instance.IsUpdateProgress) {
             return;
         }
-        
+
         if (click === "1" && !this.IsBox_1) {
             return;
         }
@@ -141,7 +141,7 @@ export default class PropBox extends cc.Component {
         if (click === "3" && !this.IsBox_3) {
             return;
         }
-        
+
         let prop: cc.Node = null;
         for (let i = 0; i < this.Props.length; i++) {
             prop = this.Props[i];
@@ -295,7 +295,7 @@ export default class PropBox extends cc.Component {
             this.IsBox_3 = false;
         }
         let srpite = prop.getComponent(cc.Sprite);
-        let ran = Math.floor(Math.random() * this.Fra_InitiativeProp.length);
+        let ran = Math.floor(Math.random() * this.Fra_InitiativeProp.length - 1);
         this.ExtractProp(srpite, 0.3, ran, this.Fra_InitiativeProp, -0.1, 0);
     }
 

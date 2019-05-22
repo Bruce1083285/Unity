@@ -32,10 +32,21 @@ export class EffectBoulder extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop?: cc.Node) {
+        GameManage.Instance.IsTouchClick = true;
+        GameManage.Instance.StopTargetAction(role);
+
         let collider = role.getComponent(cc.BoxCollider);
-        GameManage.Instance.IsTouchClick = false;
+        // GameManage.Instance.IsTouchClick = false;
         collider.enabled = false;
         role.scaleX = 0.6;
+
+        let arr = role.children;
+        for (let i = 0; i < arr.length; i++) {
+            let chi = arr[i];
+            if (chi.name === "7" || chi.name === "win") {
+                chi.destroy();
+            }
+        }
 
         let type_C = null;
         if (role.name === "AI") {
@@ -48,12 +59,12 @@ export class EffectBoulder extends PropPassive {
         type_C.Speed = speed_Value * 0.5;
 
         let callback_1 = () => {
-            GameManage.Instance.IsTouchClick = true;
-            type_C.Speed = speed_Value;
+            // GameManage.Instance.IsTouchClick = true;
+            // type_C.Speed = speed_Value;
             type_C.IsSpeedUp = true;
             role.scaleX = 0.4;
         }
-        let callback_2=()=>{
+        let callback_2 = () => {
             collider.enabled = true;
         }
         setTimeout(callback_1, 3000);

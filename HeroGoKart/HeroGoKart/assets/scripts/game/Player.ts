@@ -160,6 +160,12 @@ export default class Player extends Role {
             this.CollisionWall(this.Game, this.node);
             return;
         }
+
+        // console.log(this.IsSpeedUp);
+        // if (!this.IsSpeedUp) {
+        //     console.log(this.IsSpeedUp+"<---------------------------------------------------");
+        // }
+
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
         //水平移动
@@ -264,6 +270,9 @@ export default class Player extends Role {
      * @param self 自身
      */
     private onCollisionEnter(other, self) {
+        if (GameManage.Instance.IsPause) {
+            return;
+        }
         let target: cc.Node = other.node;
         let self_node: cc.Node = self.node;
         let group = target.group;
@@ -721,24 +730,56 @@ export default class Player extends Role {
      * @returns 保护罩是否打开
      */
     public GetPretection(target: cc.Node): boolean {
-        if (this.IsOpen_Pretection) {
-            if (target.name === "Handrail" || target.name === "Roadblock") {
-                let act_rotate = cc.rotateBy(15, 10000);
-                let act_move = cc.moveBy(15, 10000, 10000);
-                let act_spa = cc.spawn(act_rotate, act_move);
-                let act_callback = () => {
-                    target.destroy();
+        let arr = this.node.children;
+        for (let i = 0; i < arr.length; i++) {
+            let prop = arr[i];
+            if (prop.name === "6") {
+                if (target.name === "Handrail" || target.name === "Roadblock") {
+                    let act_rotate = cc.rotateBy(15, 10000);
+                    let act_move = cc.moveBy(15, 10000, 10000);
+                    let act_spa = cc.spawn(act_rotate, act_move);
+                    let act_callback = () => {
+                        target.destroy();
+                    }
+                    let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
+                    target.runAction(act_seq);
+                } else {
+                    if (target.name !== "Boulder") {
+                        target.destroy();
+                    } else {
+                        let collider = this.node.getComponent(cc.BoxCollider)
+                        collider.enabled = false;
+                        let callback = () => {
+                            collider.enabled = true;
+                        }
+                        this.scheduleOnce(callback, 1);
+                    }
                 }
-                let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
-                target.runAction(act_seq);
-            } else {
-                target.destroy();
+                let prop = this.node.getChildByName("6");
+                prop.destroy();
+                this.IsOpen_Pretection = false;
+                return true;
             }
-            let prop = this.node.getChildByName("6");
-            prop.destroy();
-            this.IsOpen_Pretection = false;
-            return true;
         }
+
+        // if (this.IsOpen_Pretection) {
+        //     if (target.name === "Handrail" || target.name === "Roadblock") {
+        //         let act_rotate = cc.rotateBy(15, 10000);
+        //         let act_move = cc.moveBy(15, 10000, 10000);
+        //         let act_spa = cc.spawn(act_rotate, act_move);
+        //         let act_callback = () => {
+        //             target.destroy();
+        //         }
+        //         let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
+        //         target.runAction(act_seq);
+        //     } else {
+        //         target.destroy();
+        //     }
+        //     let prop = this.node.getChildByName("6");
+        //     prop.destroy();
+        //     this.IsOpen_Pretection = false;
+        //     return true;
+        // }
         return false;
     }
 

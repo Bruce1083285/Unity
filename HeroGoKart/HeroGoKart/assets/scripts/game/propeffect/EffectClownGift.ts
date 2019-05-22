@@ -45,9 +45,9 @@ export class EffectClownGift extends PropEffect {
             type_Class = role.getComponent("AI");
         } else if (name === "Player") {
             type_Class = role.getComponent("Player");
+            GameManage.Instance.IsUseingProp=false;
         }
 
-        GameManage.Instance.IsUseingProp=true;
 
         type_Class.IsSpeedUp = false;
         type_Class.Speed = 0;
@@ -56,9 +56,9 @@ export class EffectClownGift extends PropEffect {
         let act_callback = () => {
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
+                GameManage.Instance.IsUseingProp=true;
             }
 
-            GameManage.Instance.IsUseingProp=false;
 
             collider.enabled = true;
             type_Class.IsSpeedUp = true;

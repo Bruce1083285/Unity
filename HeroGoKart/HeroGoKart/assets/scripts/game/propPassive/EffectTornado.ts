@@ -34,6 +34,8 @@ export class EffectTornado extends PropPassive {
  * @param prop 道具节点
  */
     private SetProp(role: cc.Node, prop: cc.Node) {
+        GameManage.Instance.StopTargetAction(role);
+
         let collider = role.getComponent(cc.BoxCollider);
         collider.enabled = false;
 
@@ -49,36 +51,30 @@ export class EffectTornado extends PropPassive {
             }
         }
 
-        let box = role.getChildByName("Box");
-        box.stopAllActions();
-        box.scale = 1;
-
-        if (role.name === "Player") {
-            GameManage.Instance.IsTouchClick = false;
-            this.Game.Horizontal = 0;
-        }
         // this.Pool_PassiveProp.put(prop);
         let type_C: Role = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);
         } else if (role.name === "Player") {
             type_C = role.getComponent(Player);
+            GameManage.Instance.IsUseingProp = false;
+            GameManage.Instance.IsTouchClick = false;
+            this.Game.Horizontal = 0;
         }
         let speed_value = type_C.Speed;
         type_C.IsSpeedUp = false;
         type_C.Speed = 0;
 
-        GameManage.Instance.IsUseingProp = false;
 
         let act_Scale_big = cc.scaleTo(0.3, 1.5);
         let act_Rotate = cc.rotateTo(1.5, 1080);
         let act_Scale_small = cc.scaleTo(0.3, 1);
         let act_callback = () => {
+            collider.enabled = true;
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
+                GameManage.Instance.IsUseingProp = true;
             }
-            GameManage.Instance.IsUseingProp = true;
-            collider.enabled = true;
             if (!type_C.IsSpeedUping) {
                 type_C.IsSpeedUp = true;
             }
@@ -86,6 +82,7 @@ export class EffectTornado extends PropPassive {
             role.setPosition(role.position.x, role.position.y + 500);
         }
         let act_Seq = cc.sequence(act_Scale_big, act_Rotate, act_Scale_small, cc.callFunc(act_callback));
+        let box=role.getChildByName("Box");
         box.runAction(act_Seq);
     }
 }

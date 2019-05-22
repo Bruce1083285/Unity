@@ -4,6 +4,7 @@ import Player from "../Player";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
 import { Special_Car } from "../../commont/Enum";
+import Role from "../Role";
 
 
 /**
@@ -42,7 +43,7 @@ export class EffectHandrail extends PropPassive {
         }
         let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
         prop.runAction(act_seq);
-        
+
         let arr_car = role.getChildByName("Box").getChildByName("SpecialCar").children;
         let car_name: string = null;
         for (let i = 0; i < arr_car.length; i++) {
@@ -56,17 +57,23 @@ export class EffectHandrail extends PropPassive {
             return;
         }
 
-        let type_C = null;
+        let type_C:Role = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);
         } else if (role.name === "Player") {
             type_C = role.getComponent(Player);
+            GameManage.Instance.IsTouchClick = false;
+            this.Game.Horizontal = 0;
         }
         type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
         type_C.Speed = speed_Value * 0.05;
 
+
         let callback = () => {
+            if (role.name === "Player") {
+                GameManage.Instance.IsTouchClick = true;
+            }
             type_C.Speed = speed_Value;
             type_C.IsSpeedUp = true;
         }

@@ -2,6 +2,7 @@ import { EventType, SoundType, Special_Car } from "../commont/Enum";
 import { EventCenter } from "../commont/EventCenter";
 import { GameManage } from "../commont/GameManager";
 import Player from "../game/Player";
+import Role from "../game/Role";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -49,7 +50,7 @@ export default class Animation_Bomb extends cc.Component {
     }
 
     update(dt) {
-        if (!this.Target|| GameManage.Instance.IsPause) {
+        if (!this.Target || GameManage.Instance.IsPause) {
             return;
         }
         let target_x = this.Target.position.x;
@@ -93,7 +94,7 @@ export default class Animation_Bomb extends cc.Component {
             let collider = this.Target.getComponent(cc.BoxCollider);
             collider.enabled = false;
             let name = this.Target.name;
-            let type_Class = null;
+            let type_Class:Role = null;
             if (name === "AI") {
                 type_Class = this.Target.getComponent("AI");
                 let istrue = type_Class.GetPretection(this.node);
@@ -109,13 +110,11 @@ export default class Animation_Bomb extends cc.Component {
                     return
                 }
                 GameManage.Instance.IsTouchClick = false;
+                GameManage.Instance.IsUseingProp = false;
                 type_Class.Game.Horizontal = 0;
             }
-            GameManage.Instance.IsUseingProp = true;
 
-            let box = this.Target.getChildByName("Box");
-            box.stopAllActions();
-            box.scale = 1;
+            GameManage.Instance.StopTargetAction(this.Target);
 
             type_Class.IsSpeedUp = false;
             type_Class.Speed = 0;
@@ -124,8 +123,8 @@ export default class Animation_Bomb extends cc.Component {
             let act_Scale_small = cc.scaleTo(0.3, 1, 1);
             let act_Spawn = cc.spawn(act_Scale_big, act_Scale_small);
             let act_callback = () => {
-                GameManage.Instance.IsUseingProp = false;
                 if (name === "Player") {
+                    GameManage.Instance.IsUseingProp = true;
                     GameManage.Instance.IsTouchClick = true;
                 }
                 collider.enabled = true;
@@ -134,6 +133,7 @@ export default class Animation_Bomb extends cc.Component {
                 this.Target = null;
             }
             let act_Seq = cc.sequence(act_Spawn, act_Scale_small, cc.callFunc(act_callback));
+            let box=this.Target.getChildByName("Box");
             box.runAction(act_Seq);
             this.node.destroy();
             return;

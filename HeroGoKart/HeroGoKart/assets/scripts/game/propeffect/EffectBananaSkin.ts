@@ -1,5 +1,6 @@
 import { PropEffect } from "../PropEffect";
 import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
 
 /**
  * @class 香蕉皮效果
@@ -26,6 +27,8 @@ export class EffectBananaSkin extends PropEffect {
      * @param role 被影响角色
      */
     private RunEffect(role: cc.Node, prop: cc.Node) {
+        GameManage.Instance.StopTargetAction(role);
+
         prop.destroy();
         // let collider = role.getComponent(cc.BoxCollider);
         // collider.enabled = false;

@@ -3,6 +3,7 @@ import Player from "../game/Player";
 import { GameManage } from "../commont/GameManager";
 import { SoundType, EventType } from "../commont/Enum";
 import { EventCenter } from "../commont/EventCenter";
+import Role from "../game/Role";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -65,17 +66,14 @@ export default class Animation_Frozen extends cc.Component {
         this.Target = target;
         this.node.zIndex = 1;
 
-        let box = target.getChildByName("Box");
-        box.stopAllActions();
-        box.scale = 1;
+        GameManage.Instance.StopTargetAction(target);
 
         EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
-        GameManage.Instance.IsUseingProp = false;
 
         let collider = target.getComponent(cc.BoxCollider);
         collider.enabled = false;
 
-        let type_Class = null;
+        let type_Class: Role = null;
         let name = this.Target.name;
         if (name === "AI") {
             type_Class = this.Target.getComponent(AI);
@@ -85,6 +83,7 @@ export default class Animation_Frozen extends cc.Component {
             }
         } else if (name === "Player") {
             type_Class = this.Target.getComponent(Player);
+            GameManage.Instance.IsUseingProp = false;
             GameManage.Instance.IsTouchClick = false;
             type_Class.Game.Horizontal = 0;
         }
@@ -119,24 +118,25 @@ export default class Animation_Frozen extends cc.Component {
             this.Spri_Img.spriteFrame = this.Fram_Frozen[this.Index_End];
             this.Index_End--;
             if (this.Index_End < 0) {
-                GameManage.Instance.IsUseingProp = false;
                 let collider = this.Target.getComponent(cc.BoxCollider);
                 collider.enabled = true;
                 // this.unschedule(callback);
                 // this.Spri_Img.spriteFrame = null;
-                let type_Class = null;
+                let type_Class: Role = null;
                 this.Target.opacity = 255;
                 let name = this.Target.name;
                 if (name === "AI") {
                     type_Class = this.Target.getComponent(AI);
                 } else if (name === "Player") {
                     type_Class = this.Target.getComponent(Player);
+                    GameManage.Instance.IsUseingProp = true;
                     GameManage.Instance.IsTouchClick = true;
 
                 }
                 type_Class.IsWaterPolo = false;
                 type_Class.IsSpeedUp = true;
                 type_Class.Speed = 0;
+                this.node.removeFromParent();
                 this.node.destroy();
             }
         }

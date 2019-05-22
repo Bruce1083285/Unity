@@ -76,4 +76,17 @@ export class GameManage {
      */
     public Roles: cc.Node[] = [];
 
+    /**
+     * 停止目标动作
+     * @param target 目标节点
+     */
+    public StopTargetAction(target: cc.Node) {
+        GameManage.Instance.IsTouchClick = true;
+        let box = target.getChildByName("Box");
+        box.stopAllActions();
+        box.scale = 1;
+        box.opacity = 255;
+        box.rotation = 0;
+    }
+
 }

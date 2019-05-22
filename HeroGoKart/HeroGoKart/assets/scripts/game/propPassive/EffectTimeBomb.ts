@@ -33,14 +33,8 @@ export class EffectTimeBomb extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        let box = role.getChildByName("Box");
-        box.stopAllActions();
-        box.scale = 1;
+        GameManage.Instance.StopTargetAction(role);
 
-        if (role.name === "Player") {
-            GameManage.Instance.IsTouchClick = false;
-            this.Game.Horizontal = 0;
-        }
         let collider = role.getComponent(cc.BoxCollider);
         collider.enabled = false;
 
@@ -49,11 +43,13 @@ export class EffectTimeBomb extends PropPassive {
             type_C = role.getComponent(AI);
         } else if (role.name === "Player") {
             type_C = role.getComponent(Player);
+            GameManage.Instance.IsUseingProp=false;
+            GameManage.Instance.IsTouchClick = false;
+            this.Game.Horizontal = 0;
         }
         type_C.IsSpeedUp = false;
         type_C.Speed = 0;
 
-        GameManage.Instance.IsUseingProp=true;
 
         let act_Scale_big = cc.scaleTo(0.5, 0.8, 0.8);
         let act_Overturn_big = cc.scaleTo(0.5, 0.8, -0.8);
@@ -61,8 +57,8 @@ export class EffectTimeBomb extends PropPassive {
         // let act_dt = cc.delayTime(2);
         let act_Scale_small = cc.scaleTo(0.3, 0.4, 0.4);
         let callback = () => {
-            GameManage.Instance.IsUseingProp=false;
             if (role.name === "Player") {
+                GameManage.Instance.IsUseingProp=true;
                 GameManage.Instance.IsTouchClick = true;
             }
             collider.enabled = true;
@@ -71,6 +67,7 @@ export class EffectTimeBomb extends PropPassive {
             type_C.IsSpeedUp = true;
         }
         let act_Seq = cc.sequence(act_spw, act_Scale_small, cc.callFunc(callback));
+        let box=role.getChildByName("Box");
         box.runAction(act_Seq);
     }
 }

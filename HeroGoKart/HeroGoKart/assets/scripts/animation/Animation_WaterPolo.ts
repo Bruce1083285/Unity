@@ -71,11 +71,12 @@ export default class Animation_WaterPolo extends cc.Component {
                 }
             }
 
-            let box = this.Target.getChildByName("Box");
-            box.stopAllActions();
-            box.scale = 1;
 
-            GameManage.Instance.IsUseingProp = false;
+            GameManage.Instance.StopTargetAction(this.Target);
+
+            let collider = this.Target.getComponent(cc.BoxCollider);
+            collider.enabled = false;
+
 
             let type_Class: Role = null;
             let name = this.Target.name;
@@ -86,6 +87,7 @@ export default class Animation_WaterPolo extends cc.Component {
                     return
                 }
             } else if (name === "Player") {
+                GameManage.Instance.IsUseingProp = false;
                 type_Class = this.Target.getComponent(Player);
                 let istrue = type_Class.GetPretection(this.node);
                 if (istrue) {
@@ -107,9 +109,8 @@ export default class Animation_WaterPolo extends cc.Component {
             img.scale = 1;
             let target = this.Target;
             let callback = () => {
-                GameManage.Instance.IsUseingProp = true;
 
-                let collider = target.getComponent(cc.BoxCollider);
+
                 collider.enabled = true;
 
                 let type_Class = null;
@@ -118,6 +119,7 @@ export default class Animation_WaterPolo extends cc.Component {
                     type_Class = target.getComponent(AI);
                 } else if (name === "Player") {
                     type_Class = target.getComponent(Player);
+                    GameManage.Instance.IsUseingProp = true;
                     GameManage.Instance.IsTouchClick = true;
                 }
                 type_Class.IsWaterPolo = false;

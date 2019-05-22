@@ -31,7 +31,7 @@ export class EffectPaint extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        this.Pool_PassiveProp.put(prop);
+        // this.Pool_PassiveProp.put(prop);
 
         let type_C = null;
         if (role.name === "AI") {
