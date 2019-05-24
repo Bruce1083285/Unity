@@ -30,6 +30,7 @@ export class EffectClownGift extends PropEffect {
      */
     private RunEffect(role: cc.Node, prop: cc.Node) {
         GameManage.Instance.StopTargetAction(role);
+        prop.getComponent(cc.BoxCollider).enabled = false;
 
         let arr_car = role.getChildByName("Box").getChildByName("SpecialCar").children;
         let car_name: string = null;
