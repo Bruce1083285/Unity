@@ -47,7 +47,7 @@ export class BananaSkin extends PropUseing {
         let box_Collider = prop.getComponent(cc.BoxCollider);
         box_Collider.enabled = false;
 
-        let act_Move = cc.moveBy(0.3, 0, -50);
+        let act_Move = cc.moveBy(0.3, 0, -200);
         let callback = () => {
             box_Collider.enabled = true;
         }

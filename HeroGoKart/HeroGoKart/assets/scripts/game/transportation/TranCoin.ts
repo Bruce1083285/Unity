@@ -47,5 +47,6 @@ export class TranCoin extends Transportation {
         let num = parseInt(coin);
         let sum = num + 1000;
         Cache.SetCache(CacheType.Coin_Amount, sum + "");
+        console.log("道具------------------>空投金币");
     }
 }

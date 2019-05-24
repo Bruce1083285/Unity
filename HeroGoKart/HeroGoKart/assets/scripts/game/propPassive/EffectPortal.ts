@@ -56,6 +56,7 @@ export class EffectPortal extends PropPassive {
             let node_pos = player.Camera.parent.convertToNodeSpaceAR(world_pos);
             let act_move = cc.moveTo(0.3, player.Camera.position.x, node_pos.y + 200);
             let callback = () => {
+                GameManage.Instance.StopTargetAction(role);
                 GameManage.Instance.IsTouchClick = true;
                 collider.enabled = true;
                 this.Pool_PassiveProp.put(prop);
@@ -68,10 +69,12 @@ export class EffectPortal extends PropPassive {
         } else {
 
             let callback = () => {
+                GameManage.Instance.StopTargetAction(role);
                 collider.enabled = true;
                 this.Pool_PassiveProp.put(prop);
             }
             setTimeout(callback, 1000);
         }
+        console.log("道具------------------>传送门");
     }
 }

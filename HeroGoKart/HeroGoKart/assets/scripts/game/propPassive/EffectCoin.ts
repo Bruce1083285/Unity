@@ -37,5 +37,6 @@ export class EffectCoin extends PropPassive {
         let num = parseInt(coin);
         let sum = num + 1;
         Cache.SetCache(CacheType.Coin_Amount, sum + "");
+        console.log("道具------------------>金币");
     }
 }

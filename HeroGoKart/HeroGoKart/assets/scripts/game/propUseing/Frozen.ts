@@ -2,11 +2,12 @@
 import AI from "../AI";
 import Player from "../Player";
 import { EventCenter } from "../../commont/EventCenter";
-import { EventType } from "../../commont/Enum";
+import { EventType, Special_Car } from "../../commont/Enum";
 import { PropUseing } from "../PropUseing";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
 import Animation_Frozen from "../../animation/Animation_Frozen";
+import Role from "../Role";
 
 /**
  * @class 冰冻
@@ -45,12 +46,18 @@ export class Frozen extends PropUseing {
         let ran = Math.floor(Math.random() * arr_y.length);
         let ran_node: cc.Node = arr_y[ran];
 
-        let arr = ran_node.children;
-        for (let i = 0; i < arr.length; i++) {
-            if (arr[i].name === "6") {
-                arr[i].destroy();
-                return;
+        let arr_car = ran_node.getChildByName("Box").getChildByName("SpecialCar").children;
+        let car_name: string = null;
+        for (let i = 0; i < arr_car.length; i++) {
+            let car = arr_car[i];
+            if (car.active) {
+                car_name = car.name;
+                break;
             }
+        }
+        if (car_name && car_name === Special_Car.StreetRoller) {
+            // this.node.destroy();
+            return;
         }
 
         let prop: cc.Node = null;
@@ -58,25 +65,16 @@ export class Frozen extends PropUseing {
         for (let i = 0; i < this.Props.length; i++) {
             if (this.Props[i].name === skin_id) {
                 prop = cc.instantiate(this.Props[i]);
-                parent.addChild(prop);
                 break;
             }
         }
-        let ai: AI = null;
-        let player: Player = null;
+
+        let type_c: Role = null;
         if (ran_node.name === "AI") {
-            ai = ran_node.getComponent(AI);
-            let istrue = ai.GetPretection(prop);
-            if (istrue) {
-                return
-            }
+            type_c = ran_node.getComponent(AI);
         }
         if (ran_node.name === "Player") {
-            player = ran_node.getComponent(Player);
-            let istrue = player.GetPretection(prop);
-            if (istrue) {
-                return
-            }
+            type_c = ran_node.getComponent(Player);
         }
 
         let callback_1_time: number = 0;
@@ -87,14 +85,13 @@ export class Frozen extends PropUseing {
             let act_seq = cc.sequence(act_fOut, act_fIn).repeatForever();
             GameManage.Instance.Page_Alarm.active = true;
             GameManage.Instance.Page_Alarm.runAction(act_seq);
-            callback_1_time = 1000;
-            callback_2_time = 4000;
+            callback_1_time = 1;
+            callback_2_time = 4;
         }
 
         let box_Collider = prop.getComponent(cc.BoxCollider);
         box_Collider.enabled = false;
 
-        prop.setPosition(ran_node.position.x, ran_node.position.y);
         // console.log("冰冻是否成功");
         // console.log(ran_node.position);
         // console.log(prop.position);
@@ -111,7 +108,8 @@ export class Frozen extends PropUseing {
         let callback_2 = () => {
             frozen.PlayEnd();
         }
-        setTimeout(callback_1, callback_1_time);
-        setTimeout(callback_2, callback_2_time);
+        frozen.scheduleOnce(callback_1, callback_1_time);
+        frozen.scheduleOnce(callback_2, callback_2_time);
+        console.log("道具------------------>冰冻");
     }
 }

@@ -1,3 +1,4 @@
+import Player from "../game/Player";
 
 /**
  * @class 游戏管理
@@ -81,12 +82,24 @@ export class GameManage {
      * @param target 目标节点
      */
     public StopTargetAction(target: cc.Node) {
-        GameManage.Instance.IsTouchClick = true;
+        target.getComponent(cc.BoxCollider).enabled = true;
+
+        if (target.name === "Player") {
+            // let player = target.getComponent(Player);
+            // player.Horizontal_Sensitivity = 100;
+
+            GameManage.Instance.IsTouchClick = true;
+        }
         let box = target.getChildByName("Box");
         box.stopAllActions();
         box.scale = 1;
         box.opacity = 255;
         box.rotation = 0;
+    }
+
+
+    public IsSkip() {
+
     }
 
 }

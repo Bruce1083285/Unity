@@ -4,6 +4,7 @@ import Player from "../Player";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
 import Role from "../Role";
+import { Special_Car } from "../../commont/Enum";
 
 /**
  * @class 龙卷风效果
@@ -34,10 +35,28 @@ export class EffectTornado extends PropPassive {
  * @param prop 道具节点
  */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        GameManage.Instance.StopTargetAction(role);
+        // GameManage.Instance.StopTargetAction(role);
 
         let collider = role.getComponent(cc.BoxCollider);
         collider.enabled = false;
+
+        let arr_car = role.getChildByName("Box").getChildByName("SpecialCar").children;
+        let car_name: string = null;
+        for (let i = 0; i < arr_car.length; i++) {
+            let car = arr_car[i];
+            if (car.active) {
+                car_name = car.name;
+                break;
+            }
+        }
+        if (car_name && car_name === Special_Car.StreetRoller) {
+            // this.node.destroy();
+            let callback = () => {
+                collider.enabled = true;
+            }
+            setTimeout(callback, 1000);
+            return;
+        }
 
         let arr = role.children;
         for (let i = 0; i < arr.length; i++) {
@@ -62,6 +81,36 @@ export class EffectTornado extends PropPassive {
             this.Game.Horizontal = 0;
         }
         let speed_value = type_C.Speed;
+        if (!type_C.IsSky) {
+            type_C.IsSky = true;
+        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen || type_C.IsSpeedUping) {
+            if (type_C.IsSlowDown) {
+                type_C.IsSlowDown = false;
+            }
+            if (type_C.IsSky) {
+                type_C.IsSky = false;
+            }
+            if (type_C.IsFrozen) {
+                role.getChildByName("5").destroy();
+                type_C.IsFrozen = false;
+            }
+            if (type_C.IsWaterPolo) {
+                role.getChildByName("4").destroy();
+                type_C.IsWaterPolo = false;
+            }
+            if (type_C.IsLightning) {
+                role.getChildByName("9").destroy();
+                type_C.IsWaterPolo = false;
+            }
+            if (type_C.IsSpeedUping) {
+                role.getChildByName("7").destroy();
+                role.getChildByName("win").destroy();
+                type_C.IsSpeedUping = false;
+            }
+            GameManage.Instance.StopTargetAction(role);
+            role.stopAllActions();
+            type_C.unscheduleAllCallbacks();
+        }
         type_C.IsSpeedUp = false;
         type_C.Speed = 0;
 
@@ -70,19 +119,21 @@ export class EffectTornado extends PropPassive {
         let act_Rotate = cc.rotateTo(1.5, 1080);
         let act_Scale_small = cc.scaleTo(0.3, 1);
         let act_callback = () => {
+            // GameManage.Instance.StopTargetAction(role);
+
             collider.enabled = true;
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
                 GameManage.Instance.IsUseingProp = true;
             }
-            if (!type_C.IsSpeedUping) {
-                type_C.IsSpeedUp = true;
-            }
-            type_C.Speed = speed_value;
+            type_C.IsSky = false;
+            type_C.IsSpeedUp = true;
+            // type_C.Speed = speed_value;
             role.setPosition(role.position.x, role.position.y + 500);
         }
         let act_Seq = cc.sequence(act_Scale_big, act_Rotate, act_Scale_small, cc.callFunc(act_callback));
-        let box=role.getChildByName("Box");
+        let box = role.getChildByName("Box");
         box.runAction(act_Seq);
+        console.log("道具------------------>龙卷风");
     }
 }

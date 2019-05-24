@@ -86,7 +86,7 @@ export default class Animation_TimeBomb extends cc.Component {
     public Play() {
         this.node.zIndex = 1;
         this.node.getChildByName("time").active = true;
-        let num = 20;
+        let num = 30;
         this.Time.string = num + "";
         let callback = () => {
             if (GameManage.Instance.IsPause) {

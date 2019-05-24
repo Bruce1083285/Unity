@@ -91,6 +91,7 @@ export class WaterPolo extends PropUseing {
         // }
 
         // setTimeout(callback, 2000);
+        console.log("道具------------------>水球");
     }
 
 }

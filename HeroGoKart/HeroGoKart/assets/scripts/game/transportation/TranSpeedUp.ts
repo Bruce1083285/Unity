@@ -3,6 +3,7 @@ import Player from "../Player";
 import AI from "../AI";
 import { GameManage } from "../../commont/GameManager";
 import Game from "../../Game";
+import Role from "../Role";
 
 /**
  * @class 空投奖励--->加速卡
@@ -31,6 +32,8 @@ export class TranSpeedUp extends Transportation {
      * @param role  角色节点
      */
     private SetSpeedUp(role: cc.Node) {
+        GameManage.Instance.StopTargetAction(role);
+
         let prop_1: cc.Node = null;
         for (let i = 0; i < this.Game.Pre_InitiativeProp.length; i++) {
             if (this.Game.Pre_InitiativeProp[i].name === "7") {
@@ -50,7 +53,7 @@ export class TranSpeedUp extends Transportation {
         let partic = speed_Effect.getComponent(cc.ParticleSystem);
         partic.resetSystem();
 
-        let role_type = null;
+        let role_type: Role = null;
         if (role.name === "AI") {
             role_type = role.getComponent(AI);
         }
@@ -59,14 +62,19 @@ export class TranSpeedUp extends Transportation {
         }
         let speed_value = role_type.Speed;
         role_type.IsSpeedUp = false;
+        role_type.IsSpeedUping = true;
         role_type.Speed = 1500;
         let callback = () => {
+            GameManage.Instance.StopTargetAction(role);
+
             prop_1.destroy();
             speed_Effect.destroy();
             role_type.IsSpeedUp = true;
+            role_type.IsSpeedUping = false;
             role_type.Speed = 1000;
             GameManage.Instance.Current_SpecialCar = null;
         }
-        setTimeout(callback, 20000);
+        setTimeout(callback, 10000);
+        console.log("道具------------------>空投加速卡");
     }
 }

@@ -6,6 +6,7 @@ import { EventType, Special_Car, SoundType } from "../../commont/Enum";
 import { PropUseing } from "../PropUseing";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
+import Role from "../Role";
 
 
 /**
@@ -32,6 +33,8 @@ export class Lightning extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
+        // GameManage.Instance.StopTargetAction(role);
+
         EventCenter.BroadcastOne(EventType.Sound, SoundType.Lightning);
         let arr_role: cc.Node[] = [];
 
@@ -43,16 +46,17 @@ export class Lightning extends PropUseing {
             if (dis <= 10) {
                 continue;
             }
+            arr_role.push(target);
 
-            let arr = target.children;
-            for (let i = 0; i < arr.length; i++) {
-                if (arr[i].name === "6") {
-                    arr[i].destroy();
-                } else {
-                    arr_role.push(target);
-                }
-                continue role;
-            }
+            // let arr = target.children;
+            // for (let i = 0; i < arr.length; i++) {
+            //     if (arr[i].name === "6") {
+            //         arr[i].destroy();
+            //     } else {
+            //         arr_role.push(target);
+            //     }
+            //     continue role;
+            // }
 
             // let target_Class = null;
             // let name = target.name;
@@ -66,10 +70,6 @@ export class Lightning extends PropUseing {
             // }
         }
 
-        if (arr_role.length <= 0) {
-            return;
-        }
-
         for (let i = 0; i < arr_role.length; i++) {
             let arr_car = arr_role[i].getChildByName("Box").getChildByName("SpecialCar").children;
             let car_name: string = null;
@@ -80,9 +80,13 @@ export class Lightning extends PropUseing {
                     break;
                 }
             }
-            if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
-                return;
+            if (car_name && car_name === Special_Car.StreetRoller) {
+                arr_role.splice(i, 1);
             }
+        }
+
+        if (arr_role.length <= 0) {
+            return;
         }
 
         let pre_prop: cc.Prefab = null;
@@ -103,45 +107,108 @@ export class Lightning extends PropUseing {
 
         for (let i = 0; i < arr_role.length; i++) {
             let target = arr_role[i];
-            let prop = cc.instantiate(pre_prop);
-            target.addChild(prop);
-            target.scale = 0.2;
-            prop.scale = 2;
-            prop.setPosition(0, 400);
 
-            let callbalc_time = 10000;
-            let target_Class = null;
+            let callbalc_time = 5;
+            let prop = cc.instantiate(pre_prop);
+            let target_Class: Role = null;
             let name = target.name;
             if (name === "AI") {
                 target_Class = target.getComponent(AI);
             } else if (name === "Player") {
                 target_Class = target.getComponent(Player);
+            }
+            let callback = () => {
+                if (!target_Class.IsLightning) {
+                    target_Class.IsLightning = true;
+                } else if (target_Class.IsSlowDown || target_Class.IsSky || target_Class.IsLightning || target_Class.IsWaterPolo || target_Class.IsFrozen || target_Class.IsSpeedUping) {
+                    if (target_Class.IsSlowDown) {
+                        target_Class.IsSlowDown = false;
+                    }
+                    if (target_Class.IsSky) {
+                        target_Class.IsSky = false;
+                    }
+                    if (target_Class.IsFrozen) {
+                        role.getChildByName("5").destroy();
+                        target_Class.IsFrozen = false;
+                    }
+                    if (target_Class.IsWaterPolo) {
+                        role.getChildByName("4").destroy();
+                        target_Class.IsWaterPolo = false;
+                    }
+                    if (target_Class.IsLightning) {
+                        let light = role.getChildByName("9");
+                        if (light) {
+                            light.destroy();
+                        }
+                        target_Class.IsWaterPolo = false;
+                    }
+                    if (target_Class.IsSpeedUping) {
+                        let head = role.getChildByName("7");
+                        if (head) {
+                            head.destroy();
+                        }
+                        let win = role.getChildByName("win");
+                        if (win) {
+                            win.destroy();
+                        }
+                        target_Class.IsSpeedUping = false;
+                    }
+                    GameManage.Instance.StopTargetAction(role);
+                    role.stopAllActions();
+                    target_Class.unscheduleAllCallbacks();
+                }
+                target_Class.IsSpeedUp = false;
+                let target_Speed_value = target_Class.Speed;
+                target_Class.Speed = target_Speed_value * 0.5;
+
+                target.addChild(prop);
+                target.scale = 0.2;
+                prop.scale = 2;
+                prop.setPosition(0, 400);
+
+                let callback_2 = () => {
+                    // GameManage.Instance.StopTargetAction(role);
+
+                    prop.destroy();
+                    target.scale = 0.4;
+                    target_Class.IsLightning = false;
+                    target_Class.IsSpeedUp = true;
+                    // target_Class.Speed = target_Speed_value;
+                }
+                target_Class.scheduleOnce(callback_2, callbalc_time);
+            }
+
+            if (target.name === "Player") {
                 let act_fOut = cc.fadeOut(0.2);
                 let act_fIn = cc.fadeIn(0.2);
                 let act_seq = cc.sequence(act_fOut, act_fIn).repeatForever();
                 GameManage.Instance.Page_Alarm.active = true;
                 GameManage.Instance.Page_Alarm.runAction(act_seq);
-                callbalc_time = 11000;
+                callbalc_time = 6.5;
                 let callback_1 = () => {
                     if (GameManage.Instance.Page_Alarm.active) {
                         GameManage.Instance.Page_Alarm.stopAllActions();
                         GameManage.Instance.Page_Alarm.active = false;
                     }
+                    let prote = target.getChildByName("6");
+                    if (prote) {
+                        prote.destroy();
+                        prop.destroy();
+                        return
+                    }
+                    callback();
                 }
-                setTimeout(callback_1, 1000);
+                target_Class.scheduleOnce(callback_1, 1);
+            } else {
+                let prote = target.getChildByName("6");
+                if (prote) {
+                    prote.destroy();
+                    prop.destroy();
+                    return
+                }
+                callback();
             }
-            target_Class.IsLightning = true;
-            target_Class.IsSpeedUp = false;
-            let target_Speed_value = target_Class.Speed;
-            target_Class.Speed = target_Speed_value * 0.5;
-            let callback_2 = () => {
-                prop.destroy();
-                target.scale = 0.4;
-                target_Class.IsLightning = false;
-                target_Class.IsSpeedUp = true;
-                target_Class.Speed = target_Speed_value;
-            }
-            setTimeout(callback_2, callbalc_time);
         }
+        console.log("道具------------------>雷击");
     }
 }

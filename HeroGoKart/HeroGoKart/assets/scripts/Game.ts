@@ -6,6 +6,7 @@ import Player from "./game/Player";
 import { GameManage } from "./commont/GameManager";
 import AI from "./game/AI";
 import { PopupBox } from "./commont/PopupBox";
+import Role from "./game/Role";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -514,7 +515,7 @@ export default class Game extends cc.Component {
         console.log(this.Questions);
 
         this.SetCurrentPathSkin("3");
-        this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 3);
+        this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 38);
         this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
         this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
         this.UpdatePathStart(this.Current_PathSkin, this.Path_Start);
@@ -679,7 +680,6 @@ export default class Game extends cc.Component {
         // this.Trans_CallBack_2 = null;
         EventCenter.Broadcast(EventType.Game_ClearPropBox);
 
-        GameManage.Instance.IsUpdateProgress = true;
         GameManage.Instance.IsGameClick = true;
         GameManage.Instance.IsGameEnd = false;
         GameManage.Instance.IsGameStart = false;
@@ -737,10 +737,6 @@ export default class Game extends cc.Component {
             // let collider = role.getComponent(cc.BoxCollider);
             // collider.enabled = true;
 
-            role.opacity = 255;
-            role.scale = 0.4;
-            role.rotation = 0;
-
             let commont_car = role.getChildByName("Box").getChildByName("Car");
             commont_car.active = true;
             let arr_car = commont_car.children;
@@ -777,6 +773,11 @@ export default class Game extends cc.Component {
                 role_AI.ResetSelf();
                 role_AI.IsSpeedUp = false;
                 role_AI.Speed = 0;
+                if (role_AI.IsSpeedUping) {
+                    role.getChildByName("7").destroy();
+                    role.getChildByName("win").destroy();
+                    role_AI.IsSpeedUping = false;
+                }
             }
             if (role.name === "Player") {
                 role_player = role.getComponent(Player);
@@ -784,16 +785,23 @@ export default class Game extends cc.Component {
                 role_player.ResetSelf();
                 role_player.IsSpeedUp = false;
                 role_player.Speed = 0;
+                if (role_player.IsSpeedUping) {
+                    role.getChildByName("7").destroy();
+                    role.getChildByName("win").destroy();
+                    role_player.IsSpeedUping = false;
+                }
             }
+            clearTimeout();
 
-            let arr = role.getChildByName("Box").children;
+            let arr = role.children;
             for (let i = 0; i < arr.length; i++) {
                 let arr_node = arr[i];
-                if (arr_node.name === "Car" || arr_node.name === "Role" || arr_node.name === "name" || arr_node.name === "SpecialCar") {
+                if (arr_node.name === "name" || arr_node.name === "Box") {
                     continue;
                 }
                 arr_node.destroy();
             }
+            GameManage.Instance.StopTargetAction(role);
         }
     }
 
@@ -813,6 +821,8 @@ export default class Game extends cc.Component {
 
         //设置当前跑道
         EventCenter.AddListenter(EventType.Game_SetCurrentPath, (path_ID) => {
+            GameManage.Instance.IsPause = false;
+
             this.Page_StartTime.active = true;
             let dragon = this.Page_StartTime.getChildByName("time").getComponent(dragonBones.ArmatureDisplay);
             dragon.playAnimation("a1", 1);
@@ -824,25 +834,54 @@ export default class Game extends cc.Component {
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 38);
             this.SetPath(this.Pool_PathEnd, this.BG, this.Pre_PathEnd, this.Current_PathSkin, 1);
             this.SetPath(this.Pool_Path, this.BG, this.Pre_Path, this.Current_PathSkin, 1);
+            this.SetPathEnd();
             this.SetTransportationAward(this.Pre_TransportationGift, this.Pre_TransportationAircraft, this.Pre_TransportationCard, this.Spr_TransportationAward, this.Area_Path);
 
             EventCenter.BroadcastOne(EventType.Sound, SoundType.StartTime);
 
             for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
                 let role = GameManage.Instance.Roles[i];
+                GameManage.Instance.StopTargetAction(role);
                 let collider = role.getComponent(cc.BoxCollider);
                 collider.enabled = false;
+                let role_type: Role = null;
+                if (role.name === "Player") {
+                    role_type = role.getComponent(Player);
+                }
+                if (role.name === "AI") {
+                    role_type = role.getComponent(AI);
+                }
+                role_type.IsSpeedUp = false;
+                role_type.Speed_Max = 1000;
+                role_type.Speed = 0;
+                role_type.IsFrozen = false;
+                role_type.IsLightning = false;
+                role_type.IsSky = false;
+                role_type.IsSpeedUping = false;
+                role_type.IsWaterPolo = false;
+                role_type.IsOpen_Pretection = false;
             }
 
             let callback = () => {
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Go);
                 for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
                     let role = GameManage.Instance.Roles[i];
+                    GameManage.Instance.StopTargetAction(role);
                     let collider = role.getComponent(cc.BoxCollider);
                     collider.enabled = true;
+                    let role_type: Role = null;
+                    if (role.name === "Player") {
+                        role_type = role.getComponent(Player);
+                    }
+                    if (role.name === "AI") {
+                        role_type = role.getComponent(AI);
+                    }
+                    role_type.IsSpeedUp = true;
+                    role_type.Speed = 0;
                 }
 
                 this.Page_StartTime.active = false;
+                GameManage.Instance.IsUpdateProgress = true;
                 GameManage.Instance.IsGameStart = true;
                 GameManage.Instance.IsTouchClick = true;
                 //测试
@@ -948,7 +987,8 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private LeftStart(event) {
-        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart) {
+        let player: Role = this.Player.getComponent(Player);
+        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart || GameManage.Instance.IsPause || player.IsWaterPolo || player.IsFrozen || player.IsSky) {
             return;
         }
         // console.log(this.Player);
@@ -972,7 +1012,8 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private TouchEnd(event) {
-        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart) {
+        let player: Role = this.Player.getComponent(Player);
+        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart || player.IsWaterPolo || player.IsFrozen || player.IsSky) {
             return;
         }
         this.Horizontal = 0;
@@ -994,7 +1035,8 @@ export default class Game extends cc.Component {
      * @param event 触摸信息
      */
     private RightStart(event) {
-        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart) {
+        let player: Role = this.Player.getComponent(Player);
+        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart || player.IsWaterPolo || player.IsFrozen || player.IsSky) {
             return;
         }
         this.Horizontal = 1;
@@ -1063,8 +1105,9 @@ export default class Game extends cc.Component {
     private SetPassivePos(pool: cc.NodePool, parent: cc.Node) {
         let value = 1500;
         let ran = Math.floor(Math.random() * 5 + 10)
-        let have_arr = ["TimeBomb"]; //-------------------------------------------->测试完需清空
-        for (let i = 0; i < 35; i++) {
+        let have_arr = []; //-------------------------------------------->测试完需清空
+        for (let i = 0; i < 60; i++) {
+
             let prop = pool.get();
             if (!prop) {
                 this.SetPoolPassive(this.Pre_PassiveProps, this.Pool_PassiveProps);
@@ -1072,32 +1115,53 @@ export default class Game extends cc.Component {
             }
 
             if (prop.name === "TimeBomb" || prop.name === "Container") {
+                let ran = Math.floor(Math.random() * 100);
+                if (ran > 20) {
+                    i--;
+                    continue;
+                }
                 let ind = have_arr.indexOf(prop.name);
                 if (ind === -1) {
                     have_arr.push(prop.name);
                 } else {
+                    prop.destroy();
                     i--;
                     continue;
                 }
             }
 
             if (prop.name === "Boulder") {
+                prop.destroy();
                 i--;
                 continue;
+            } else if (prop.name === "Portal") {
+                if (!(i === 16 || i === 54 || i === 5 || i === 32)) {
+                    prop.destroy();
+                    i--;
+                }
             }
 
             // let world_Pos = this.Area_Path.convertToWorldSpaceAR(this.Area_Path.position);
             // let node_Pos = this.ar.convertToNodeSpaceAR(world_Pos);
             parent.addChild(prop);
             let name = prop.name;
-            let cha = name.charAt(name.length - 1);
-            let num = parseInt(cha);
-            if (num === NaN || num === null) {
-                i--;
+            // let cha = name.charAt(name.length - 1);
+            // let num = parseInt(cha);
+            // console.log("是否生成金币");
+            // console.log(num);
+            if (name === "Coin_1" || name === "Coin_2" || name === "Coin_3" || name === "Coin_4" || name === "Coin_5" || name === "Coin_6" || name === "Coin_7" || name === "Coin_8") {
+                // i--;
                 prop.setPosition(300, i * value + value / 2 + 1000);
             } else {
-                let ran_x = Math.random() * 300 + 200;
+                let ran_x = Math.random() * 400 + 100;
                 prop.setPosition(ran_x, i * value + value / 2 + 1000);
+            }
+            let path_End: cc.Node = this.BG.getChildByName("Path_End");
+            // let end_pos=path_End.convertToWorldSpaceAR(end.position);
+            let world_Pos = this.BG.convertToWorldSpaceAR(path_End.position);
+            let node_Pos = this.Area_Path.convertToNodeSpaceAR(world_Pos);
+            if (prop.position.y > node_Pos.y - 2000) {
+                return;
             }
 
             //修改渲染顺序
@@ -1217,11 +1281,24 @@ export default class Game extends cc.Component {
     }
 
     /**
+     * 设置重点
+     */
+    private SetPathEnd() {
+        let path_End: cc.Node = this.BG.getChildByName("Path_End");
+        let terminus = this.Area_Prop.getChildByName("Terminus");
+        // let end_pos=path_End.convertToWorldSpaceAR(end.position);
+        let world_Pos = this.BG.convertToWorldSpaceAR(path_End.position);
+        let node_Pos = this.Area_Prop.convertToNodeSpaceAR(world_Pos);
+        terminus.setPosition(300, node_Pos.y + 600);
+    }
+
+    /**
      * 设置玩家
      * @param parent 父节点
      * @param pre_player 玩家预制体
      */
     private SetPlayer(parent: cc.Node, pre_player: cc.Prefab) {
+
         let player: cc.Node = null;
         for (let i in GameManage.Instance.Roles) {
             if (GameManage.Instance.Roles[i].name === "Player") {
@@ -1620,8 +1697,9 @@ export default class Game extends cc.Component {
         let ques_x: number = 150;
 
         let ran_max = Math.random() * 5;
-        for (let j = 0; j < 10; j++) {
+        for (let j = 0; j < 20; j++) {
             this.Question_Space += 5000;
+            // let question: cc.Node = null;
             for (let i = 0; i < 4; i++) {
                 let question = pool.get();
                 if (!question) {
@@ -1638,6 +1716,19 @@ export default class Game extends cc.Component {
             arr = [];
         }
         this.Question_Space = 0;
+
+        let path_End: cc.Node = this.BG.getChildByName("Path_End");
+        let world_Pos = this.BG.convertToWorldSpaceAR(path_End.position);
+        let node_Pos = this.Area_Path.convertToNodeSpaceAR(world_Pos);
+        let arr_ques = this.Area_Path.children;
+        for (let i = 0; i < arr_ques.length; i++) {
+            let question = arr_ques[i];
+            if (question.name === "Question") {
+                if (question.position.y > node_Pos.y) {
+                    question.destroy();
+                }
+            }
+        }
     }
 
     /**
@@ -1734,6 +1825,7 @@ export default class Game extends cc.Component {
             num--;
             label.string = num + "";
             if (num <= 0) {
+                GameManage.Instance.IsPause = true;
                 this.RunOver();
             }
         }
@@ -1804,12 +1896,11 @@ export default class Game extends cc.Component {
         let list: cc.Node[] = this.Page_Over.getChildByName("Box").getChildByName("List").children;
         for (let i = 0; i < list.length; i++) {
             let rank = list[i];
-            let label_ranking = rank.getChildByName("label_Ranking").getComponent(cc.Label);
             let label_name = rank.getChildByName("label_Name").getComponent(cc.Label);
             let istrue: boolean = null;
             let role: cc.Node = null;
             let value = 0;
-            if (label_ranking.string === "第一名") {
+            if (rank.name === "1") {
                 role = role_arr[0];
                 if (role.name === "Player") {
                     value = 100;
@@ -1819,7 +1910,7 @@ export default class Game extends cc.Component {
                     Cache.SetCache(CacheType.Coin_Amount, sum + "");
                 }
             }
-            if (label_ranking.string === "第二名") {
+            if (rank.name === "2") {
                 role = role_arr[1];
                 if (role.name === "Player") {
                     value = 50;
@@ -1829,10 +1920,10 @@ export default class Game extends cc.Component {
                     Cache.SetCache(CacheType.Coin_Amount, sum + "");
                 }
             }
-            if (label_ranking.string === "第三名") {
+            if (rank.name === "3") {
                 role = role_arr[2];
             }
-            if (label_ranking.string === "第四名") {
+            if (rank.name === "4") {
                 role = role_arr[3];
             }
 

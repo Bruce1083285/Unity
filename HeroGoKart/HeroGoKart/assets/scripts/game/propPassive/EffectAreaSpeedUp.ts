@@ -35,7 +35,9 @@ export class EffectAreaSpeedUp extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        GameManage.Instance.IsTouchClick = true;
+        GameManage.Instance.StopTargetAction(role);
+
+        // GameManage.Instance.IsTouchClick = true;
         // GameManage.Instance.StopTargetAction(role);
 
         EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
@@ -69,12 +71,15 @@ export class EffectAreaSpeedUp extends PropPassive {
         let speed_Value = type_C.Speed;
         type_C.Speed = 1500;
         let callback = () => {
+            GameManage.Instance.StopTargetAction(role);
+            
             prop_1.destroy();
             speed_Effect.destroy();
             type_C.IsSpeedUp = true;
-            type_C.IsSpeedUping = true;
+            type_C.IsSpeedUping = false;
             type_C.Speed = 1000;
         }
         setTimeout(callback, 2000);
+        console.log("道具------------------>加速带");
     }
 }

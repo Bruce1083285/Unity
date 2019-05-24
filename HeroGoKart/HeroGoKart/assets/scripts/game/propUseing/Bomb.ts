@@ -63,6 +63,7 @@ export class Bomb extends PropUseing {
 
         let bomb = prop.getComponent(Animation_Bomb);
         bomb.SetTarget(target);
+        console.log("道具------------------>导弹");
         // let callback = () => {
         //     let prop_y = prop.position.y + 10;
         //     prop.setPosition(prop.position.x, prop_y);

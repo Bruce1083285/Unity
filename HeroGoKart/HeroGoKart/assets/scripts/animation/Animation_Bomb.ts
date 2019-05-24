@@ -64,9 +64,11 @@ export default class Animation_Bomb extends cc.Component {
         let num = this.node.position.sub(this.Target.position).mag();
         let dis = Math.abs(num);
         if (dis < 100) {
+            let target: cc.Node = this.Target;
+
             GameManage.Instance.Page_Alarm.stopAllActions();
             GameManage.Instance.Page_Alarm.active = false;
-            let arr_car = this.Target.getChildByName("Box").getChildByName("SpecialCar").children;
+            let arr_car = target.getChildByName("Box").getChildByName("SpecialCar").children;
             // let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
             let car_name: string = null;
             for (let i = 0; i < arr_car.length; i++) {
@@ -76,12 +78,12 @@ export default class Animation_Bomb extends cc.Component {
                     break;
                 }
             }
-            if (car_name && (car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+            if (car_name && car_name === Special_Car.StreetRoller) {
                 this.node.destroy();
                 return;
             }
 
-            let arr = this.Target.children;
+            let arr = target.children;
             for (let i = 0; i < arr.length; i++) {
                 if (arr[i].name === "6") {
                     arr[i].destroy();
@@ -91,19 +93,19 @@ export default class Animation_Bomb extends cc.Component {
             }
 
             EventCenter.BroadcastOne(EventType.Sound, SoundType.Bomb);
-            let collider = this.Target.getComponent(cc.BoxCollider);
+            let collider = target.getComponent(cc.BoxCollider);
             collider.enabled = false;
-            let name = this.Target.name;
-            let type_Class:Role = null;
+            let name = target.name;
+            let type_Class: Role = null;
             if (name === "AI") {
-                type_Class = this.Target.getComponent("AI");
+                type_Class = target.getComponent("AI");
                 let istrue = type_Class.GetPretection(this.node);
                 if (istrue) {
                     this.node.destroy();
                     return
                 }
             } else if (name === "Player") {
-                type_Class = this.Target.getComponent("Player");
+                type_Class = target.getComponent("Player");
                 let istrue = type_Class.GetPretection(this.node);
                 if (istrue) {
                     this.node.destroy();
@@ -113,27 +115,71 @@ export default class Animation_Bomb extends cc.Component {
                 GameManage.Instance.IsUseingProp = false;
                 type_Class.Game.Horizontal = 0;
             }
-
-            GameManage.Instance.StopTargetAction(this.Target);
-
+            type_Class.IsSky = true;
+            if (!type_Class.IsSky) {
+                type_Class.IsSky = true;
+            } else if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen || type_Class.IsSpeedUping) {
+                if (type_Class.IsSlowDown) {
+                    type_Class.IsSlowDown = false;
+                }
+                if (type_Class.IsSky) {
+                    type_Class.IsSky = false;
+                }
+                if (type_Class.IsFrozen) {
+                    target.getChildByName("5").destroy();
+                    type_Class.IsFrozen = false;
+                }
+                if (type_Class.IsWaterPolo) {
+                    target.getChildByName("4").destroy();
+                    type_Class.IsWaterPolo = false;
+                }
+                if (type_Class.IsLightning) {
+                    let light = target.getChildByName("9");
+                    if (light) {
+                        light.destroy();
+                    }
+                    type_Class.IsWaterPolo = false;
+                }
+                if (type_Class.IsSpeedUping) {
+                    target.getChildByName("7").destroy();
+                    target.getChildByName("win").destroy();
+                    type_Class.IsSpeedUping = false;
+                }
+                GameManage.Instance.StopTargetAction(target);
+                target.stopAllActions();
+                type_Class.unscheduleAllCallbacks();
+            }
             type_Class.IsSpeedUp = false;
             type_Class.Speed = 0;
-            let act_Scale_big = cc.scaleTo(1, 1, -1);
-            // let act_Rotate = cc.rotateTo(1, 1080);
-            let act_Scale_small = cc.scaleTo(0.3, 1, 1);
+            if (type_Class.IsSpeedUping) {
+                target.getChildByName("7").destroy();
+                target.getChildByName("win").destroy();
+                type_Class.IsSpeedUping = false;
+            }
+
+            GameManage.Instance.StopTargetAction(target);
+
+            // let act_Scale_big = cc.scaleTo(1, 1, -1);
+            // // let act_Rotate = cc.rotateTo(1, 1080);
+            // let act_Scale_small = cc.scaleTo(0.3, 1, 1);
+            let act_Scale_big = cc.scaleTo(1, 1.5);
+            let act_Scale_small = cc.scaleTo(0.3, 1);
             let act_Spawn = cc.spawn(act_Scale_big, act_Scale_small);
             let act_callback = () => {
+                GameManage.Instance.StopTargetAction(target);
+
                 if (name === "Player") {
                     GameManage.Instance.IsUseingProp = true;
                     GameManage.Instance.IsTouchClick = true;
                 }
                 collider.enabled = true;
+                type_Class.IsSky = false;
                 type_Class.IsSpeedUp = true;
                 type_Class.Speed = 0;
-                this.Target = null;
+                target = null;
             }
             let act_Seq = cc.sequence(act_Spawn, act_Scale_small, cc.callFunc(act_callback));
-            let box=this.Target.getChildByName("Box");
+            let box = target.getChildByName("Box");
             box.runAction(act_Seq);
             this.node.destroy();
             return;

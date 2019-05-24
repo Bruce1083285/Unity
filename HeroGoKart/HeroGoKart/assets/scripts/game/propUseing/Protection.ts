@@ -5,6 +5,7 @@ import AI from "../AI";
 import Player from "../Player";
 import { PropUseing } from "../PropUseing";
 import Game from "../../Game";
+import { GameManage } from "../../commont/GameManager";
 
 
 /**
@@ -30,6 +31,8 @@ export class Protection extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
+        GameManage.Instance.StopTargetAction(role);
+
         let prop: cc.Node = null;
         for (let i = 0; i < this.Props.length; i++) {
             if (this.Props[i].name === skin_id) {
@@ -52,11 +55,14 @@ export class Protection extends PropUseing {
         type_Class.IsOpen_Pretection = true;
 
         let callback = () => {
+            GameManage.Instance.StopTargetAction(role);
+
             type_Class.IsOpen_Pretection = false;
             prop.destroy();
         }
 
         setTimeout(callback, 5000);
+        console.log("道具------------------>保护罩");
     }
 
 }

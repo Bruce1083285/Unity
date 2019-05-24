@@ -69,10 +69,11 @@ export default class AI extends Role {
      * @property 是否移动
      */
     private IsMove: boolean = true;
+
     /**
-     * @property 加速最大值
+     * @property 速度倍数
      */
-    private Speed_Max: number = 1000;
+    private Speed_X: number = 1;
     /**
      * @property 当前速度值
      */
@@ -211,17 +212,17 @@ export default class AI extends Role {
         /**栏杆 */
         {
             name: "Handrail",
-            ratio: 60,
+            ratio: 70,
         },
         /**油漆 */
         {
             name: "Paint",
-            ratio: 50,
+            ratio: 70,
         },
         /**石墩 */
         {
             name: "Piers",
-            ratio: 70,
+            ratio: 90,
         },
         /**传送门 */
         {
@@ -231,7 +232,7 @@ export default class AI extends Role {
         /**路障 */
         {
             name: "Roadblock",
-            ratio: 50,
+            ratio: 70,
         },
         /**定时炸弹 */
         {
@@ -241,7 +242,7 @@ export default class AI extends Role {
         /**龙卷风 */
         {
             name: "Tornado",
-            ratio: 50,
+            ratio: 70,
         },
         /**水滩 */
         {
@@ -256,12 +257,12 @@ export default class AI extends Role {
         /**小丑盒子 */
         {
             name: "3",
-            ratio: 50,
+            ratio: 60,
         },
         /**问号 */
         {
             name: "Question",
-            ratio: 20,
+            ratio: 0,
         },
     ]
 
@@ -274,17 +275,19 @@ export default class AI extends Role {
     }
 
     update(dt) {
-
-        if (!GameManage.Instance.IsGameStart || !this.IsMove || GameManage.Instance.IsPause || GameManage.Instance.IsGameEnd) {
+        if (!GameManage.Instance.IsGameStart || !this.IsMove || GameManage.Instance.IsPause || GameManage.Instance.IsGameEnd || this.IsWaterPolo || this.IsFrozen || this.IsSky) {
             return;
         }
-        if ((this.node.position.x <= 0 && this.node.position.x >= -50) || (this.node.position.x >= 600 && this.node.position.x <= 650)) {
-            this.Speed = 100;
-        }
-        if (this.node.position.x < -5 || this.node.position.x > 650) {
+        // if ((this.node.position.x <= 0 && this.node.position.x >= -50) || (this.node.position.x >= 600 && this.node.position.x <= 650)) {
+        //     this.Speed = 100;
+        // }
+        if (this.node.position.x < 0 || this.node.position.x > 600) {
             this.CollisionWall(this.Game, this.node);
             return;
         }
+
+        this.SlefToPlayerDis();
+
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
         //水平移动
@@ -345,6 +348,20 @@ export default class AI extends Role {
         this.node.opacity = 255;
         this.IsMove = true;
         this.unscheduleAllCallbacks();
+        this.node.stopAllActions();
+    }
+
+    /**
+     * 自身到玩家的距离
+     */
+    private SlefToPlayerDis() {
+        if (this.node.position.y < this.Game.Player.position.y) {
+            let dis = Math.abs(this.Game.Player.position.y - this.node.position.y);
+            this.Speed_X = dis / 2000 * 50;
+            if (this.Speed_X <= 1) {
+                this.Speed_X = 1;
+            }
+        }
     }
 
     /**
@@ -354,11 +371,12 @@ export default class AI extends Role {
         if (!this.IsSpeedUp || !GameManage.Instance.IsGameStart) {
             return;
         }
-        let ran = Math.random() * 3 + 1;
-        this.Speed += ran;
+        let ran = Math.random() * 2 + 1;
+        this.Speed += ran * this.Speed_X;
         if (this.Speed >= this.Speed_Max) {
             this.Speed = this.Speed_Max;
         }
+        // console.log(this.Speed + "---------->AI速度");
     }
 
     /**
@@ -395,10 +413,10 @@ export default class AI extends Role {
         if (ran <= ratio) {
             let left_Or_right = Math.random() * 100;
             if (left_Or_right <= 50) {
-                let act_move_Left = cc.moveBy(0.5, -200, 0);
+                let act_move_Left = cc.moveBy(0.5, -50, 0);
                 this.node.runAction(act_move_Left);
             } else {
-                let act_move_Left = cc.moveBy(0.5, 200, 0);
+                let act_move_Left = cc.moveBy(0.5, 50, 0);
                 this.node.runAction(act_move_Left);
             }
         }
@@ -441,9 +459,9 @@ export default class AI extends Role {
                 // GameManage.Instance.IsUpdateProgress = true;
                 GameManage.Instance.IsListenterDis = true;
                 break;
-            case "end":
-                this.CollisionEnd(self_node);
-                break;
+            // case "end":
+            //     this.CollisionEnd(self_node);
+            //     break;
             default:
                 break;
         }
@@ -455,12 +473,16 @@ export default class AI extends Role {
         */
     private onCollisionExit(other, self) {
         let target: cc.Node = other.node;
+        let self_node = self.node;
         switch (target.name) {
             case "Player":
                 // this.ClearTimeBomb();
                 break;
             case "AI":
                 // this.ClearTimeBomb();
+                break;
+            case "end":
+                this.CollisionEnd(self_node);
                 break;
             default:
                 break;
@@ -511,7 +533,9 @@ export default class AI extends Role {
         this.scheduleOnce(() => {
             dragon.playAnimation("a1", 0);
         }, 0.5);
-        // str = "5";
+        // let patch_arr: string[] = ["5", "4"];
+        // let patch_ran = Math.floor(Math.random() * patch_arr.length);
+        // str = "9";
         switch (str) {
             case "1":
                 //香蕉皮
@@ -620,10 +644,10 @@ export default class AI extends Role {
                 break;
             case Prop_Passive.Tornado:
                 //龙卷风
-                istrue = this.GetPretection(target);
-                if (istrue) {
-                    return
-                }
+                // istrue = this.GetPretection(target);
+                // if (istrue) {
+                //     return
+                // }
                 if (car_name && (car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
                     return;
                 }
@@ -642,10 +666,10 @@ export default class AI extends Role {
                 break;
             case Prop_Passive.Paint:
                 //油漆
-                istrue = this.GetPretection(target);
-                if (istrue) {
-                    return
-                }
+                // istrue = this.GetPretection(target);
+                // if (istrue) {
+                //     return
+                // }
                 if (car_name && (car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
                     return;
                 }
@@ -686,10 +710,10 @@ export default class AI extends Role {
                 break;
             case Prop_Passive.Water:
                 //水滩
-                istrue = this.GetPretection(target);
-                if (istrue) {
-                    return
-                }
+                // istrue = this.GetPretection(target);
+                // if (istrue) {
+                //     return
+                // }
                 if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.StreetRoller)) {
                     return;
                 }

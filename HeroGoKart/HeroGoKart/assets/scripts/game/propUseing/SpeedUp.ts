@@ -6,6 +6,7 @@ import Player from "../Player";
 import { PropUseing } from "../PropUseing";
 import Game from "../../Game";
 import Role from "../Role";
+import { GameManage } from "../../commont/GameManager";
 
 
 /**
@@ -31,6 +32,8 @@ export class SpeedUp extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
+        GameManage.Instance.StopTargetAction(role);
+
         let prop: cc.Node = null;
         for (let i = 0; i < this.Props.length; i++) {
             if (this.Props[i].name === skin_id) {
@@ -64,6 +67,8 @@ export class SpeedUp extends PropUseing {
         type_Class.Speed = 1500;
 
         let callback = () => {
+            GameManage.Instance.StopTargetAction(role);
+
             speed_Effect.destroy();
             prop.destroy();
             type_Class.IsSpeedUp = true;
@@ -72,5 +77,6 @@ export class SpeedUp extends PropUseing {
         }
 
         setTimeout(callback, 5000);
+        console.log("道具------------------>加速道具");
     }
 }

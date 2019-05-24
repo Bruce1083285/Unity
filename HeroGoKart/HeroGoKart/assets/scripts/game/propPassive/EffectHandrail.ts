@@ -55,11 +55,11 @@ export class EffectHandrail extends PropPassive {
                 break;
             }
         }
-        if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+        if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.StreetRoller || car_name === Special_Car.CementTruck)) {
             return;
         }
 
-        let type_C:Role = null;
+        let type_C: Role = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);
         } else if (role.name === "Player") {
@@ -69,16 +69,24 @@ export class EffectHandrail extends PropPassive {
         }
         type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
-        type_C.Speed = speed_Value * 0.05;
+        type_C.Speed = speed_Value * 0.5;
+        if (type_C.IsSpeedUping) {
+            role.getChildByName("7").destroy();
+            role.getChildByName("win").destroy();
+            type_C.IsSpeedUping = false;
+        }
 
 
         let callback = () => {
+            GameManage.Instance.StopTargetAction(role);
+
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
             }
-            type_C.Speed = speed_Value;
+            // type_C.Speed = speed_Value;
             type_C.IsSpeedUp = true;
         }
         setTimeout(callback, 500);
+        console.log("道具------------------>栏杆");
     }
 }

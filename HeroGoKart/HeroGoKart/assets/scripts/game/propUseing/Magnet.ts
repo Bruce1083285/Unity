@@ -31,6 +31,8 @@ export class Magnet extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
+        GameManage.Instance.StopTargetAction(role);
+
         let arr_y: cc.Node[] = [];
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
             let patch_node = GameManage.Instance.Roles[i];
@@ -54,7 +56,7 @@ export class Magnet extends PropUseing {
                 break;
             }
         }
-        if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
+        if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.StreetRoller || car_name === Special_Car.CementTruck)) {
             return;
         }
 
@@ -68,7 +70,7 @@ export class Magnet extends PropUseing {
 
         skin_id = "7"
 
-        let target_Class:Role = null;
+        let target_Class: Role = null;
         let target_name = target.name;
         if (target_name === "AI") {
             target_Class = target.getComponent(AI);
@@ -103,7 +105,7 @@ export class Magnet extends PropUseing {
         let act_seq = cc.sequence(act_fadeOut, act_fadeIn).repeatForever();
         target.runAction(act_seq);
 
-        let role_Class:Role = null;
+        let role_Class: Role = null;
         let role_name = role.name;
         if (role_name === "AI") {
             role_Class = role.getComponent(AI);
@@ -112,9 +114,11 @@ export class Magnet extends PropUseing {
         }
         role_Class.IsSpeedUp = false;
         let role_Speed_value = role_Class.Speed;
-        role_Class.Speed = role_Speed_value + role_Speed_value * 0.3;
+        role_Class.Speed = 1500;
 
         let callback = () => {
+            GameManage.Instance.StopTargetAction(role);
+
             target.stopAllActions();
             prop.destroy();
             speed_Effect.destroy();
@@ -127,5 +131,6 @@ export class Magnet extends PropUseing {
         }
 
         setTimeout(callback, 3000);
+        console.log("道具------------------>吸铁石");
     }
 }

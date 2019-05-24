@@ -3,6 +3,8 @@ import Player from "../Player";
 import AI from "../AI";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
+import { Special_Car } from "../../commont/Enum";
+import Role from "../Role";
 
 /**
  * @class 大石头效果
@@ -32,41 +34,93 @@ export class EffectBoulder extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop?: cc.Node) {
-        GameManage.Instance.StopTargetAction(role);
+        // GameManage.Instance.StopTargetAction(role);
+
+        let arr_car = role.getChildByName("Box").getChildByName("SpecialCar").children;
+        let car_name: string = null;
+        for (let i = 0; i < arr_car.length; i++) {
+            let car = arr_car[i];
+            if (car.active) {
+                car_name = car.name;
+                break;
+            }
+        }
+        if (car_name && (car_name === Special_Car.StreetRoller || car_name === Special_Car.CementTruck)) {
+            let act_rotate = cc.rotateBy(15, 10000);
+            let act_move = cc.moveBy(15, 10000, 10000);
+            let act_spa = cc.spawn(act_rotate, act_move);
+            let act_callback = () => {
+                prop.destroy();
+            }
+            let act_seq = cc.sequence(act_spa, cc.callFunc(act_callback));
+            prop.runAction(act_seq);
+            return;
+        }
 
         let collider = role.getComponent(cc.BoxCollider);
         // GameManage.Instance.IsTouchClick = false;
         collider.enabled = false;
-        role.scaleX = 0.6;
+        let box = role.getChildByName("Box");
+        box.scaleX = 1.2;
 
-        let arr = role.children;
-        for (let i = 0; i < arr.length; i++) {
-            let chi = arr[i];
-            if (chi.name === "7" || chi.name === "win") {
-                chi.destroy();
-            }
-        }
-
-        let type_C = null;
+        let type_C: Role = null;
         if (role.name === "AI") {
             type_C = role.getComponent(AI);
         } else if (role.name === "Player") {
             type_C = role.getComponent(Player);
         }
+        if (!type_C.IsSlowDown) {
+            type_C.IsSlowDown = true;
+        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen || type_C.IsSpeedUping) {
+            if (type_C.IsSlowDown) {
+                type_C.IsSlowDown = false;
+            }
+            if (type_C.IsSky) {
+                type_C.IsSky = false;
+            }
+            if (type_C.IsFrozen) {
+                role.getChildByName("5").destroy();
+                type_C.IsFrozen = false;
+            }
+            if (type_C.IsWaterPolo) {
+                role.getChildByName("4").destroy();
+                type_C.IsWaterPolo = false;
+            }
+            if (type_C.IsLightning) {
+                role.getChildByName("9").destroy();
+                type_C.IsWaterPolo = false;
+            }
+            if (type_C.IsSpeedUping) {
+                role.getChildByName("7").destroy();
+                role.getChildByName("win").destroy();
+                type_C.IsSpeedUping = false;
+            }
+            GameManage.Instance.StopTargetAction(role);
+            role.stopAllActions();
+            type_C.unscheduleAllCallbacks();
+        }
         type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
         type_C.Speed = speed_Value * 0.5;
+        if (type_C.IsSpeedUp) {
+            role.getChildByName("7").destroy();
+            role.getChildByName("win").destroy();
+            type_C.IsSpeedUping = false;
+        }
 
         let callback_1 = () => {
+            // GameManage.Instance.StopTargetAction(role);
             // GameManage.Instance.IsTouchClick = true;
             // type_C.Speed = speed_Value;
+            type_C.IsSlowDown=true;
             type_C.IsSpeedUp = true;
-            role.scaleX = 0.4;
+            box.scaleX = 1;
         }
         let callback_2 = () => {
             collider.enabled = true;
         }
-        setTimeout(callback_1, 3000);
-        setTimeout(callback_2, 1000);
+        type_C.scheduleOnce(callback_1, 3);
+        type_C.scheduleOnce(callback_2, 0.5);
+        console.log("道具------------------>大石头");
     }
 }

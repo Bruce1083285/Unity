@@ -55,7 +55,7 @@ export class ClownGift extends PropUseing {
         } else {
             dir = -1;
         }
-        let y = Math.floor(Math.random() * 500 * dir + (role.position.y + 300 * dir));
+        let y = Math.floor(Math.random() * 500 * dir + (role.position.y + 500 * dir));
         let x = Math.floor(Math.random() * 300 + 100);
         let act_Move = cc.moveTo(0.3, x, y);
         let callback = () => {

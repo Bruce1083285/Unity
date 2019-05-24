@@ -66,30 +66,80 @@ export default class Animation_Frozen extends cc.Component {
         this.Target = target;
         this.node.zIndex = 1;
 
+        let arr = target.children;
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].name === "6") {
+                arr[i].destroy();
+                return;
+            }
+        }
+
         GameManage.Instance.StopTargetAction(target);
 
         EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
 
-        let collider = target.getComponent(cc.BoxCollider);
-        collider.enabled = false;
+        target.addChild(this.node);
+        this.node.setPosition(0, 0);
+        this.node.scale = 3;
+        // let collider = target.getComponent(cc.BoxCollider);
+        // collider.enabled = false;
 
         let type_Class: Role = null;
-        let name = this.Target.name;
+        let name = target.name;
         if (name === "AI") {
-            type_Class = this.Target.getComponent(AI);
+            type_Class = target.getComponent(AI);
             let istrue = type_Class.GetPretection(this.node);
             if (istrue) {
                 return
             }
         } else if (name === "Player") {
-            type_Class = this.Target.getComponent(Player);
+            type_Class = target.getComponent(Player);
             GameManage.Instance.IsUseingProp = false;
             GameManage.Instance.IsTouchClick = false;
             type_Class.Game.Horizontal = 0;
         }
-        type_Class.IsWaterPolo = true;
+        if (!type_Class.IsFrozen) {
+            type_Class.IsFrozen = true;
+        } else {
+            let arr = target.children;
+            for (let i = 0; i < arr.length; i++) {
+                let chi = arr[i];
+                if (chi.name === this.node.name && chi.uuid !== this.node.uuid) {
+                    let Frozen = chi.getComponent(Animation_Frozen);
+                    Frozen.unscheduleAllCallbacks();
+                    chi.removeFromParent();
+                    chi.destroy();
+                }
+            }
+        }
+        if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsSpeedUping) {
+            if (type_Class.IsSlowDown) {
+                type_Class.IsSlowDown = false;
+            }
+            if (type_Class.IsSky) {
+                type_Class.IsSky = false;
+            }
+            if (type_Class.IsWaterPolo) {
+                target.getChildByName("4").destroy();
+                type_Class.IsWaterPolo = false;
+            }
+            if (type_Class.IsLightning) {
+                target.getChildByName("9").destroy();
+                type_Class.IsWaterPolo = false;
+            }
+            if (type_Class.IsSpeedUping) {
+                target.getChildByName("7").destroy();
+                target.getChildByName("win").destroy();
+                type_Class.IsSpeedUping = false;
+            }
+            GameManage.Instance.StopTargetAction(target);
+            target.stopAllActions();
+            type_Class.unscheduleAllCallbacks();
+        }
+
         type_Class.IsSpeedUp = false;
         type_Class.Speed = 0;
+
         let callback = () => {
             if (GameManage.Instance.IsPause) {
                 return;
@@ -110,30 +160,45 @@ export default class Animation_Frozen extends cc.Component {
      */
     public PlayEnd() {
         EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
+        let target = this.Target;
+        let spre_Img = this.node.getChildByName("img").getComponent(cc.Sprite);
+
+        console.log(target);
+        console.log(target.children);
+        let arr = target.children;
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].name === "6") {
+                arr[i].destroy();
+                return;
+            }
+        }
+
         this.Index_End = this.Fram_Frozen.length - 1;
         let callback = () => {
+            GameManage.Instance.StopTargetAction(target);
+
             if (GameManage.Instance.IsPause) {
                 return;
             }
-            this.Spri_Img.spriteFrame = this.Fram_Frozen[this.Index_End];
+            console.log(spre_Img);
+            spre_Img.spriteFrame = this.Fram_Frozen[this.Index_End];
             this.Index_End--;
             if (this.Index_End < 0) {
-                let collider = this.Target.getComponent(cc.BoxCollider);
-                collider.enabled = true;
+                // let collider = target.getComponent(cc.BoxCollider);
+                // collider.enabled = true;
                 // this.unschedule(callback);
                 // this.Spri_Img.spriteFrame = null;
                 let type_Class: Role = null;
-                this.Target.opacity = 255;
-                let name = this.Target.name;
+                target.opacity = 255;
+                let name = target.name;
                 if (name === "AI") {
-                    type_Class = this.Target.getComponent(AI);
+                    type_Class = target.getComponent(AI);
                 } else if (name === "Player") {
-                    type_Class = this.Target.getComponent(Player);
+                    type_Class = target.getComponent(Player);
                     GameManage.Instance.IsUseingProp = true;
                     GameManage.Instance.IsTouchClick = true;
-
                 }
-                type_Class.IsWaterPolo = false;
+                type_Class.IsFrozen = false;
                 type_Class.IsSpeedUp = true;
                 type_Class.Speed = 0;
                 this.node.removeFromParent();

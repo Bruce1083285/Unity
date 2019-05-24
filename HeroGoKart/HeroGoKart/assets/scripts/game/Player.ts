@@ -54,11 +54,10 @@ export default class Player extends Role {
      * @property 水平移动速度
      */
     private Speed_Horizontal: number = 0.1;
-
     /**
-     * @property 速度最大值
+     * @property 速度等级
      */
-    private Speed_Max: number = 1000;
+    private Speed_Level: number = 0;
     /**
      * @property 自身是否移动
      */
@@ -146,17 +145,21 @@ export default class Player extends Role {
     }
 
     update(dt) {
-        if (!this.Game || !GameManage.Instance.IsGameStart || GameManage.Instance.IsPortal || !this.IsMove || GameManage.Instance.IsPause) {
+        this.Speed_Level = Math.floor(this.Speed / 250);
+        EventCenter.BroadcastOne<number>(EventType.Game_SetSpeedBar, this.Speed_Level);
+        if (!this.Game || !GameManage.Instance.IsGameStart || GameManage.Instance.IsPortal || !this.IsMove || GameManage.Instance.IsPause || this.IsWaterPolo || this.IsFrozen || this.IsSky) {
+            this.Speed = 0;
+            EventCenter.BroadcastOne<number>(EventType.Game_SetSpeedBar, 0);
             return;
         }
         if (!this.IsHorizontal) {
             this.Game.Horizontal = 0;
         }
 
-        if ((this.node.position.x <= 50 && this.node.position.x >= -50) || (this.node.position.x >= 600 && this.node.position.x <= 650)) {
-            this.Speed = 100;
-        }
-        if (this.node.position.x < -100 || this.node.position.x > 650) {
+        // if ((this.node.position.x <= 50 && this.node.position.x >= -50) || (this.node.position.x >= 600 && this.node.position.x <= 650)) {
+        //     this.Speed = 100;
+        // }
+        if (this.node.position.x < 0 || this.node.position.x > 600) {
             this.CollisionWall(this.Game, this.node);
             return;
         }
@@ -242,6 +245,7 @@ export default class Player extends Role {
         this.node.opacity = 255;
         this.IsMove = true;
         this.unscheduleAllCallbacks();
+        this.node.stopAllActions();
     }
 
     /**
@@ -255,10 +259,6 @@ export default class Player extends Role {
         this.Speed += 2;
         if (this.Speed >= this.Speed_Max) {
             this.Speed = this.Speed_Max;
-        }
-        if (this.Speed % 100 === 0) {
-            let num = this.Speed / 100;
-            EventCenter.BroadcastOne<number>(EventType.Game_SetSpeedBar, num);
         }
         // }
         // this.schedule(callback, 1);
@@ -299,9 +299,9 @@ export default class Player extends Role {
             case "begin":
                 // GameManage.Instance.IsUpdateProgress = true;
                 break;
-            case "end":
-                this.CollisionEnd(self_node);
-                break;
+            // case "end":
+            //     this.CollisionEnd(self_node);
+            //     break;
             default:
                 break;
         }
@@ -314,9 +314,13 @@ export default class Player extends Role {
      */
     private onCollisionExit(other, self) {
         let target: cc.Node = other.node;
+        let self_node: cc.Node = self.node;
         switch (target.name) {
             case "AI":
                 // this.ClearTimeBomb();
+                break;
+            case "end":
+                this.CollisionEnd(self_node);
                 break;
             default:
                 break;
@@ -374,7 +378,7 @@ export default class Player extends Role {
         switch (name) {
             case "1":
                 //香蕉皮效果
-                if (car_name && car_name === Special_Car.Pickup) {
+                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.StreetRoller || car_name === Special_Car.CementTruck)) {
                     return;
                 }
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.BananaSkin);
@@ -415,10 +419,10 @@ export default class Player extends Role {
                 break;
             case Prop_Passive.Tornado:
                 //龙卷风
-                istrue = this.GetPretection(target);
-                if (istrue) {
-                    return
-                }
+                // istrue = this.GetPretection(target);
+                // if (istrue) {
+                //     return
+                // }
                 if (car_name && (car_name === Special_Car.CementTruck || car_name === Special_Car.StreetRoller)) {
                     return;
                 }
@@ -437,11 +441,11 @@ export default class Player extends Role {
                 break;
             case Prop_Passive.Paint:
                 //油漆
-                istrue = this.GetPretection(target);
-                if (istrue) {
-                    return
-                }
-                if (car_name && (car_name === Special_Car.StreetRoller || car_name === Special_Car.Pickup)) {
+                // istrue = this.GetPretection(target);
+                // if (istrue) {
+                //     return
+                // }
+                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.StreetRoller || car_name === Special_Car.CementTruck)) {
                     return;
                 }
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Paint);
@@ -487,11 +491,11 @@ export default class Player extends Role {
                 break;
             case Prop_Passive.Water:
                 //水滩
-                istrue = this.GetPretection(target);
-                if (istrue) {
-                    return
-                }
-                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.StreetRoller)) {
+                // istrue = this.GetPretection(target);
+                // if (istrue) {
+                //     return
+                // }
+                if (car_name && (car_name === Special_Car.Pickup || car_name === Special_Car.StreetRoller || car_name === Special_Car.CementTruck)) {
                     return;
                 }
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Water);
@@ -675,7 +679,7 @@ export default class Player extends Role {
 
         let arr_str = ["7", "2"];
         let ran = Math.floor(Math.random() * arr_str.length);
-        ran = 1;
+        // ran = 1;
         let cha = arr_str[ran];
         // let spr_target = target.getChildByName("Card").getComponent(cc.Sprite);
         // let name = spr_target.spriteFrame.name;

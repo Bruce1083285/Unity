@@ -46,9 +46,13 @@ export default class Animation_WaterPolo extends cc.Component {
         let dis = Math.abs(num);
         if (dis <= 10) {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.WaterPolo);
+
+            let target = this.Target;
+
             GameManage.Instance.Page_Alarm.stopAllActions();
             GameManage.Instance.Page_Alarm.active = false;
-            let arr_car = this.Target.getChildByName("Box").getChildByName("SpecialCar").children;
+
+            let arr_car = target.getChildByName("Box").getChildByName("SpecialCar").children;
             let car_name: string = null;
             for (let i = 0; i < arr_car.length; i++) {
                 let car = arr_car[i];
@@ -57,12 +61,12 @@ export default class Animation_WaterPolo extends cc.Component {
                     break;
                 }
             }
-            if (car_name && car_name === Special_Car.Pickup) {
+            if (car_name && (car_name === Special_Car.StreetRoller || car_name === Special_Car.CementTruck)) {
                 this.node.destroy();
                 return;
             }
 
-            let arr = this.Target.children;
+            let arr = target.children;
             for (let i = 0; i < arr.length; i++) {
                 if (arr[i].name === "6") {
                     arr[i].destroy();
@@ -72,23 +76,33 @@ export default class Animation_WaterPolo extends cc.Component {
             }
 
 
-            GameManage.Instance.StopTargetAction(this.Target);
+            GameManage.Instance.StopTargetAction(target);
 
-            let collider = this.Target.getComponent(cc.BoxCollider);
+
+            this.Animat.stop();
+            this.node.removeFromParent(false);
+            target.addChild(this.node);
+            this.node.setPosition(0, 0);
+            this.node.opacity = 150;
+            this.node.scaleX = 1;
+            this.node.scaleY = 1;
+            this.node.scale = 4;
+            let img = this.node.getChildByName("img");
+            img.scale = 1;
+            let collider = target.getComponent(cc.BoxCollider);
             collider.enabled = false;
 
-
             let type_Class: Role = null;
-            let name = this.Target.name;
+            let name = target.name;
             if (name === "AI") {
-                type_Class = this.Target.getComponent(AI);
+                type_Class = target.getComponent(AI);
                 let istrue = type_Class.GetPretection(this.node);
                 if (istrue) {
                     return
                 }
             } else if (name === "Player") {
                 GameManage.Instance.IsUseingProp = false;
-                type_Class = this.Target.getComponent(Player);
+                type_Class = target.getComponent(Player);
                 let istrue = type_Class.GetPretection(this.node);
                 if (istrue) {
                     return
@@ -96,20 +110,47 @@ export default class Animation_WaterPolo extends cc.Component {
                 GameManage.Instance.IsTouchClick = false;
                 type_Class.Game.Horizontal = 0;
             }
-            type_Class.IsWaterPolo = true;
+            if (!type_Class.IsWaterPolo) {
+                type_Class.IsWaterPolo = true;
+            } else {
+                let arr = target.children;
+                for (let i = 0; i < arr.length; i++) {
+                    let chi = arr[i];
+                    if (chi.name === this.node.name && chi.uuid !== this.node.uuid) {
+                        chi.removeFromParent();
+                        chi.destroy();
+                    }
+                }
+            }
+            if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsFrozen || type_Class.IsSpeedUping) {
+                if (type_Class.IsSlowDown) {
+                    type_Class.IsSlowDown = false;
+                }
+                if (type_Class.IsSky) {
+                    type_Class.IsSky = false;
+                }
+                if (type_Class.IsFrozen) {
+                    target.getChildByName("5").destroy();
+                    type_Class.IsFrozen = false;
+                }
+                if (type_Class.IsLightning) {
+                    target.getChildByName("9").destroy();
+                    type_Class.IsWaterPolo = false;
+                }
+                if (type_Class.IsSpeedUping) {
+                    target.getChildByName("7").destroy();
+                    target.getChildByName("win").destroy();
+                    type_Class.IsSpeedUping = false;
+                }
+                GameManage.Instance.StopTargetAction(target);
+                target.stopAllActions();
+                type_Class.unscheduleAllCallbacks();
+            }
             type_Class.IsSpeedUp = false;
             type_Class.Speed = 0;
-            // this.node.removeFromParent(false);
-            // this.Target.addChild(this.node);
-            // this.node.setPosition(0, 0);
-            this.node.opacity = 200;
-            this.node.scale = 1.5;
-            this.Animat.stop();
-            let img = this.node.getChildByName("img");
-            img.scale = 1;
-            let target = this.Target;
-            let callback = () => {
 
+            let callback = () => {
+                GameManage.Instance.StopTargetAction(target);
 
                 collider.enabled = true;
 
@@ -161,7 +202,6 @@ export default class Animation_WaterPolo extends cc.Component {
      */
     Init() {
         this.Animat = this.node.getComponent(cc.Animation);
-
     }
 
     /**
