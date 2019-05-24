@@ -71,8 +71,8 @@ export class EffectPortal extends PropPassive {
 
             let act_dt = cc.delayTime(1);
             let callback = () => {
-                GameManage.Instance.StopTargetAction(role);
                 collider.enabled = true;
+                GameManage.Instance.StopTargetAction(role);
                 this.Pool_PassiveProp.put(prop);
                 console.log("道具------------------>传送门");
             }

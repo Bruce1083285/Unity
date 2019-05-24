@@ -364,6 +364,16 @@ export default class AI extends Role {
         } else {
             this.Speed_X = 1;
         }
+
+        // for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+        //     let target: cc.Node = GameManage.Instance.Roles[i];
+        //     let value = this.node.position.sub(target.position).mag();
+        //     let dis = Math.abs(value);
+        //     if (dis <= 110 && dis > 0) {
+        //         this.CollisionRole(this.Game.Player, this.node);
+        //         return;
+        //     }
+        // }
     }
 
     /**
@@ -468,6 +478,29 @@ export default class AI extends Role {
                 break;
         }
     }
+
+    /**
+ * 当碰撞产生后，碰撞结束前的情况下，每次计算碰撞结果后调用
+ * @param  {Collider} other 产生碰撞的另一个碰撞组件
+ * @param  {Collider} self  产生碰撞的自身的碰撞组件
+ */
+    private onCollisionStay(other, self) {
+        // if (GameManage.Instance.IsPause) {
+        //     // this.unscheduleAllCallbacks();
+        //     return;
+        // }
+        // let target: cc.Node = other.node;
+        // let self_node: cc.Node = self.node;
+        // let group = target.group;
+        // switch (group) {
+        //     case "role":
+        //         this.CollisionRole(target, self_node);
+        //         break;
+        //     default:
+        //         break;
+        // }
+    }
+
     /**
         * 当碰撞结束后调用
         * @param  {Collider} other 产生碰撞的另一个碰撞组件
@@ -537,7 +570,7 @@ export default class AI extends Role {
         }, 0.5);
         // let patch_arr: string[] = ["5", "4"];
         // let patch_ran = Math.floor(Math.random() * patch_arr.length);
-        // str = "5";
+        // str = "4";
         switch (str) {
             case "1":
                 //香蕉皮
@@ -626,7 +659,7 @@ export default class AI extends Role {
      * @param self 玩家节点
      */
     private CollisionPassiveProp(target: cc.Node, self: cc.Node) {
-        let arr: cc.Node[] = this.node.getChildByName("Box").getChildByName("SpecialCar").children;
+        let arr: cc.Node[] = self.getChildByName("Box").getChildByName("SpecialCar").children;
         let car_name: string = null;
         for (let i = 0; i < arr.length; i++) {
             let chi = arr[i];
@@ -768,6 +801,7 @@ export default class AI extends Role {
      * @param self 玩家节点
      */
     private CollisionRole(target: cc.Node, self: cc.Node) {
+        // this.node.stopAllActions();
         if (this.TimeBomb) {
             this.TransferTimeBomb(target);
         }
@@ -775,11 +809,10 @@ export default class AI extends Role {
         let self_x = self.position.x;
         let target_y = target.position.y;
         let self_y = self.position.y;
-        let speed_value = 100;
+        let speed_value = 50;
         let callback = (target_x: number, target_y: number, self_x: number, self_y: number) => {
             // let target_act_move = cc.moveTo(0.3, target_x, target_y);
             // target.runAction(target_act_move);
-
             let self_act_move = cc.moveTo(0.3, self_x, self_y);
             self.runAction(self_act_move);
         }
@@ -869,6 +902,9 @@ export default class AI extends Role {
             }
         }
 
+        console.log("定时炸弹------------------------------------>>>AI");
+        console.log(this.TimeBomb);
+        console.log(this.TimeBomb.parent);
         let world_pos = target.parent.convertToWorldSpaceAR(target.position);
         let node_pos = this.TimeBomb.parent.convertToNodeSpaceAR(world_pos);
         // let act_move = cc.moveTo(0.3, node_pos);
@@ -907,6 +943,7 @@ export default class AI extends Role {
         //加速
         if (cha === "7") {
             EventCenter.BroadcastOne(EventType.Sound, SoundType.SpeedUp);
+            target.getComponent(cc.BoxCollider).enabled = false;
             this.TranSpeedUp.SetTransportation(self);
         }
         //金币
@@ -932,8 +969,8 @@ export default class AI extends Role {
         let collider = this.node.getComponent(cc.BoxCollider);
         collider.enabled = false;
 
-        let name = self.getChildByName("name").getComponent(cc.Label);
-        GameManage.Instance.Ranking.push(name.string);
+        let name = self.getChildByName("name").getComponent(cc.Label).string;
+        GameManage.Instance.Ranking.push(name);
         EventCenter.Broadcast(EventType.Game_GameOver);
     }
 
@@ -976,6 +1013,7 @@ export default class AI extends Role {
      */
     private CrossingTheLineProtection(self: cc.Node) {
         this.Horizontal = 0;
+
         let role_arr = this.node.getChildByName("Box").getChildByName("Role").children;
         for (let i = 0; i < role_arr.length; i++) {
             let role = role_arr[i];
@@ -986,22 +1024,81 @@ export default class AI extends Role {
             }
         }
 
-        let car_arr = this.node.getChildByName("Box").getChildByName("Car").children;
-        for (let i = 0; i < car_arr.length; i++) {
-            let car = car_arr[i];
-            if (car.active) {
-                let dra_car = car.getComponent(dragonBones.ArmatureDisplay);
-                dra_car.playAnimation("a1", 0);
+        let special_arr: cc.Node[] = this.node.getChildByName("Box").getChildByName("SpecialCar").children;
+        let special_car: cc.Node = null;
+        for (let i = 0; i < special_arr.length; i++) {
+            special_car = special_arr[i];
+            if (special_car.active) {
                 break;
             }
         }
+        if (special_car) {
+            let dra_special = special_car.getComponent(dragonBones.ArmatureDisplay);
+            dra_special.playAnimation("a1", 0);
+        } else {
+            let car_arr = this.node.getChildByName("Box").getChildByName("Car").children;
+            for (let i = 0; i < car_arr.length; i++) {
+                let car = car_arr[i];
+                if (car.active) {
+                    let dra_car = car.getComponent(dragonBones.ArmatureDisplay);
+                    dra_car.playAnimation("a1", 0);
+                    break;
+                }
+            }
+        }
+
+        GameManage.Instance.IsListenterDis = false;
+        if (!this.IsBorder) {
+            this.IsBorder = true;
+        } else if (this.IsBorder || this.IsBorder || this.IsSlowDown || this.IsSky || this.IsLightning || this.IsWaterPolo || this.IsFrozen) {
+            if (this.IsBorder) {
+                // this.IsBorder = false;
+            }
+            if (this.IsBorder) {
+                this.IsBorder = false;
+            }
+            if (this.IsSlowDown) {
+                this.Horizontal_Sensitivity = 100;
+                this.IsSlowDown = false;
+            }
+            if (this.IsSky) {
+                this.IsSky = false;
+            }
+            if (this.IsFrozen) {
+                this.node.getChildByName("5").destroy();
+                this.IsFrozen = false;
+            }
+            if (this.IsWaterPolo) {
+                this.node.getChildByName("4").destroy();
+                this.IsWaterPolo = false;
+            }
+            if (this.IsLightning) {
+                this.node.getChildByName("9").destroy();
+                this.IsLightning = false;
+            }
+            GameManage.Instance.StopTargetAction(this.node);
+            this.node.stopAllActions();
+            this.unscheduleAllCallbacks();
+        }
+        if (this.IsSpeedUping) {
+            let speed = this.node.getChildByName("7");
+            if (speed) {
+                speed.destroy();
+            }
+            let win = this.node.getChildByName("win");
+            if (win) {
+                win.destroy();
+            }
+            this.IsSpeedUping = false;
+            GameManage.Instance.StopTargetAction(this.node);
+            this.node.stopAllActions();
+            this.unscheduleAllCallbacks();
+        }
+        this.IsSpeedUp = false;
+        this.Speed = 0;
 
         let collision = this.node.getComponent(cc.BoxCollider);
         collision.enabled = false;
-
-        GameManage.Instance.IsListenterDis = false;
-        this.IsSpeedUp = false;
-        this.Speed = 0;
 
         self.setPosition(300, self.position.y);
         let act_fadOut = cc.fadeOut(0.5);
@@ -1011,8 +1108,10 @@ export default class AI extends Role {
         let callback = () => {
             GameManage.Instance.IsListenterDis = true;
             collision.enabled = true;
+            this.IsBorder = false;
             this.IsSpeedUp = true;
             this.Speed = 0;
+            GameManage.Instance.StopTargetAction(this.node);
         }
         let act_seq_2 = cc.sequence(act_rep, cc.callFunc(callback));
         self.runAction(act_seq_2);

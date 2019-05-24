@@ -28,7 +28,7 @@ export class EffectBananaSkin extends PropEffect {
      * @param role 被影响角色
      */
     private RunEffect(role: cc.Node, prop: cc.Node) {
-
+        GameManage.Instance.StopTargetAction(role);
         prop.destroy();
         // let collider = role.getComponent(cc.BoxCollider);
         // collider.enabled = false;
@@ -42,9 +42,15 @@ export class EffectBananaSkin extends PropEffect {
         }
         if (!type_Class.IsSlowDown) {
             type_Class.IsSlowDown = true;
-        } else if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen) {
+        } else if (type_Class.IsBorder || type_Class.IsBorder || type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen) {
+            if (type_Class.IsBorder) {
+                type_Class.IsBorder = false;
+            }
+            if (type_Class.IsBorder) {
+                type_Class.IsBorder = false;
+            }
             if (type_Class.IsSlowDown) {
-                type_Class.Horizontal_Sensitivity=100;
+                type_Class.Horizontal_Sensitivity = 100;
                 // type_Class.IsSlowDown = false;
             }
             if (type_Class.IsSky) {
@@ -62,16 +68,16 @@ export class EffectBananaSkin extends PropEffect {
                 role.getChildByName("9").destroy();
                 type_Class.IsLightning = false;
             }
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_Class.unscheduleAllCallbacks();
         }
         if (type_Class.IsSpeedUping) {
             role.getChildByName("7").destroy();
             role.getChildByName("win").destroy();
             type_Class.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_Class.unscheduleAllCallbacks();
         }
 
@@ -86,11 +92,11 @@ export class EffectBananaSkin extends PropEffect {
 
 
             console.log("道具------------------>香蕉");
-            // GameManage.Instance.StopTargetAction(role);
             // collider.enabled = true;
             type_Class.IsSlowDown = false;
             type_Class.Horizontal_Sensitivity = sens;
             type_Class.IsSpeedUp = true;
+            GameManage.Instance.StopTargetAction(role);
             // type_Class.Speed = speed_Value;
         }
         let act_Seq = cc.sequence(act_Rotate, cc.callFunc(act_callback));

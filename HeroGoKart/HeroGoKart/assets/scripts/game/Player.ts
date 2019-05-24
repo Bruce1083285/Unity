@@ -168,6 +168,7 @@ export default class Player extends Role {
         // if (!this.IsSpeedUp) {
         //     console.log(this.IsSpeedUp+"<---------------------------------------------------");
         // }
+        // this.SlefToPlayerDis();
 
         //垂直移动
         let y = this.node.position.y + this.Speed * dt;
@@ -249,6 +250,21 @@ export default class Player extends Role {
     }
 
     /**
+    * 自身到玩家的距离
+    */
+    private SlefToPlayerDis() {
+        for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
+            let target: cc.Node = GameManage.Instance.Roles[i];
+            let value = this.node.position.sub(target.position).mag();
+            let dis = Math.abs(value);
+            if (dis <= 110 && dis > 0) {
+                this.CollisionRole(this.Game.Player, this.node);
+                return;
+            }
+        }
+    }
+
+    /**
      * 更新速度值
      */
     private UpdateSpeed() {
@@ -305,6 +321,28 @@ export default class Player extends Role {
             default:
                 break;
         }
+    }
+
+    /**
+* 当碰撞产生后，碰撞结束前的情况下，每次计算碰撞结果后调用
+* @param  {Collider} other 产生碰撞的另一个碰撞组件
+* @param  {Collider} self  产生碰撞的自身的碰撞组件
+*/
+    private onCollisionStay(other, self) {
+        // if (GameManage.Instance.IsPause) {
+        //     // this.unscheduleAllCallbacks();
+        //     return;
+        // }
+        // let target: cc.Node = other.node;
+        // let self_node: cc.Node = self.node;
+        // let group = target.group;
+        // switch (group) {
+        //     case "role":
+        //         this.CollisionRole(target, self_node);
+        //         break;
+        //     default:
+        //         break;
+        // }
     }
 
     /**
@@ -549,6 +587,7 @@ export default class Player extends Role {
      * @param self 玩家节点
      */
     private CollisionRole(target: cc.Node, self: cc.Node) {
+        // this.node.stopAllActions();
         let car_name = GameManage.Instance.Current_SpecialCar ? GameManage.Instance.Current_SpecialCar.name : null;
         if (car_name && car_name === Special_Car.StreetRoller) {
             this.EffectBoulder.Effect(target);
@@ -562,13 +601,18 @@ export default class Player extends Role {
         let self_x = self.position.x;
         let target_y = target.position.y;
         let self_y = self.position.y;
-        let speed_value = 100;
+        let speed_value = 50;
         let callback = (target_x: number, target_y: number, self_x: number, self_y: number) => {
             // let target_act_move = cc.moveTo(0.3, target_x, target_y);
             // target.runAction(target_act_move);
+            GameManage.Instance.IsTouchClick = false;
 
             let self_act_move = cc.moveTo(0.3, self_x, self_y);
-            self.runAction(self_act_move);
+            let callback = () => {
+                GameManage.Instance.IsTouchClick = true;
+            }
+            let act_seq = cc.sequence(self_act_move, cc.callFunc(callback));
+            self.runAction(act_seq);
         }
 
         //水平碰撞
@@ -647,6 +691,10 @@ export default class Player extends Role {
         if (ai.TimeBomb) {
             return;
         }
+
+        console.log("定时炸弹------------------------------------>>>AI");
+        console.log(this.TimeBomb);
+        console.log(this.TimeBomb.parent);
         let world_pos = target.parent.convertToWorldSpaceAR(target.position);
         let node_pos = this.TimeBomb.parent.convertToNodeSpaceAR(world_pos);
         // let act_move = cc.moveTo(0.3, node_pos);
@@ -716,8 +764,8 @@ export default class Player extends Role {
         let collider = this.node.getComponent(cc.BoxCollider);
         collider.enabled = false;
 
-        let name = self.getChildByName("name").getComponent(cc.Label);
-        GameManage.Instance.Ranking.push(name.string);
+        let name = self.getChildByName("name").getComponent(cc.Label).string;
+        GameManage.Instance.Ranking.push(name);
 
         if (!GameManage.Instance.IsGameEnd) {
             PopupBox.CommontPopup(GameManage.Instance.Finished_Box);
@@ -824,11 +872,57 @@ export default class Player extends Role {
                 }
             }
         }
+        if (!this.IsBorder) {
+            this.IsBorder = true;
+        } else if (this.IsBorder || this.IsBorder || this.IsSlowDown || this.IsSky || this.IsLightning || this.IsWaterPolo || this.IsFrozen) {
+            if (this.IsBorder) {
+                // this.IsBorder = false;
+            }
+            if (this.IsBorder) {
+                this.IsBorder = false;
+            }
+            if (this.IsSlowDown) {
+                this.Horizontal_Sensitivity = 100;
+                this.IsSlowDown = false;
+            }
+            if (this.IsSky) {
+                this.IsSky = false;
+            }
+            if (this.IsFrozen) {
+                this.node.getChildByName("5").destroy();
+                this.IsFrozen = false;
+            }
+            if (this.IsWaterPolo) {
+                this.node.getChildByName("4").destroy();
+                this.IsWaterPolo = false;
+            }
+            if (this.IsLightning) {
+                this.node.getChildByName("9").destroy();
+                this.IsLightning = false;
+            }
+            GameManage.Instance.StopTargetAction(this.node);
+            this.node.stopAllActions();
+            this.unscheduleAllCallbacks();
+        }
+        if (this.IsSpeedUping) {
+            let speed = this.node.getChildByName("7");
+            if (speed) {
+                speed.destroy();
+            }
+            let win = this.node.getChildByName("win");
+            if (win) {
+                win.destroy();
+            }
+            this.IsSpeedUping = false;
+            GameManage.Instance.StopTargetAction(this.node);
+            this.node.stopAllActions();
+            this.unscheduleAllCallbacks();
+        }
+        this.IsSpeedUp = false;
+        this.Speed = 0;
 
         let collision = this.node.getComponent(cc.BoxCollider);
         collision.enabled = false;
-        this.IsSpeedUp = false;
-        this.Speed = 0;
 
         self.setPosition(300, self.position.y);
         let act_fadOut = cc.fadeOut(0.5);
@@ -839,9 +933,11 @@ export default class Player extends Role {
             GameManage.Instance.IsTouchClick = true;
             GameManage.Instance.IsUseingProp = true;
 
+            this.IsBorder = false;
             collision.enabled = true;
             this.IsSpeedUp = true;
             this.Speed = 0;
+            GameManage.Instance.StopTargetAction(this.node);
         }
         let act_seq_2 = cc.sequence(act_rep, cc.callFunc(callback));
         self.runAction(act_seq_2);

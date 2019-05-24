@@ -120,9 +120,12 @@ export class Lightning extends PropUseing {
             let callback = () => {
                 if (!target_Class.IsLightning) {
                     target_Class.IsLightning = true;
-                } else if (target_Class.IsSlowDown || target_Class.IsSky || target_Class.IsLightning || target_Class.IsWaterPolo || target_Class.IsFrozen ) {
+                } else if (target_Class.IsBorder || target_Class.IsSlowDown || target_Class.IsSky || target_Class.IsLightning || target_Class.IsWaterPolo || target_Class.IsFrozen) {
+                    if (target_Class.IsBorder) {
+                        target_Class.IsBorder = false;
+                    }
                     if (target_Class.IsSlowDown) {
-                        target_Class.Horizontal_Sensitivity=100;
+                        target_Class.Horizontal_Sensitivity = 100;
                         target_Class.IsSlowDown = false;
                     }
                     if (target_Class.IsSky) {
@@ -157,16 +160,22 @@ export class Lightning extends PropUseing {
                         }
                         // target_Class.IsLightning = false;
                     }
-                    GameManage.Instance.StopTargetAction(target);
                     target.stopAllActions();
+                    GameManage.Instance.StopTargetAction(target);
                     target_Class.unscheduleAllCallbacks();
                 }
                 if (target_Class.IsSpeedUping) {
-                    role.getChildByName("7").destroy();
-                    role.getChildByName("win").destroy();
+                    let speed = role.getChildByName("7");
+                    if (speed) {
+                        speed.destroy();
+                    }
+                    let win = role.getChildByName("win");
+                    if (win) {
+                        win.destroy();
+                    }
                     target_Class.IsSpeedUping = false;
-                    GameManage.Instance.StopTargetAction(role);
                     role.stopAllActions();
+                    GameManage.Instance.StopTargetAction(target);
                     target_Class.unscheduleAllCallbacks();
                 }
                 target_Class.IsSpeedUp = false;
@@ -179,12 +188,11 @@ export class Lightning extends PropUseing {
                 prop.setPosition(0, 400);
 
                 let callback_2 = () => {
-                    // GameManage.Instance.StopTargetAction(role);
-
-                    prop.destroy();
                     target.scale = 0.4;
                     target_Class.IsLightning = false;
                     target_Class.IsSpeedUp = true;
+                    GameManage.Instance.StopTargetAction(target);
+                    prop.destroy();
                     // target_Class.Speed = target_Speed_value;
                     console.log("道具------------------>雷击");
                 }
@@ -197,7 +205,7 @@ export class Lightning extends PropUseing {
                 let act_seq = cc.sequence(act_fOut, act_fIn).repeatForever();
                 GameManage.Instance.Page_Alarm.active = true;
                 GameManage.Instance.Page_Alarm.runAction(act_seq);
-                callbalc_time = 6.5;
+                callbalc_time = 6;
                 let callback_1 = () => {
                     if (GameManage.Instance.Page_Alarm.active) {
                         GameManage.Instance.Page_Alarm.stopAllActions();

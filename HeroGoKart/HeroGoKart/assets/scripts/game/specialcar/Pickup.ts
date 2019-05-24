@@ -28,6 +28,7 @@ export class Pickup extends SpecialCar {
                 arr[i].active = false;
             }
         }
-        role.scheduleOnce(callback, 15);
+        // role.scheduleOnce(callback, 15);
+        setTimeout(callback, 15000);
     }
 }

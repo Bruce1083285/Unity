@@ -32,15 +32,12 @@ export class TranSpeedUp extends Transportation {
      * @param role  角色节点
      */
     private SetSpeedUp(role: cc.Node) {
-        // GameManage.Instance.StopTargetAction(role);
+        GameManage.Instance.StopTargetAction(role);
 
         let prop_1: cc.Node = null;
         for (let i = 0; i < this.Game.Pre_InitiativeProp.length; i++) {
             if (this.Game.Pre_InitiativeProp[i].name === "7") {
                 prop_1 = cc.instantiate(this.Game.Pre_InitiativeProp[i]);
-                role.addChild(prop_1);
-                prop_1.scale = 3;
-                prop_1.setPosition(0, 400);
                 break;
             }
         }
@@ -73,24 +70,29 @@ export class TranSpeedUp extends Transportation {
             // role.getChildByName("7").destroy();
             // role.getChildByName("win").destroy();
             // role_type.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             role_type.unscheduleAllCallbacks();
         }
         let speed_value = role_type.Speed;
         role_type.IsSpeedUp = false;
         role_type.Speed = 1500;
-        let callback = () => {
-            // GameManage.Instance.StopTargetAction(role);
 
-            prop_1.destroy();
-            speed_Effect.destroy();
+        role.addChild(prop_1);
+        prop_1.scale = 3;
+        prop_1.setPosition(0, 400);
+
+        let callback = () => {
+            
             role_type.IsSpeedUp = true;
             role_type.IsSpeedUping = false;
             role_type.Speed = 1000;
             GameManage.Instance.Current_SpecialCar = null;
+            GameManage.Instance.StopTargetAction(role);
+            prop_1.destroy();
+            speed_Effect.destroy();
         }
-        setTimeout(callback, 10000);
+        setTimeout(callback, 7000);
         console.log("道具------------------>空投加速卡");
     }
 }

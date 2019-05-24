@@ -34,9 +34,9 @@ export class EffectTimeBomb extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        // GameManage.Instance.StopTargetAction(role);
+        GameManage.Instance.StopTargetAction(role);
 
-   
+
 
         let type_C: Role = null;
         if (role.name === "AI") {
@@ -49,9 +49,12 @@ export class EffectTimeBomb extends PropPassive {
         }
         if (!type_C.IsSky) {
             type_C.IsSky = true;
-        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen ) {
+        } else if (type_C.IsBorder || type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen) {
+            if (type_C.IsBorder) {
+                type_C.IsBorder = false;
+            }
             if (type_C.IsSlowDown) {
-                type_C.Horizontal_Sensitivity=100;
+                type_C.Horizontal_Sensitivity = 100;
                 type_C.IsSlowDown = false;
             }
             if (type_C.IsSky) {
@@ -69,16 +72,16 @@ export class EffectTimeBomb extends PropPassive {
                 role.getChildByName("9").destroy();
                 type_C.IsLightning = false;
             }
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_C.unscheduleAllCallbacks();
         }
         if (type_C.IsSpeedUping) {
             role.getChildByName("7").destroy();
             role.getChildByName("win").destroy();
             type_C.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_C.unscheduleAllCallbacks();
         }
         type_C.IsSpeedUp = false;
@@ -95,7 +98,6 @@ export class EffectTimeBomb extends PropPassive {
         let act_Scale_big = cc.scaleTo(1, 1.5);
         let act_Scale_small = cc.scaleTo(0.3, 1);
         let callback = () => {
-            // GameManage.Instance.StopTargetAction(role);
 
             if (role.name === "Player") {
                 GameManage.Instance.IsUseingProp = true;
@@ -105,6 +107,7 @@ export class EffectTimeBomb extends PropPassive {
             collider.enabled = true;
             type_C.TimeBomb = null;
             type_C.IsSpeedUp = true;
+            GameManage.Instance.StopTargetAction(role);
             console.log("道具------------------>定时炸弹");
         }
         let act_Seq = cc.sequence(act_Scale_big, act_Scale_small, cc.callFunc(callback));

@@ -93,7 +93,7 @@ export default class Animation_Bomb extends cc.Component {
             }
 
             EventCenter.BroadcastOne(EventType.Sound, SoundType.Bomb);
- 
+
             let name = target.name;
             let type_Class: Role = null;
             if (name === "AI") {
@@ -117,9 +117,12 @@ export default class Animation_Bomb extends cc.Component {
             type_Class.IsSky = true;
             if (!type_Class.IsSky) {
                 type_Class.IsSky = true;
-            } else if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen ) {
+            } else if (type_Class.IsBorder || type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen) {
+                if (type_Class.IsBorder) {
+                    type_Class.IsBorder = false;
+                }
                 if (type_Class.IsSlowDown) {
-                    type_Class.Horizontal_Sensitivity=100;
+                    type_Class.Horizontal_Sensitivity = 100;
                     type_Class.IsSlowDown = false;
                 }
                 if (type_Class.IsSky) {
@@ -140,8 +143,8 @@ export default class Animation_Bomb extends cc.Component {
                     }
                     type_Class.IsLightning = false;
                 }
-                GameManage.Instance.StopTargetAction(target);
                 target.stopAllActions();
+                GameManage.Instance.StopTargetAction(target);
                 type_Class.unscheduleAllCallbacks();
             }
             type_Class.IsSpeedUp = false;
@@ -150,8 +153,8 @@ export default class Animation_Bomb extends cc.Component {
                 target.getChildByName("7").destroy();
                 target.getChildByName("win").destroy();
                 type_Class.IsSpeedUping = false;
-                GameManage.Instance.StopTargetAction(target);
                 target.stopAllActions();
+                GameManage.Instance.StopTargetAction(target);
                 type_Class.unscheduleAllCallbacks();
             }
 
@@ -166,17 +169,16 @@ export default class Animation_Bomb extends cc.Component {
             let act_Scale_small = cc.scaleTo(0.3, 1);
             let act_Spawn = cc.spawn(act_Scale_big, act_Scale_small);
             let act_callback = () => {
-                // GameManage.Instance.StopTargetAction(target);
 
                 if (name === "Player") {
                     GameManage.Instance.IsUseingProp = true;
                     GameManage.Instance.IsTouchClick = true;
                 }
-                collider.enabled = true;
+                // collider.enabled = true;
                 type_Class.IsSky = false;
                 type_Class.IsSpeedUp = true;
                 type_Class.Speed = 0;
-                target = null;
+                GameManage.Instance.StopTargetAction(target);
                 console.log("道具------------------>导弹");
             }
             let act_Seq = cc.sequence(act_Spawn, act_Scale_small, cc.callFunc(act_callback));
@@ -231,11 +233,11 @@ export default class Animation_Bomb extends cc.Component {
         dir_1.normalizeSelf();
 
         //根据方向向量移动位置
-        let moveSpeed = 100;
+        let moveSpeed = 2000;
         this.node.x += dt * dir_1.x * moveSpeed;
         this.node.y += dt * dir_1.y * moveSpeed;
-        this.node.x += dir_1.x * moveSpeed;
-        this.node.y += dir_1.y * moveSpeed;
+        // this.node.x += dir_1.x * moveSpeed;
+        // this.node.y += dir_1.y * moveSpeed;
 
         // degree = - Math.atan((currentPos.y - this.lastPosition.y) / (currentPos.x - this.lastPosition.x)) * 180 / 3.14;
 

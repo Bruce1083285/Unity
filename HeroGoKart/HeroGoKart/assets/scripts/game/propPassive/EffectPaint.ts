@@ -33,7 +33,7 @@ export class EffectPaint extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        // GameManage.Instance.StopTargetAction(role);
+        GameManage.Instance.StopTargetAction(role);
         // this.Pool_PassiveProp.put(prop);
 
         let arr = role.children;
@@ -52,7 +52,10 @@ export class EffectPaint extends PropPassive {
         }
         if (!type_C.IsSlowDown) {
             type_C.IsSlowDown = true;
-        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen ) {
+        } else if (type_C.IsBorder||type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen ) {
+            if (type_C.IsBorder) {
+                type_C.IsBorder = false;
+            }
             if (type_C.IsSlowDown) {
                 type_C.Horizontal_Sensitivity=100;
                 // type_C.IsSlowDown = false;
@@ -72,16 +75,16 @@ export class EffectPaint extends PropPassive {
                 role.getChildByName("9").destroy();
                 type_C.IsLightning = false;
             }
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_C.unscheduleAllCallbacks();
         }
         if (type_C.IsSpeedUping) {
             role.getChildByName("7").destroy();
             role.getChildByName("win").destroy();
             type_C.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_C.unscheduleAllCallbacks();
         }
         let sens = type_C.Horizontal_Sensitivity;
@@ -90,11 +93,11 @@ export class EffectPaint extends PropPassive {
         type_C.Speed = type_C.Speed * 0.5;
 
         let callback = () => {
-            // GameManage.Instance.StopTargetAction(role);
             type_C.IsSlowDown=false;
             type_C.Horizontal_Sensitivity = sens;
             // type_C.IsHorizontal = true;
             type_C.IsSpeedUp = true;
+            GameManage.Instance.StopTargetAction(role);
             console.log("道具------------------>油漆");
         }
         type_C.scheduleOnce(callback, 2);

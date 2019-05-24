@@ -29,7 +29,7 @@ export class EffectClownGift extends PropEffect {
      * @param role 被影响角色
      */
     private RunEffect(role: cc.Node, prop: cc.Node) {
-        // GameManage.Instance.StopTargetAction(role);
+        GameManage.Instance.StopTargetAction(role);
 
         let arr_car = role.getChildByName("Box").getChildByName("SpecialCar").children;
         let car_name: string = null;
@@ -65,9 +65,12 @@ export class EffectClownGift extends PropEffect {
         }
         if (!type_Class.IsSky) {
             type_Class.IsSky = true;
-        } else if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen) {
+        } else if (type_Class.IsBorder || type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen) {
+            if (type_Class.IsBorder) {
+                type_Class.IsBorder = false;
+            }
             if (type_Class.IsSlowDown) {
-                type_Class.Horizontal_Sensitivity=100;
+                type_Class.Horizontal_Sensitivity = 100;
                 type_Class.IsSlowDown = false;
             }
             if (type_Class.IsSky) {
@@ -85,16 +88,16 @@ export class EffectClownGift extends PropEffect {
                 role.getChildByName("9").destroy();
                 type_Class.IsLightning = false;
             }
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_Class.unscheduleAllCallbacks();
         }
         if (type_Class.IsSpeedUping) {
             role.getChildByName("7").destroy();
             role.getChildByName("win").destroy();
             type_Class.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_Class.unscheduleAllCallbacks();
         }
         collider.enabled = false;
@@ -108,7 +111,6 @@ export class EffectClownGift extends PropEffect {
 
             if (type_Class.IsFrozen) { }
 
-            // GameManage.Instance.StopTargetAction(role);
 
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
@@ -118,6 +120,7 @@ export class EffectClownGift extends PropEffect {
             collider.enabled = true;
             type_Class.IsSky = false;
             type_Class.IsSpeedUp = true;
+            GameManage.Instance.StopTargetAction(role);
             console.log("道具------------------>小丑");
             // type_Class.Speed = 0;
         }

@@ -35,7 +35,7 @@ export class EffectAreaSpeedUp extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        // GameManage.Instance.StopTargetAction(role);
+        GameManage.Instance.StopTargetAction(role);
 
         // GameManage.Instance.IsTouchClick = true;
         // GameManage.Instance.StopTargetAction(role);
@@ -45,9 +45,6 @@ export class EffectAreaSpeedUp extends PropPassive {
         for (let i = 0; i < this.Game.Pre_InitiativeProp.length; i++) {
             if (this.Game.Pre_InitiativeProp[i].name === "7") {
                 prop_1 = cc.instantiate(this.Game.Pre_InitiativeProp[i]);
-                role.addChild(prop_1);
-                prop_1.scale = 3;
-                prop_1.setPosition(0, 400);
                 break;
             }
         }
@@ -79,21 +76,26 @@ export class EffectAreaSpeedUp extends PropPassive {
             // role.getChildByName("7").destroy();
             // role.getChildByName("win").destroy();
             // type_C.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_C.unscheduleAllCallbacks();
         }
         type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
         type_C.Speed = 1500;
-        let callback = () => {
-            // GameManage.Instance.StopTargetAction(role);
 
-            prop_1.destroy();
-            speed_Effect.destroy();
+        role.addChild(prop_1);
+        prop_1.scale = 3;
+        prop_1.setPosition(0, 400);
+
+        let callback = () => {
+
             type_C.IsSpeedUp = true;
             type_C.IsSpeedUping = false;
             type_C.Speed = 1000;
+            GameManage.Instance.StopTargetAction(role);
+            prop_1.destroy();
+            speed_Effect.destroy();
             console.log("道具------------------>加速带");
         }
         type_C.scheduleOnce(callback, 2);

@@ -74,20 +74,20 @@ export class EffectHandrail extends PropPassive {
             role.getChildByName("7").destroy();
             role.getChildByName("win").destroy();
             type_C.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_C.unscheduleAllCallbacks();
         }
 
 
         let callback = () => {
-            GameManage.Instance.StopTargetAction(role);
-
+            
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
             }
             // type_C.Speed = speed_Value;
             type_C.IsSpeedUp = true;
+            GameManage.Instance.StopTargetAction(role);
             console.log("道具------------------>栏杆");
         }
         type_C.scheduleOnce(callback, 0.5);

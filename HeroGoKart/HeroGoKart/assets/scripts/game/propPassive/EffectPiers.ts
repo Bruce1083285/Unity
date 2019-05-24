@@ -35,7 +35,7 @@ export class EffectPiers extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        // GameManage.Instance.StopTargetAction(role);
+        GameManage.Instance.StopTargetAction(role);
 
         let arr_car = role.getChildByName("Box").getChildByName("SpecialCar").children;
         let car_name: string = null;
@@ -58,7 +58,7 @@ export class EffectPiers extends PropPassive {
             return;
         }
 
-      
+
         // GameManage.Instance.IsTouchClick = false;
 
         let role_type: Role = null;
@@ -100,11 +100,17 @@ export class EffectPiers extends PropPassive {
         //     role_type.unscheduleAllCallbacks();
         // }
         if (role_type.IsSpeedUping) {
-            role.getChildByName("7").destroy();
-            role.getChildByName("win").destroy();
+            let speed = role.getChildByName("7");
+            if (speed) {
+                speed.destroy();
+            }
+            let win = role.getChildByName("win");
+            if (win) {
+                win.destroy();
+            }
             role_type.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             role_type.unscheduleAllCallbacks();
         }
         let collider = role.getComponent(cc.BoxCollider);
@@ -118,7 +124,6 @@ export class EffectPiers extends PropPassive {
         let act_Move_left = cc.moveBy(0.3, -50, -150);
         let act_Move_right = cc.moveBy(0.3, 50, -150);
         let callback = () => {
-            // GameManage.Instance.StopTargetAction(role);
 
             if (role.name === "Player") {
                 GameManage.Instance.IsTouchClick = true;
@@ -132,6 +137,7 @@ export class EffectPiers extends PropPassive {
             collider.enabled = true;
             // role_type.Speed = speed_Value;
             role_type.IsSpeedUp = true;
+            GameManage.Instance.StopTargetAction(role);
             console.log("道具------------------>石墩");
         }
         let act_Move: cc.ActionInstant = null;

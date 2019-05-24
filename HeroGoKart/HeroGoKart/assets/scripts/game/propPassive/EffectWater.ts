@@ -34,8 +34,7 @@ export class EffectWater extends PropPassive {
       * @param prop 道具节点
       */
     private SetProp(role: cc.Node, prop: cc.Node) {
-        // GameManage.Instance.StopTargetAction(role);
-
+        GameManage.Instance.StopTargetAction(role);
 
         let arr = role.children;
         for (let i = 0; i < arr.length; i++) {
@@ -53,9 +52,12 @@ export class EffectWater extends PropPassive {
         }
         if (!type_C.IsSlowDown) {
             type_C.IsSlowDown = true;
-        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen) {
+        } else if (type_C.IsBorder||type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen) {
+            if (type_C.IsBorder) {
+                type_C.IsBorder = false;
+            }
             if (type_C.IsSlowDown) {
-                type_C.Horizontal_Sensitivity=100;
+                type_C.Horizontal_Sensitivity = 100;
                 // type_C.IsSlowDown = false;
             }
             if (type_C.IsSky) {
@@ -73,16 +75,22 @@ export class EffectWater extends PropPassive {
                 role.getChildByName("9").destroy();
                 type_C.IsLightning = false;
             }
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_C.unscheduleAllCallbacks();
         }
         if (type_C.IsSpeedUping) {
-            role.getChildByName("7").destroy();
-            role.getChildByName("win").destroy();
+            let speed = role.getChildByName("7");
+            if (speed) {
+                speed.destroy();
+            }
+            let win = role.getChildByName("win");
+            if (win) {
+                win.destroy();
+            }
             type_C.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_C.unscheduleAllCallbacks();
         }
         type_C.IsSpeedUp = false;
@@ -91,11 +99,11 @@ export class EffectWater extends PropPassive {
         type_C.Speed = speed_Value * 0.5;
 
         let callback = () => {
-            // GameManage.Instance.StopTargetAction(role);
             // type_C.Speed = speed_Value;
             type_C.IsSlowDown = false;
             type_C.IsSpeedUp = true;
             type_C.Horizontal_Sensitivity = 100;
+            GameManage.Instance.StopTargetAction(role);
             console.log("道具------------------>水滩");
         }
         type_C.scheduleOnce(callback, 2);

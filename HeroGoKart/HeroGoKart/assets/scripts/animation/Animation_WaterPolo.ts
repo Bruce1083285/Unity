@@ -116,14 +116,22 @@ export default class Animation_WaterPolo extends cc.Component {
                 for (let i = 0; i < arr.length; i++) {
                     let chi = arr[i];
                     if (chi.name === this.node.name && chi.uuid !== this.node.uuid) {
+                        let water_Polo = chi.getComponent(Animation_WaterPolo);
+                        water_Polo.unscheduleAllCallbacks();
+                        target.stopAllActions();
+                        GameManage.Instance.StopTargetAction(target);
+                        type_Class.unscheduleAllCallbacks();
                         chi.removeFromParent();
                         chi.destroy();
                     }
                 }
             }
-            if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsFrozen) {
+            if (type_Class.IsBorder || type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsFrozen) {
+                if (type_Class.IsBorder) {
+                    type_Class.IsBorder = false;
+                }
                 if (type_Class.IsSlowDown) {
-                    type_Class.Horizontal_Sensitivity=100;
+                    type_Class.Horizontal_Sensitivity = 100;
                     type_Class.IsSlowDown = false;
                 }
                 if (type_Class.IsSky) {
@@ -142,43 +150,41 @@ export default class Animation_WaterPolo extends cc.Component {
                     target.getChildByName("win").destroy();
                     type_Class.IsSpeedUping = false;
                 }
-                GameManage.Instance.StopTargetAction(target);
                 target.stopAllActions();
+                GameManage.Instance.StopTargetAction(target);
                 type_Class.unscheduleAllCallbacks();
             }
             if (type_Class.IsSpeedUping) {
                 target.getChildByName("7").destroy();
                 target.getChildByName("win").destroy();
                 type_Class.IsSpeedUping = false;
-                GameManage.Instance.StopTargetAction(target);
                 target.stopAllActions();
+                GameManage.Instance.StopTargetAction(target);
                 type_Class.unscheduleAllCallbacks();
             }
             type_Class.IsSpeedUp = false;
             type_Class.Speed = 0;
 
-            let collider = target.getComponent(cc.BoxCollider);
-            collider.enabled = false;
+            // let collider = target.getComponent(cc.BoxCollider);
+            // collider.enabled = false;
 
             let act_dt = cc.delayTime(2);
             let callback = () => {
-                GameManage.Instance.StopTargetAction(target);
 
-                collider.enabled = true;
+                // collider.enabled = true;
 
-                let type_Class = null;
                 let name = target.name;
-                if (name === "AI") {
-                    type_Class = target.getComponent(AI);
-                } else if (name === "Player") {
-                    type_Class = target.getComponent(Player);
+                if (name === "Player") {
                     GameManage.Instance.IsUseingProp = true;
                     GameManage.Instance.IsTouchClick = true;
                 }
                 type_Class.IsWaterPolo = false;
                 type_Class.IsSpeedUp = true;
                 type_Class.Speed = 0;
-                this.node.destroy();
+                GameManage.Instance.StopTargetAction(target);
+                if (this.node) {
+                    this.node.destroy();
+                }
                 console.log("道具------------------>水球");
             }
             let act_seq = cc.sequence(act_dt, cc.callFunc(callback));

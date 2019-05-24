@@ -988,6 +988,9 @@ export default class Game extends cc.Component {
      */
     private LeftStart(event) {
         let player: Role = this.Player.getComponent(Player);
+        console.log("玩家---------->左");
+        console.log(this.Player);
+        console.log(player);
         if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart || GameManage.Instance.IsPause || player.IsWaterPolo || player.IsFrozen || player.IsSky) {
             return;
         }
@@ -1013,7 +1016,10 @@ export default class Game extends cc.Component {
      */
     private TouchEnd(event) {
         let player: Role = this.Player.getComponent(Player);
-        if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart || player.IsWaterPolo || player.IsFrozen || player.IsSky) {
+        console.log("玩家---------->结束触摸");
+        console.log(this.Player);
+        console.log(player);
+        if (!GameManage.Instance.IsGameStart || player.IsWaterPolo || player.IsFrozen || player.IsSky) {
             return;
         }
         this.Horizontal = 0;
@@ -1036,6 +1042,9 @@ export default class Game extends cc.Component {
      */
     private RightStart(event) {
         let player: Role = this.Player.getComponent(Player);
+        console.log("玩家---------->右");
+        console.log(this.Player);
+        console.log(player);
         if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart || player.IsWaterPolo || player.IsFrozen || player.IsSky) {
             return;
         }
@@ -1115,10 +1124,12 @@ export default class Game extends cc.Component {
             }
 
             if (prop.name === "TimeBomb" || prop.name === "Container") {
-                let ran = Math.floor(Math.random() * 100);
-                if (ran > 20) {
-                    i--;
-                    continue;
+                if (prop.name === "Container") {
+                    let ran = Math.floor(Math.random() * 100);
+                    if (ran > 20) {
+                        i--;
+                        continue;
+                    }
                 }
                 let ind = have_arr.indexOf(prop.name);
                 if (ind === -1) {

@@ -31,7 +31,7 @@ export class Magnet extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        // GameManage.Instance.StopTargetAction(role);
+        GameManage.Instance.StopTargetAction(role);
 
         let arr_y: cc.Node[] = [];
         for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
@@ -82,9 +82,6 @@ export class Magnet extends PropUseing {
         for (let i = 0; i < this.Props.length; i++) {
             if (this.Props[i].name === skin_id) {
                 prop = cc.instantiate(this.Props[i]);
-                role.addChild(prop);
-                prop.scale = 3;
-                prop.setPosition(0, 400);
                 break;
             }
         }
@@ -125,20 +122,20 @@ export class Magnet extends PropUseing {
             // role.getChildByName("7").destroy();
             // role.getChildByName("win").destroy();
             // type_Class.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             role_Class.unscheduleAllCallbacks();
         }
         role_Class.IsSpeedUp = false;
         let role_Speed_value = role_Class.Speed;
         role_Class.Speed = 1500;
 
-        let callback = () => {
-            // GameManage.Instance.StopTargetAction(role);
+        role.addChild(prop);
+        prop.scale = 3;
+        prop.setPosition(0, 400);
 
-            target.stopAllActions();
-            prop.destroy();
-            speed_Effect.destroy();
+        let callback = () => {
+
 
             target_Class.IsSpeedUp = true;
             target_Class.Speed = target_Speed_value;
@@ -146,9 +143,13 @@ export class Magnet extends PropUseing {
             role_Class.IsSpeedUping = false;
             role_Class.IsSpeedUp = true;
             role_Class.Speed = role_Speed_value;
+            target.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
+            prop.destroy();
+            speed_Effect.destroy();
             console.log("道具------------------>吸铁石");
         }
 
-        role_Class.scheduleOnce(callback, 3000);
+        role_Class.scheduleOnce(callback, 3);
     }
 }

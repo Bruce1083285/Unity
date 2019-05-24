@@ -64,6 +64,10 @@ export default class Role extends cc.Component {
   */
   public IsLightning: boolean = false;
   /**
+   * @property 是否越界
+   */
+  public IsBorder: boolean = false;
+  /**
    * @property 是否存在定时炸弹
    */
   public TimeBomb: cc.Node = null;
@@ -97,7 +101,7 @@ export default class Role extends cc.Component {
 * 重置自身
 */
   public ResetSelf() { }
-  
+
   /**
    * 左右移动
    * @param ratio 比例

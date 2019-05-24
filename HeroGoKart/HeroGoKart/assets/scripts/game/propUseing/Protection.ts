@@ -56,7 +56,7 @@ export class Protection extends PropUseing {
         type_Class.IsOpen_Pretection = true;
 
         let callback = () => {
-            GameManage.Instance.StopTargetAction(role);
+            // GameManage.Instance.StopTargetAction(role);
 
             type_Class.IsOpen_Pretection = false;
             prop.destroy();

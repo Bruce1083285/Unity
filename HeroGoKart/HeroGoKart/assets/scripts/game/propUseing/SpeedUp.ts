@@ -32,15 +32,12 @@ export class SpeedUp extends PropUseing {
     }
 
     private SetProp(role: cc.Node, skin_id: string) {
-        // GameManage.Instance.StopTargetAction(role);
+        GameManage.Instance.StopTargetAction(role);
 
         let prop: cc.Node = null;
         for (let i = 0; i < this.Props.length; i++) {
             if (this.Props[i].name === skin_id) {
                 prop = cc.instantiate(this.Props[i]);
-                role.addChild(prop);
-                prop.scale = 3;
-                prop.setPosition(0, 400);
                 break;
             }
         }
@@ -74,25 +71,29 @@ export class SpeedUp extends PropUseing {
             // role.getChildByName("7").destroy();
             // role.getChildByName("win").destroy();
             // type_Class.IsSpeedUping = false;
-            GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
+            GameManage.Instance.StopTargetAction(role);
             type_Class.unscheduleAllCallbacks();
         }
         type_Class.IsSpeedUp = false;
         let speed_value = type_Class.Speed;
         type_Class.Speed = 1500;
 
-        let callback = () => {
-            // GameManage.Instance.StopTargetAction(role);
+        role.addChild(prop);
+        prop.scale = 3;
+        prop.setPosition(0, 400);
 
-            speed_Effect.destroy();
-            prop.destroy();
+        let callback = () => {
+            
             type_Class.IsSpeedUp = true;
             type_Class.IsSpeedUping = false;
             type_Class.Speed = 1000;
+            GameManage.Instance.StopTargetAction(role);
+            speed_Effect.destroy();
+            prop.destroy();
             console.log("道具------------------>加速道具");
         }
 
-        type_Class.scheduleOnce(callback, 5);
+        type_Class.scheduleOnce(callback, 4);
     }
 }

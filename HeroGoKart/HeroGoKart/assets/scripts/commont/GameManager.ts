@@ -82,7 +82,6 @@ export class GameManage {
      * @param target 目标节点
      */
     public StopTargetAction(target: cc.Node) {
-        target.getComponent(cc.BoxCollider).enabled = true;
 
         if (target.name === "Player") {
             // let player = target.getComponent(Player);
@@ -95,6 +94,10 @@ export class GameManage {
         box.scale = 1;
         box.opacity = 255;
         box.rotation = 0;
+
+        target.getComponent(cc.BoxCollider).enabled = true;
+        // target.stopAllActions();
+        target.opacity = 255;
     }
 
 
