@@ -58,8 +58,7 @@ export class EffectPiers extends PropPassive {
             return;
         }
 
-        let collider = role.getComponent(cc.BoxCollider);
-        collider.enabled = false;
+      
         // GameManage.Instance.IsTouchClick = false;
 
         let role_type: Role = null;
@@ -100,6 +99,17 @@ export class EffectPiers extends PropPassive {
         //     role.stopAllActions();
         //     role_type.unscheduleAllCallbacks();
         // }
+        if (role_type.IsSpeedUping) {
+            role.getChildByName("7").destroy();
+            role.getChildByName("win").destroy();
+            role_type.IsSpeedUping = false;
+            GameManage.Instance.StopTargetAction(role);
+            role.stopAllActions();
+            role_type.unscheduleAllCallbacks();
+        }
+        let collider = role.getComponent(cc.BoxCollider);
+        collider.enabled = false;
+
         role_type.IsSpeedUp = false;
         let speed_Value = role_type.Speed;
         role_type.Speed = 0;
@@ -122,6 +132,7 @@ export class EffectPiers extends PropPassive {
             collider.enabled = true;
             // role_type.Speed = speed_Value;
             role_type.IsSpeedUp = true;
+            console.log("道具------------------>石墩");
         }
         let act_Move: cc.ActionInstant = null;
         let ran = Math.floor(Math.random() * 100);
@@ -132,6 +143,5 @@ export class EffectPiers extends PropPassive {
         }
         let act_seq = cc.sequence(act_Move, cc.callFunc(callback));
         role.runAction(act_seq);
-        console.log("道具------------------>石墩");
     }
 }

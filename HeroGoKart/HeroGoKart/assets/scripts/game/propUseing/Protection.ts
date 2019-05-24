@@ -6,6 +6,7 @@ import Player from "../Player";
 import { PropUseing } from "../PropUseing";
 import Game from "../../Game";
 import { GameManage } from "../../commont/GameManager";
+import Role from "../Role";
 
 
 /**
@@ -44,7 +45,7 @@ export class Protection extends PropUseing {
             }
         }
 
-        let type_Class = null;
+        let type_Class:Role = null;
         let name = role.name;
         if (name === "AI") {
             type_Class = role.getComponent(AI);
@@ -59,10 +60,10 @@ export class Protection extends PropUseing {
 
             type_Class.IsOpen_Pretection = false;
             prop.destroy();
+            console.log("道具------------------>保护罩");
         }
 
-        setTimeout(callback, 5000);
-        console.log("道具------------------>保护罩");
+        type_Class.scheduleOnce(callback, 5);
     }
 
 }

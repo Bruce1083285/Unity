@@ -63,6 +63,7 @@ export default class Animation_Frozen extends cc.Component {
      * 播放开始动画
      */
     public PlayBegin(target: cc.Node) {
+        console.log("冰冻开始--->1");
         this.Target = target;
         this.node.zIndex = 1;
 
@@ -74,15 +75,14 @@ export default class Animation_Frozen extends cc.Component {
             }
         }
 
-        GameManage.Instance.StopTargetAction(target);
+        // GameManage.Instance.StopTargetAction(target);
 
         EventCenter.BroadcastOne(EventType.Sound, SoundType.Frozen);
 
         target.addChild(this.node);
         this.node.setPosition(0, 0);
         this.node.scale = 3;
-        // let collider = target.getComponent(cc.BoxCollider);
-        // collider.enabled = false;
+     
 
         let type_Class: Role = null;
         let name = target.name;
@@ -99,8 +99,10 @@ export default class Animation_Frozen extends cc.Component {
             type_Class.Game.Horizontal = 0;
         }
         if (!type_Class.IsFrozen) {
+            console.log("冰冻开始--->2");
             type_Class.IsFrozen = true;
         } else {
+            console.log("冰冻开始--->3");
             let arr = target.children;
             for (let i = 0; i < arr.length; i++) {
                 let chi = arr[i];
@@ -112,8 +114,10 @@ export default class Animation_Frozen extends cc.Component {
                 }
             }
         }
-        if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsSpeedUping) {
+        if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo) {
+            console.log("冰冻开始--->4");
             if (type_Class.IsSlowDown) {
+                type_Class.Horizontal_Sensitivity = 100;
                 type_Class.IsSlowDown = false;
             }
             if (type_Class.IsSky) {
@@ -125,31 +129,43 @@ export default class Animation_Frozen extends cc.Component {
             }
             if (type_Class.IsLightning) {
                 target.getChildByName("9").destroy();
-                type_Class.IsWaterPolo = false;
-            }
-            if (type_Class.IsSpeedUping) {
-                target.getChildByName("7").destroy();
-                target.getChildByName("win").destroy();
-                type_Class.IsSpeedUping = false;
+                type_Class.IsLightning = false;
             }
             GameManage.Instance.StopTargetAction(target);
             target.stopAllActions();
             type_Class.unscheduleAllCallbacks();
         }
-
+        if (type_Class.IsSpeedUping) {
+            console.log("冰冻开始--->5");
+            target.getChildByName("7").destroy();
+            target.getChildByName("win").destroy();
+            type_Class.IsSpeedUping = false;
+            GameManage.Instance.StopTargetAction(target);
+            target.stopAllActions();
+            type_Class.unscheduleAllCallbacks();
+        }
         type_Class.IsSpeedUp = false;
         type_Class.Speed = 0;
+        
 
         let callback = () => {
+            console.log("冰冻开始--->6");
             if (GameManage.Instance.IsPause) {
                 return;
             }
             this.Spri_Img.spriteFrame = this.Fram_Frozen[this.Index_Begin];
             this.Index_Begin++;
             if (this.Index_Begin >= this.Fram_Frozen.length) {
+                console.log("冰冻开始--->7");
                 this.unschedule(callback);
                 this.Spri_Img.spriteFrame = this.Fram_Frozen[this.Fram_Frozen.length - 1]
+                let callback_2 = () => {
+                    console.log("冰冻结束");
+                    this.PlayEnd();
+                }
+                this.scheduleOnce(callback_2, 3);
             }
+            console.log("道具------------------>冰冻");
         }
 
         this.schedule(callback, 0.05);

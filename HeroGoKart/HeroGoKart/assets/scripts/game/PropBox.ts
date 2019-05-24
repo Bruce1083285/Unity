@@ -326,7 +326,7 @@ export default class PropBox extends cc.Component {
             count = 0;
         }
 
-        console.log(dt + "<-----持续时间值");
+        // console.log(dt + "<-----持续时间值");
         //减速
         if (dt > 0.3) {
             console.log("是否跳出");

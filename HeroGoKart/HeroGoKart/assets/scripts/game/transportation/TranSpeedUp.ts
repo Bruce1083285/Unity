@@ -32,7 +32,7 @@ export class TranSpeedUp extends Transportation {
      * @param role  角色节点
      */
     private SetSpeedUp(role: cc.Node) {
-        GameManage.Instance.StopTargetAction(role);
+        // GameManage.Instance.StopTargetAction(role);
 
         let prop_1: cc.Node = null;
         for (let i = 0; i < this.Game.Pre_InitiativeProp.length; i++) {
@@ -60,12 +60,28 @@ export class TranSpeedUp extends Transportation {
         if (role.name === "Player") {
             role_type = role.getComponent(Player);
         }
+        if (!role_type.IsSpeedUping) {
+            role_type.IsSpeedUping = true;
+        } else {
+            let arr = role.children;
+            for (let i = 0; i < arr.length; i++) {
+                let speed_icon = arr[i];
+                if ((speed_icon.name === "7" && speed_icon.uuid !== prop_1.uuid) || (speed_icon.name === "win" && speed_icon.uuid !== speed_Effect.uuid)) {
+                    speed_icon.destroy();
+                }
+            }
+            // role.getChildByName("7").destroy();
+            // role.getChildByName("win").destroy();
+            // role_type.IsSpeedUping = false;
+            GameManage.Instance.StopTargetAction(role);
+            role.stopAllActions();
+            role_type.unscheduleAllCallbacks();
+        }
         let speed_value = role_type.Speed;
         role_type.IsSpeedUp = false;
-        role_type.IsSpeedUping = true;
         role_type.Speed = 1500;
         let callback = () => {
-            GameManage.Instance.StopTargetAction(role);
+            // GameManage.Instance.StopTargetAction(role);
 
             prop_1.destroy();
             speed_Effect.destroy();

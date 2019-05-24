@@ -65,12 +65,13 @@ export class EffectClownGift extends PropEffect {
         }
         if (!type_Class.IsSky) {
             type_Class.IsSky = true;
-        } else if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning  || type_Class.IsWaterPolo || type_Class.IsFrozen || type_Class.IsSpeedUping) {
+        } else if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen) {
             if (type_Class.IsSlowDown) {
+                type_Class.Horizontal_Sensitivity=100;
                 type_Class.IsSlowDown = false;
             }
             if (type_Class.IsSky) {
-                type_Class.IsSky = false;
+                // type_Class.IsSky = false;
             }
             if (type_Class.IsFrozen) {
                 role.getChildByName("5").destroy();
@@ -82,17 +83,22 @@ export class EffectClownGift extends PropEffect {
             }
             if (type_Class.IsLightning) {
                 role.getChildByName("9").destroy();
-                type_Class.IsWaterPolo = false;
-            }
-            if (type_Class.IsSpeedUping) {
-                role.getChildByName("7").destroy();
-                role.getChildByName("win").destroy();
-                type_Class.IsSpeedUping = false;
+                type_Class.IsLightning = false;
             }
             GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
             type_Class.unscheduleAllCallbacks();
         }
+        if (type_Class.IsSpeedUping) {
+            role.getChildByName("7").destroy();
+            role.getChildByName("win").destroy();
+            type_Class.IsSpeedUping = false;
+            GameManage.Instance.StopTargetAction(role);
+            role.stopAllActions();
+            type_Class.unscheduleAllCallbacks();
+        }
+        collider.enabled = false;
+
         type_Class.IsSpeedUp = false;
         type_Class.Speed = 0;
 
@@ -112,11 +118,11 @@ export class EffectClownGift extends PropEffect {
             collider.enabled = true;
             type_Class.IsSky = false;
             type_Class.IsSpeedUp = true;
+            console.log("道具------------------>小丑");
             // type_Class.Speed = 0;
         }
         let act_Seq = cc.sequence(act_Scale_big, act_Scale_small, cc.callFunc(act_callback));
         let box = role.getChildByName("Box");
         box.runAction(act_Seq);
-        console.log("道具------------------>小丑");
     }
 }

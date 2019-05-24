@@ -57,9 +57,7 @@ export class EffectBoulder extends PropPassive {
             return;
         }
 
-        let collider = role.getComponent(cc.BoxCollider);
-        // GameManage.Instance.IsTouchClick = false;
-        collider.enabled = false;
+       
         let box = role.getChildByName("Box");
         box.scaleX = 1.2;
 
@@ -71,9 +69,10 @@ export class EffectBoulder extends PropPassive {
         }
         if (!type_C.IsSlowDown) {
             type_C.IsSlowDown = true;
-        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen || type_C.IsSpeedUping) {
+        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen ) {
             if (type_C.IsSlowDown) {
-                type_C.IsSlowDown = false;
+                type_C.Horizontal_Sensitivity=100;
+                // type_C.IsSlowDown = false;
             }
             if (type_C.IsSky) {
                 type_C.IsSky = false;
@@ -88,13 +87,16 @@ export class EffectBoulder extends PropPassive {
             }
             if (type_C.IsLightning) {
                 role.getChildByName("9").destroy();
-                type_C.IsWaterPolo = false;
+                type_C.IsLightning = false;
             }
-            if (type_C.IsSpeedUping) {
-                role.getChildByName("7").destroy();
-                role.getChildByName("win").destroy();
-                type_C.IsSpeedUping = false;
-            }
+            GameManage.Instance.StopTargetAction(role);
+            role.stopAllActions();
+            type_C.unscheduleAllCallbacks();
+        }
+        if (type_C.IsSpeedUping) {
+            role.getChildByName("7").destroy();
+            role.getChildByName("win").destroy();
+            type_C.IsSpeedUping = false;
             GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
             type_C.unscheduleAllCallbacks();
@@ -102,11 +104,10 @@ export class EffectBoulder extends PropPassive {
         type_C.IsSpeedUp = false;
         let speed_Value = type_C.Speed;
         type_C.Speed = speed_Value * 0.5;
-        if (type_C.IsSpeedUp) {
-            role.getChildByName("7").destroy();
-            role.getChildByName("win").destroy();
-            type_C.IsSpeedUping = false;
-        }
+
+        let collider = role.getComponent(cc.BoxCollider);
+        // GameManage.Instance.IsTouchClick = false;
+        collider.enabled = false;
 
         let callback_1 = () => {
             // GameManage.Instance.StopTargetAction(role);
@@ -115,12 +116,12 @@ export class EffectBoulder extends PropPassive {
             type_C.IsSlowDown=true;
             type_C.IsSpeedUp = true;
             box.scaleX = 1;
+            console.log("道具------------------>大石头");
         }
         let callback_2 = () => {
             collider.enabled = true;
         }
         type_C.scheduleOnce(callback_1, 3);
         type_C.scheduleOnce(callback_2, 0.5);
-        console.log("道具------------------>大石头");
     }
 }

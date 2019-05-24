@@ -361,6 +361,8 @@ export default class AI extends Role {
             if (this.Speed_X <= 1) {
                 this.Speed_X = 1;
             }
+        } else {
+            this.Speed_X = 1;
         }
     }
 
@@ -535,7 +537,7 @@ export default class AI extends Role {
         }, 0.5);
         // let patch_arr: string[] = ["5", "4"];
         // let patch_ran = Math.floor(Math.random() * patch_arr.length);
-        // str = "9";
+        // str = "5";
         switch (str) {
             case "1":
                 //香蕉皮
@@ -853,17 +855,16 @@ export default class AI extends Role {
      * @param target AI节点
      */
     private TransferTimeBomb(target: cc.Node) {
-        let ai: AI = null;
-        let player: Player = null;
+        let role_c: Role = null;
         if (target.name === "AI") {
-            ai = target.getComponent(AI);
-            if (ai.TimeBomb) {
+            role_c = target.getComponent(AI);
+            if (role_c.TimeBomb) {
                 return;
             }
         }
         if (target.name === "Player") {
-            player = target.getComponent(Player);
-            if (player.TimeBomb) {
+            role_c = target.getComponent(Player);
+            if (role_c.TimeBomb) {
                 return;
             }
         }
@@ -883,12 +884,8 @@ export default class AI extends Role {
         this.TimeBomb.removeFromParent(false);
         target.addChild(this.TimeBomb);
         this.TimeBomb.setPosition(0, 0);
-        if (ai) {
-            ai.TimeBomb = this.TimeBomb;
-        }
-        if (player) {
-            player.TimeBomb = this.TimeBomb;
-        }
+        role_c.TimeBomb = this.TimeBomb;
+
         let callback = () => {
             this.TimeBomb = null;
         }

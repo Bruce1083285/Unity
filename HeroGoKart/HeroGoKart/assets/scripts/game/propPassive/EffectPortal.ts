@@ -63,18 +63,21 @@ export class EffectPortal extends PropPassive {
                 GameManage.Instance.IsPortal = false;
                 player.IsSpeedUp = true;
                 player.Speed = speed_value;
+                console.log("道具------------------>传送门");
             }
             let act_seq = cc.sequence(act_move, cc.callFunc(callback));
             player.Camera.runAction(act_seq);
         } else {
 
+            let act_dt = cc.delayTime(1);
             let callback = () => {
                 GameManage.Instance.StopTargetAction(role);
                 collider.enabled = true;
                 this.Pool_PassiveProp.put(prop);
+                console.log("道具------------------>传送门");
             }
-            setTimeout(callback, 1000);
+            let act_seq = cc.sequence(act_dt, cc.callFunc(callback));
+            role.runAction(act_seq);
         }
-        console.log("道具------------------>传送门");
     }
 }

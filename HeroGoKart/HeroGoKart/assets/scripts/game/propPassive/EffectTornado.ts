@@ -36,7 +36,6 @@ export class EffectTornado extends PropPassive {
  */
     private SetProp(role: cc.Node, prop: cc.Node) {
         // GameManage.Instance.StopTargetAction(role);
-
         let collider = role.getComponent(cc.BoxCollider);
         collider.enabled = false;
 
@@ -83,12 +82,13 @@ export class EffectTornado extends PropPassive {
         let speed_value = type_C.Speed;
         if (!type_C.IsSky) {
             type_C.IsSky = true;
-        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen || type_C.IsSpeedUping) {
+        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen ) {
             if (type_C.IsSlowDown) {
+                type_C.Horizontal_Sensitivity=100;
                 type_C.IsSlowDown = false;
             }
             if (type_C.IsSky) {
-                type_C.IsSky = false;
+                // type_C.IsSky = false;
             }
             if (type_C.IsFrozen) {
                 role.getChildByName("5").destroy();
@@ -100,19 +100,23 @@ export class EffectTornado extends PropPassive {
             }
             if (type_C.IsLightning) {
                 role.getChildByName("9").destroy();
-                type_C.IsWaterPolo = false;
+                type_C.IsLightning = false;
             }
-            if (type_C.IsSpeedUping) {
-                role.getChildByName("7").destroy();
-                role.getChildByName("win").destroy();
-                type_C.IsSpeedUping = false;
-            }
+            GameManage.Instance.StopTargetAction(role);
+            role.stopAllActions();
+            type_C.unscheduleAllCallbacks();
+        }
+        if (type_C.IsSpeedUping) {
+            role.getChildByName("7").destroy();
+            role.getChildByName("win").destroy();
+            type_C.IsSpeedUping = false;
             GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
             type_C.unscheduleAllCallbacks();
         }
         type_C.IsSpeedUp = false;
         type_C.Speed = 0;
+        collider.enabled = false;
 
 
         let act_Scale_big = cc.scaleTo(0.3, 1.5);
@@ -130,10 +134,10 @@ export class EffectTornado extends PropPassive {
             type_C.IsSpeedUp = true;
             // type_C.Speed = speed_value;
             role.setPosition(role.position.x, role.position.y + 500);
+            console.log("道具------------------>龙卷风");
         }
         let act_Seq = cc.sequence(act_Scale_big, act_Rotate, act_Scale_small, cc.callFunc(act_callback));
         let box = role.getChildByName("Box");
         box.runAction(act_Seq);
-        console.log("道具------------------>龙卷风");
     }
 }

@@ -803,7 +803,7 @@ export default class Player extends Role {
             let dra_car = GameManage.Instance.Current_SpecialCar.getComponent(dragonBones.ArmatureDisplay);
             dra_car.playAnimation("a1", 0);
         } else {
-            console.log("当前玩家节点");
+            // console.log("当前玩家节点");
             let arr_role = this.node.getChildByName("Box").getChildByName("Role").children;
             for (let i = 0; i < arr_role.length; i++) {
                 let role = arr_role[i];

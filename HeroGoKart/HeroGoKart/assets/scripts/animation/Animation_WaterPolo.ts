@@ -89,8 +89,7 @@ export default class Animation_WaterPolo extends cc.Component {
             this.node.scale = 4;
             let img = this.node.getChildByName("img");
             img.scale = 1;
-            let collider = target.getComponent(cc.BoxCollider);
-            collider.enabled = false;
+
 
             let type_Class: Role = null;
             let name = target.name;
@@ -122,8 +121,9 @@ export default class Animation_WaterPolo extends cc.Component {
                     }
                 }
             }
-            if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsFrozen || type_Class.IsSpeedUping) {
+            if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsFrozen) {
                 if (type_Class.IsSlowDown) {
+                    type_Class.Horizontal_Sensitivity=100;
                     type_Class.IsSlowDown = false;
                 }
                 if (type_Class.IsSky) {
@@ -135,7 +135,7 @@ export default class Animation_WaterPolo extends cc.Component {
                 }
                 if (type_Class.IsLightning) {
                     target.getChildByName("9").destroy();
-                    type_Class.IsWaterPolo = false;
+                    type_Class.IsLightning = false;
                 }
                 if (type_Class.IsSpeedUping) {
                     target.getChildByName("7").destroy();
@@ -146,9 +146,21 @@ export default class Animation_WaterPolo extends cc.Component {
                 target.stopAllActions();
                 type_Class.unscheduleAllCallbacks();
             }
+            if (type_Class.IsSpeedUping) {
+                target.getChildByName("7").destroy();
+                target.getChildByName("win").destroy();
+                type_Class.IsSpeedUping = false;
+                GameManage.Instance.StopTargetAction(target);
+                target.stopAllActions();
+                type_Class.unscheduleAllCallbacks();
+            }
             type_Class.IsSpeedUp = false;
             type_Class.Speed = 0;
 
+            let collider = target.getComponent(cc.BoxCollider);
+            collider.enabled = false;
+
+            let act_dt = cc.delayTime(2);
             let callback = () => {
                 GameManage.Instance.StopTargetAction(target);
 
@@ -167,8 +179,10 @@ export default class Animation_WaterPolo extends cc.Component {
                 type_Class.IsSpeedUp = true;
                 type_Class.Speed = 0;
                 this.node.destroy();
+                console.log("道具------------------>水球");
             }
-            this.scheduleOnce(callback, 2);
+            let act_seq = cc.sequence(act_dt, cc.callFunc(callback));
+            target.runAction(act_seq);
             this.Target = null;
             return;
         }

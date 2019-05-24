@@ -93,8 +93,7 @@ export default class Animation_Bomb extends cc.Component {
             }
 
             EventCenter.BroadcastOne(EventType.Sound, SoundType.Bomb);
-            let collider = target.getComponent(cc.BoxCollider);
-            collider.enabled = false;
+ 
             let name = target.name;
             let type_Class: Role = null;
             if (name === "AI") {
@@ -118,12 +117,13 @@ export default class Animation_Bomb extends cc.Component {
             type_Class.IsSky = true;
             if (!type_Class.IsSky) {
                 type_Class.IsSky = true;
-            } else if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen || type_Class.IsSpeedUping) {
+            } else if (type_Class.IsSlowDown || type_Class.IsSky || type_Class.IsLightning || type_Class.IsWaterPolo || type_Class.IsFrozen ) {
                 if (type_Class.IsSlowDown) {
+                    type_Class.Horizontal_Sensitivity=100;
                     type_Class.IsSlowDown = false;
                 }
                 if (type_Class.IsSky) {
-                    type_Class.IsSky = false;
+                    // type_Class.IsSky = false;
                 }
                 if (type_Class.IsFrozen) {
                     target.getChildByName("5").destroy();
@@ -138,12 +138,7 @@ export default class Animation_Bomb extends cc.Component {
                     if (light) {
                         light.destroy();
                     }
-                    type_Class.IsWaterPolo = false;
-                }
-                if (type_Class.IsSpeedUping) {
-                    target.getChildByName("7").destroy();
-                    target.getChildByName("win").destroy();
-                    type_Class.IsSpeedUping = false;
+                    type_Class.IsLightning = false;
                 }
                 GameManage.Instance.StopTargetAction(target);
                 target.stopAllActions();
@@ -155,10 +150,15 @@ export default class Animation_Bomb extends cc.Component {
                 target.getChildByName("7").destroy();
                 target.getChildByName("win").destroy();
                 type_Class.IsSpeedUping = false;
+                GameManage.Instance.StopTargetAction(target);
+                target.stopAllActions();
+                type_Class.unscheduleAllCallbacks();
             }
 
-            GameManage.Instance.StopTargetAction(target);
+            // GameManage.Instance.StopTargetAction(target);
 
+            let collider = target.getComponent(cc.BoxCollider);
+            collider.enabled = false;
             // let act_Scale_big = cc.scaleTo(1, 1, -1);
             // // let act_Rotate = cc.rotateTo(1, 1080);
             // let act_Scale_small = cc.scaleTo(0.3, 1, 1);
@@ -166,7 +166,7 @@ export default class Animation_Bomb extends cc.Component {
             let act_Scale_small = cc.scaleTo(0.3, 1);
             let act_Spawn = cc.spawn(act_Scale_big, act_Scale_small);
             let act_callback = () => {
-                GameManage.Instance.StopTargetAction(target);
+                // GameManage.Instance.StopTargetAction(target);
 
                 if (name === "Player") {
                     GameManage.Instance.IsUseingProp = true;
@@ -177,6 +177,7 @@ export default class Animation_Bomb extends cc.Component {
                 type_Class.IsSpeedUp = true;
                 type_Class.Speed = 0;
                 target = null;
+                console.log("道具------------------>导弹");
             }
             let act_Seq = cc.sequence(act_Spawn, act_Scale_small, cc.callFunc(act_callback));
             let box = target.getChildByName("Box");

@@ -53,9 +53,10 @@ export class EffectWater extends PropPassive {
         }
         if (!type_C.IsSlowDown) {
             type_C.IsSlowDown = true;
-        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen || type_C.IsSpeedUping) {
+        } else if (type_C.IsSlowDown || type_C.IsSky || type_C.IsLightning || type_C.IsWaterPolo || type_C.IsFrozen) {
             if (type_C.IsSlowDown) {
-                type_C.IsSlowDown = false;
+                type_C.Horizontal_Sensitivity=100;
+                // type_C.IsSlowDown = false;
             }
             if (type_C.IsSky) {
                 type_C.IsSky = false;
@@ -70,13 +71,16 @@ export class EffectWater extends PropPassive {
             }
             if (type_C.IsLightning) {
                 role.getChildByName("9").destroy();
-                type_C.IsWaterPolo = false;
+                type_C.IsLightning = false;
             }
-            if (type_C.IsSpeedUping) {
-                role.getChildByName("7").destroy();
-                role.getChildByName("win").destroy();
-                type_C.IsSpeedUping = false;
-            }
+            GameManage.Instance.StopTargetAction(role);
+            role.stopAllActions();
+            type_C.unscheduleAllCallbacks();
+        }
+        if (type_C.IsSpeedUping) {
+            role.getChildByName("7").destroy();
+            role.getChildByName("win").destroy();
+            type_C.IsSpeedUping = false;
             GameManage.Instance.StopTargetAction(role);
             role.stopAllActions();
             type_C.unscheduleAllCallbacks();
@@ -92,8 +96,8 @@ export class EffectWater extends PropPassive {
             type_C.IsSlowDown = false;
             type_C.IsSpeedUp = true;
             type_C.Horizontal_Sensitivity = 100;
+            console.log("道具------------------>水滩");
         }
         type_C.scheduleOnce(callback, 2);
-        console.log("道具------------------>水滩");
     }
 }

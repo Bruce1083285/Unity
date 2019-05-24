@@ -35,7 +35,9 @@ export class EventCenter {
         if (ind === null) {
             arr.push(call);
         } else {
-            console.error("重复添加回调" + call);
+            console.log("重复添加回调" + call);
+            // return;
+            // console.error("重复添加回调" + call);
         }
     }
 

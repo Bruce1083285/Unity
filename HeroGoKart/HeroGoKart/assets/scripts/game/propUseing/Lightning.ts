@@ -120,39 +120,51 @@ export class Lightning extends PropUseing {
             let callback = () => {
                 if (!target_Class.IsLightning) {
                     target_Class.IsLightning = true;
-                } else if (target_Class.IsSlowDown || target_Class.IsSky || target_Class.IsLightning || target_Class.IsWaterPolo || target_Class.IsFrozen || target_Class.IsSpeedUping) {
+                } else if (target_Class.IsSlowDown || target_Class.IsSky || target_Class.IsLightning || target_Class.IsWaterPolo || target_Class.IsFrozen ) {
                     if (target_Class.IsSlowDown) {
+                        target_Class.Horizontal_Sensitivity=100;
                         target_Class.IsSlowDown = false;
                     }
                     if (target_Class.IsSky) {
                         target_Class.IsSky = false;
                     }
                     if (target_Class.IsFrozen) {
-                        role.getChildByName("5").destroy();
+                        let frozen = target.getChildByName("5");
+                        if (frozen) {
+                            frozen.destroy();
+                        }
                         target_Class.IsFrozen = false;
                     }
                     if (target_Class.IsWaterPolo) {
-                        role.getChildByName("4").destroy();
+                        let water_Polo = target.getChildByName("4");
+                        if (water_Polo) {
+                            water_Polo.destroy();
+                        }
                         target_Class.IsWaterPolo = false;
                     }
                     if (target_Class.IsLightning) {
-                        let light = role.getChildByName("9");
+                        // console.log(role.children);
+                        // let arr = role.children;
+                        // for (let i = 0; i < arr.length; i++) {
+                        //     let light = arr[i];
+                        //     if (light.name === "9") {
+                        //         light.destroy();
+                        //     }
+                        // }
+                        let light = target.getChildByName("9");
                         if (light) {
                             light.destroy();
                         }
-                        target_Class.IsWaterPolo = false;
+                        // target_Class.IsLightning = false;
                     }
-                    if (target_Class.IsSpeedUping) {
-                        let head = role.getChildByName("7");
-                        if (head) {
-                            head.destroy();
-                        }
-                        let win = role.getChildByName("win");
-                        if (win) {
-                            win.destroy();
-                        }
-                        target_Class.IsSpeedUping = false;
-                    }
+                    GameManage.Instance.StopTargetAction(target);
+                    target.stopAllActions();
+                    target_Class.unscheduleAllCallbacks();
+                }
+                if (target_Class.IsSpeedUping) {
+                    role.getChildByName("7").destroy();
+                    role.getChildByName("win").destroy();
+                    target_Class.IsSpeedUping = false;
                     GameManage.Instance.StopTargetAction(role);
                     role.stopAllActions();
                     target_Class.unscheduleAllCallbacks();
@@ -174,6 +186,7 @@ export class Lightning extends PropUseing {
                     target_Class.IsLightning = false;
                     target_Class.IsSpeedUp = true;
                     // target_Class.Speed = target_Speed_value;
+                    console.log("道具------------------>雷击");
                 }
                 target_Class.scheduleOnce(callback_2, callbalc_time);
             }
@@ -206,9 +219,9 @@ export class Lightning extends PropUseing {
                     prop.destroy();
                     return
                 }
-                callback();
+                target_Class.scheduleOnce(callback, 0);
             }
         }
-        console.log("道具------------------>雷击");
+
     }
 }

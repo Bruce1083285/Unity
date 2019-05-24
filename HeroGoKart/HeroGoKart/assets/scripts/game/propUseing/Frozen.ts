@@ -102,14 +102,10 @@ export class Frozen extends PropUseing {
                 GameManage.Instance.Page_Alarm.stopAllActions();
                 GameManage.Instance.Page_Alarm.active = false;
             }
+         
             frozen.PlayBegin(ran_node);
         }
-
-        let callback_2 = () => {
-            frozen.PlayEnd();
-        }
         frozen.scheduleOnce(callback_1, callback_1_time);
-        frozen.scheduleOnce(callback_2, callback_2_time);
-        console.log("道具------------------>冰冻");
+
     }
 }
