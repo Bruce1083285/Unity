@@ -1,0 +1,41 @@
+
+xc_a.png
+size: 1024,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+h_a
+  rotate: false
+  xy: 2, 46
+  size: 389, 139
+  orig: 389, 139
+  offset: 0, 0
+  index: -1
+h_b
+  rotate: false
+  xy: 739, 51
+  size: 237, 134
+  orig: 237, 134
+  offset: 0, 0
+  index: -1
+h_c
+  rotate: false
+  xy: 2, 2
+  size: 389, 42
+  orig: 389, 42
+  offset: 0, 0
+  index: -1
+h_d
+  rotate: false
+  xy: 393, 47
+  size: 344, 138
+  orig: 344, 138
+  offset: 0, 0
+  index: -1
+xxx
+  rotate: false
+  xy: 393, 10
+  size: 36, 35
+  orig: 36, 35
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,13 @@
+
+comper_wj.png
+size: 256,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+t_els_dsp
+  rotate: true
+  xy: 2, 2
+  size: 66, 126
+  orig: 66, 126
+  offset: 0, 0
+  index: -1

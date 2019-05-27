@@ -1,0 +1,78 @@
+{
+"skeleton": { "hash": "Tz6+dOhESbIbbyZbHAJJUx+6rF0", "spine": "3.7.92", "width": 56, "height": 42, "images": "./zc/", "audio": "" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "bone", "parent": "root" },
+	{ "name": "bg_fk_hui_a", "parent": "root", "length": 22.22, "rotation": 89.43, "x": 11.49, "y": -11.37 },
+	{ "name": "bg_fk_hui_a2", "parent": "root", "length": 22.22, "rotation": 89.43, "x": 18.49, "y": -11.37 },
+	{ "name": "bg_fk_hui_a3", "parent": "root", "length": 22.22, "rotation": 89.43, "x": 4.49, "y": -11.37 }
+],
+"slots": [
+	{ "name": "bg_fk_hui", "bone": "bone", "dark": "000000", "attachment": "bg_fk_hui" },
+	{ "name": "bg_fk_hui_a", "bone": "bg_fk_hui_a", "attachment": "bg_fk_hui_a" },
+	{ "name": "bg_fk_hui_a2", "bone": "bg_fk_hui_a2", "color": "ffffffcb", "attachment": "bg_fk_hui_a" },
+	{ "name": "bg_fk_hui_a3", "bone": "bg_fk_hui_a3", "color": "ffffffcb", "attachment": "bg_fk_hui_a" }
+],
+"skins": {
+	"default": {
+		"bg_fk_hui": {
+			"bg_fk_hui": { "width": 42, "height": 42 }
+		},
+		"bg_fk_hui_a": {
+			"bg_fk_hui_a": { "x": 11.25, "y": 11.6, "rotation": -89.43, "width": 42, "height": 42 }
+		},
+		"bg_fk_hui_a2": {
+			"bg_fk_hui_a": { "x": 11.25, "y": 11.6, "rotation": -89.43, "width": 42, "height": 42 }
+		},
+		"bg_fk_hui_a3": {
+			"bg_fk_hui_a": { "x": 11.25, "y": 11.6, "rotation": -89.43, "width": 42, "height": 42 }
+		}
+	}
+},
+"animations": {
+	"animation": {
+		"slots": {
+			"bg_fk_hui_a": {
+				"color": [
+					{ "time": 0.3333, "color": "ffffffff" },
+					{ "time": 0.5, "color": "ffffff00" }
+				]
+			},
+			"bg_fk_hui_a2": {
+				"color": [
+					{ "time": 0.3333, "color": "ffffffcb" },
+					{ "time": 0.5, "color": "ffffff00" }
+				]
+			},
+			"bg_fk_hui_a3": {
+				"color": [
+					{ "time": 0.3333, "color": "ffffffcb" },
+					{ "time": 0.5, "color": "ffffff00" }
+				]
+			}
+		},
+		"bones": {
+			"bg_fk_hui_a2": {
+				"translate": [
+					{ "time": 0, "x": 0, "y": 0 },
+					{ "time": 0.0667, "x": -7, "y": 0 },
+					{ "time": 0.1333, "x": 0, "y": 0 },
+					{ "time": 0.2, "x": -7, "y": 0 },
+					{ "time": 0.2667, "x": 0, "y": 0 },
+					{ "time": 0.3333, "x": -7, "y": 0 }
+				]
+			},
+			"bg_fk_hui_a3": {
+				"translate": [
+					{ "time": 0, "x": 0, "y": 0 },
+					{ "time": 0.0667, "x": 7, "y": 0 },
+					{ "time": 0.1333, "x": 0, "y": 0 },
+					{ "time": 0.2, "x": 7, "y": 0 },
+					{ "time": 0.2667, "x": 0, "y": 0 },
+					{ "time": 0.3333, "x": 7, "y": 0 }
+				]
+			}
+		}
+	}
+}
+}

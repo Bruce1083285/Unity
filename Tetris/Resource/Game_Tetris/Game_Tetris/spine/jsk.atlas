@@ -1,0 +1,34 @@
+
+jsk.png
+size: 2048,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+h_a
+  rotate: false
+  xy: 2, 144
+  size: 821, 69
+  orig: 821, 69
+  offset: 0, 0
+  index: -1
+h_b
+  rotate: false
+  xy: 2, 73
+  size: 821, 69
+  orig: 821, 69
+  offset: 0, 0
+  index: -1
+l_a
+  rotate: false
+  xy: 825, 144
+  size: 821, 69
+  orig: 821, 69
+  offset: 0, 0
+  index: -1
+l_b
+  rotate: false
+  xy: 2, 2
+  size: 821, 69
+  orig: 821, 69
+  offset: 0, 0
+  index: -1
