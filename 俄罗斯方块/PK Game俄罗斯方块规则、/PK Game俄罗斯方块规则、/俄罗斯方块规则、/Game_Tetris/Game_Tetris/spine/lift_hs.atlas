@@ -1,0 +1,27 @@
+
+lift_hs.png
+size: 128,64
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+bg_fk_hong
+  rotate: false
+  xy: 2, 2
+  size: 42, 42
+  orig: 42, 42
+  offset: 0, 0
+  index: -1
+bg_fk_hui
+  rotate: false
+  xy: 46, 2
+  size: 42, 42
+  orig: 42, 42
+  offset: 0, 0
+  index: -1
+sg
+  rotate: false
+  xy: 90, 20
+  size: 20, 24
+  orig: 20, 24
+  offset: 0, 0
+  index: -1

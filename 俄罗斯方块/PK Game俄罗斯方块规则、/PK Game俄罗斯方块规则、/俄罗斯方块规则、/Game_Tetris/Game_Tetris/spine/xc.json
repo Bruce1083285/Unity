@@ -1,0 +1,150 @@
+{
+"skeleton": { "hash": "IsvXnyO03sye6ErXUeF2fmXOlO8", "spine": "3.7.91", "width": 376, "height": 40, "images": "./images/", "audio": "F:/PK/俄罗斯/xc/images" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "bone", "parent": "root", "x": 202.47, "y": 19.97 },
+	{ "name": "d@2x", "parent": "bone", "length": 45.25, "x": -0.31, "y": -0.31 },
+	{ "name": "x5@2x", "parent": "bone", "x": -50.08, "y": -10.71 },
+	{ "name": "x3@2x", "parent": "bone", "x": -132.97, "y": 8.93 },
+	{ "name": "x6@2x", "parent": "bone", "x": -162.44, "y": -10.41 },
+	{ "name": "x2@2x", "parent": "bone", "x": 81.01, "y": 8.01 },
+	{ "name": "x4@2x", "parent": "bone", "x": 98.51, "y": -11.02 },
+	{ "name": "x1@2x", "parent": "bone", "x": 140.87, "y": 7.4 }
+],
+"slots": [
+	{ "name": "d@2x", "bone": "d@2x", "attachment": "d@2x" },
+	{ "name": "t@2x", "bone": "d@2x", "attachment": "t@2x" },
+	{ "name": "x1@2x", "bone": "x1@2x", "attachment": "x1@2x" },
+	{ "name": "x2@2x", "bone": "x2@2x", "attachment": "x2@2x" },
+	{ "name": "x3@2x", "bone": "x3@2x", "attachment": "x3@2x" },
+	{ "name": "x4@2x", "bone": "x4@2x", "attachment": "x4@2x" },
+	{ "name": "x5@2x", "bone": "x5@2x", "attachment": "x5@2x" },
+	{ "name": "x6@2x", "bone": "x6@2x", "attachment": "x6@2x" }
+],
+"skins": {
+	"default": {
+		"d@2x": {
+			"d@2x": { "x": -14.16, "y": -7.65, "width": 376, "height": 24 }
+		},
+		"t@2x": {
+			"t@2x": { "x": -14.16, "y": 8.35, "width": 376, "height": 24 }
+		},
+		"x1@2x": {
+			"x1@2x": { "x": -0.34, "y": 0.13, "width": 16, "height": 17 }
+		},
+		"x2@2x": {
+			"x2@2x": { "x": -0.48, "y": 0.52, "width": 16, "height": 17 }
+		},
+		"x3@2x": {
+			"x3@2x": { "x": 0.5, "y": 0.6, "width": 16, "height": 17 }
+		},
+		"x4@2x": {
+			"x4@2x": { "x": 0.02, "y": 0.55, "width": 16, "height": 17 }
+		},
+		"x5@2x": {
+			"x5@2x": { "x": 0.11, "y": 2.75, "width": 27, "height": 24 }
+		},
+		"x6@2x": {
+			"x6@2x": { "x": -0.53, "y": 1.94, "width": 27, "height": 23 }
+		}
+	}
+},
+"animations": {
+	"xc": {
+		"slots": {
+			"x1@2x": {
+				"color": [
+					{ "time": 0, "color": "ffffff00", "curve": "stepped" },
+					{ "time": 0.0667, "color": "ffffff00" },
+					{ "time": 0.2, "color": "ffffffff" },
+					{ "time": 0.3, "color": "ffffff00" }
+				]
+			},
+			"x2@2x": {
+				"color": [
+					{ "time": 0, "color": "ffffff00", "curve": "stepped" },
+					{ "time": 0.0667, "color": "ffffff00" },
+					{ "time": 0.2, "color": "ffffffff" },
+					{ "time": 0.3667, "color": "ffffff00" }
+				]
+			},
+			"x3@2x": {
+				"color": [
+					{ "time": 0, "color": "ffffff00", "curve": "stepped" },
+					{ "time": 0.0667, "color": "ffffff00" },
+					{ "time": 0.2, "color": "ffffffff" },
+					{ "time": 0.4, "color": "ffffff00" }
+				]
+			},
+			"x4@2x": {
+				"color": [
+					{ "time": 0, "color": "ffffff00" },
+					{ "time": 0.0667, "color": "ffffff00" },
+					{ "time": 0.2667, "color": "ffffffff" },
+					{ "time": 0.5, "color": "ffffff00" }
+				]
+			},
+			"x5@2x": {
+				"color": [
+					{ "time": 0, "color": "ffffff00" },
+					{ "time": 0.0667, "color": "ffffff00" },
+					{ "time": 0.2667, "color": "ffffffff" },
+					{ "time": 0.4667, "color": "ffffff00" }
+				]
+			},
+			"x6@2x": {
+				"color": [
+					{ "time": 0, "color": "ffffff00" },
+					{ "time": 0.0667, "color": "ffffff00" },
+					{ "time": 0.2667, "color": "ffffffff" },
+					{ "time": 0.4333, "color": "ffffff00" }
+				]
+			}
+		},
+		"bones": {
+			"d@2x": {
+				"scale": [
+					{ "time": 0, "x": 1, "y": 1 },
+					{ "time": 0.1, "x": 1.5, "y": 0 }
+				]
+			},
+			"x3@2x": {
+				"translate": [
+					{ "time": 0.0667, "x": 0, "y": 0 },
+					{ "time": 0.4, "x": 0, "y": 6.53 }
+				]
+			},
+			"x2@2x": {
+				"translate": [
+					{ "time": 0.0667, "x": 0, "y": 0 },
+					{ "time": 0.3667, "x": 0, "y": 6.53 }
+				]
+			},
+			"x1@2x": {
+				"translate": [
+					{ "time": 0.0667, "x": 0, "y": 0 },
+					{ "time": 0.3, "x": 0, "y": 6.53 }
+				]
+			},
+			"x6@2x": {
+				"translate": [
+					{ "time": 0.0667, "x": 0, "y": 0 },
+					{ "time": 0.4333, "x": 0, "y": 7.35 }
+				]
+			},
+			"x5@2x": {
+				"translate": [
+					{ "time": 0.0667, "x": 0, "y": 0 },
+					{ "time": 0.4667, "x": 0, "y": 7.35 }
+				]
+			},
+			"x4@2x": {
+				"translate": [
+					{ "time": 0.0667, "x": 0, "y": 0 },
+					{ "time": 0.5, "x": 0, "y": 7.35 }
+				]
+			}
+		}
+	}
+}
+}

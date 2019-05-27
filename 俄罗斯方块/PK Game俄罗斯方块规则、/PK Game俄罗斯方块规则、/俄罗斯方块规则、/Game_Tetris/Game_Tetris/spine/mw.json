@@ -1,0 +1,58 @@
+{
+"skeleton": { "hash": "bpXzu0tISVcV7iDTCpQVbTvx88c", "spine": "3.7.91", "width": 0, "height": 0, "images": "./xulie/bg/", "audio": "" },
+"bones": [
+	{ "name": "root" }
+],
+"slots": [
+	{ "name": "b_00000", "bone": "root" }
+],
+"skins": {
+	"default": {
+		"b_00000": {
+			"b_00000": { "width": 1800, "height": 810 },
+			"b_00003": { "width": 1800, "height": 810 },
+			"b_00006": { "width": 1800, "height": 810 },
+			"b_00009": { "width": 1800, "height": 810 },
+			"b_00012": { "width": 1800, "height": 810 },
+			"b_00015": { "width": 1800, "height": 810 },
+			"b_00018": { "width": 1800, "height": 810 },
+			"b_00021": { "width": 1800, "height": 810 },
+			"b_00024": { "width": 1800, "height": 810 },
+			"b_00027": { "width": 1800, "height": 810 },
+			"b_00030": { "width": 1800, "height": 810 },
+			"b_00033": { "width": 1800, "height": 810 },
+			"b_00036": { "width": 1800, "height": 810 },
+			"b_00039": { "width": 1800, "height": 810 },
+			"b_00042": { "width": 1800, "height": 810 },
+			"b_00045": { "width": 1800, "height": 810 }
+		}
+	}
+},
+"animations": {
+	"gongji": {
+		"slots": {
+			"b_00000": {
+				"attachment": [
+					{ "time": 0, "name": "b_00000" },
+					{ "time": 0.1, "name": "b_00003" },
+					{ "time": 0.2, "name": "b_00006" },
+					{ "time": 0.3, "name": "b_00009" },
+					{ "time": 0.4, "name": "b_00012" },
+					{ "time": 0.5, "name": "b_00015" },
+					{ "time": 0.6, "name": "b_00018" },
+					{ "time": 0.7, "name": "b_00021" },
+					{ "time": 0.8, "name": "b_00024" },
+					{ "time": 0.9, "name": "b_00027" },
+					{ "time": 1, "name": "b_00030" },
+					{ "time": 1.1, "name": "b_00033" },
+					{ "time": 1.2, "name": "b_00036" },
+					{ "time": 1.3, "name": "b_00039" },
+					{ "time": 1.4, "name": "b_00042" },
+					{ "time": 1.5, "name": "b_00045" },
+					{ "time": 1.6, "name": "b_00000" }
+				]
+			}
+		}
+	}
+}
+}

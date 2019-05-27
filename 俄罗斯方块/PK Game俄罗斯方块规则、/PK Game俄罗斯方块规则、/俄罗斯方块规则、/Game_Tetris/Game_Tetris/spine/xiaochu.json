@@ -1,0 +1,51 @@
+{
+"skeleton": { "hash": "hQGIhxy8OB3HrcJh6OnDHCiwIXY", "spine": "3.7.91", "width": 39, "height": 39, "images": "./zc/", "audio": "" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "bone", "parent": "root" }
+],
+"slots": [
+	{ "name": "asd", "bone": "bone", "color": "13ebeeff", "attachment": "asd" }
+],
+"skins": {
+	"default": {
+		"asd": {
+			"asd": { "width": 39, "height": 39 }
+		}
+	}
+},
+"animations": {
+	"animation": {
+		"slots": {
+			"asd": {
+				"color": [
+					{ "time": 0, "color": "13ebeeff" },
+					{ "time": 0.0667, "color": "76faf1ff" },
+					{ "time": 0.1333, "color": "13ebeeff" },
+					{ "time": 0.2, "color": "76faf1ff" },
+					{ "time": 0.2667, "color": "13ebeeff" },
+					{ "time": 0.3333, "color": "76faf1ff" },
+					{ "time": 0.4, "color": "13ebeeff" },
+					{ "time": 0.4667, "color": "76faf1ff" },
+					{ "time": 0.5333, "color": "13ebeeff" }
+				]
+			}
+		},
+		"bones": {
+			"bone": {
+				"scale": [
+					{ "time": 0, "x": 1, "y": 1 },
+					{ "time": 0.0667, "x": 1.2, "y": 1.2 },
+					{ "time": 0.1333, "x": 1, "y": 1 },
+					{ "time": 0.2, "x": 1.2, "y": 1.2 },
+					{ "time": 0.2667, "x": 1, "y": 1 },
+					{ "time": 0.3333, "x": 1.2, "y": 1.2 },
+					{ "time": 0.4, "x": 1, "y": 1 },
+					{ "time": 0.4667, "x": 1.2, "y": 1.2 },
+					{ "time": 0.5333, "x": 1, "y": 1 }
+				]
+			}
+		}
+	}
+}
+}

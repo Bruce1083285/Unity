@@ -1,0 +1,62 @@
+
+xc.png
+size: 1024,32
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+d@2x
+  rotate: false
+  xy: 2, 2
+  size: 376, 24
+  orig: 376, 24
+  offset: 0, 0
+  index: -1
+t@2x
+  rotate: false
+  xy: 380, 2
+  size: 376, 24
+  orig: 376, 24
+  offset: 0, 0
+  index: -1
+x1@2x
+  rotate: false
+  xy: 816, 9
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+x2@2x
+  rotate: false
+  xy: 816, 9
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+x3@2x
+  rotate: false
+  xy: 816, 9
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+x4@2x
+  rotate: false
+  xy: 816, 9
+  size: 16, 17
+  orig: 16, 17
+  offset: 0, 0
+  index: -1
+x5@2x
+  rotate: false
+  xy: 758, 2
+  size: 27, 24
+  orig: 27, 24
+  offset: 0, 0
+  index: -1
+x6@2x
+  rotate: false
+  xy: 787, 3
+  size: 27, 23
+  orig: 27, 23
+  offset: 0, 0
+  index: -1

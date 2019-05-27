@@ -1,0 +1,20 @@
+
+comper.png
+size: 1024,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+COMBO
+  rotate: false
+  xy: 433, 2
+  size: 311, 63
+  orig: 433, 67
+  offset: 61, 2
+  index: -1
+PERFECT
+  rotate: false
+  xy: 2, 2
+  size: 429, 63
+  orig: 433, 67
+  offset: 2, 2
+  index: -1
