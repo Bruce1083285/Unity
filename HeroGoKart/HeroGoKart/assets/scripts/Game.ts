@@ -64,6 +64,11 @@ export default class Game extends cc.Component {
     @property(cc.Prefab)
     private Pre_TransportationCard: cc.Prefab = null;
     /**
+     * @property 箭头
+     */
+    @property(cc.Prefab)
+    private Pre_Arrows: cc.Prefab = null;
+    /**
      * @property 空投--->奖励精灵帧
      */
     @property([cc.SpriteFrame])
@@ -862,6 +867,23 @@ export default class Game extends cc.Component {
                 role_type.IsOpen_Pretection = false;
             }
 
+            //测试
+            this.Player = this.Area_Path.getChildByName("Player");
+            let arrows = cc.instantiate(this.Pre_Arrows);
+            this.Player.addChild(arrows);
+            arrows.setPosition(0, 300);
+            arrows.scale = 0.5;
+            let act_Move_1 = cc.moveBy(0.07, 10, 10);
+            let act_Move_2 = cc.moveBy(0.07, -10, -10);
+            let act_dt = cc.delayTime(2);
+            let act_seq = cc.sequence(act_Move_1, act_Move_2, act_dt, act_Move_1, act_Move_2).repeatForever();
+            arrows.runAction(act_seq);
+            let callback_2 = () => {
+                arrows.destroy();
+                arrows.destroy();
+            }
+            this.scheduleOnce(callback_2, 4);
+
             let callback = () => {
                 EventCenter.BroadcastOne(EventType.Sound, SoundType.Go);
                 for (let i = 0; i < GameManage.Instance.Roles.length; i++) {
@@ -884,8 +906,6 @@ export default class Game extends cc.Component {
                 GameManage.Instance.IsUpdateProgress = true;
                 GameManage.Instance.IsGameStart = true;
                 GameManage.Instance.IsTouchClick = true;
-                //测试
-                this.Player = this.Area_Path.getChildByName("Player");
 
                 this.SetQuestion(this.Pool_Question, this.Area_Path);
 
@@ -903,6 +923,7 @@ export default class Game extends cc.Component {
             this.SetPlayer(this.Area_Path, this.Pre_Player);
             this.SetAI(this.Pool_AI, this.Area_Path);
             this.SetRolePos(this.Area_Path);
+
         }, "Game");
 
         //设置速度等级

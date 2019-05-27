@@ -78,13 +78,26 @@ export class Magnet extends PropUseing {
             target_Class = target.getComponent(Player);
         }
 
-        let prop: cc.Node = null;
+        let prop_1: cc.Node = null;
+        let prop_target: cc.Node = null;
+        let prop_self: cc.Node = null;
         for (let i = 0; i < this.Props.length; i++) {
-            if (this.Props[i].name === skin_id) {
-                prop = cc.instantiate(this.Props[i]);
-                break;
+            if (this.Props[i].name === "7") {
+                prop_1 = cc.instantiate(this.Props[i]);
+            }
+            if (this.Props[i].name === "8") {
+                prop_target = cc.instantiate(this.Props[i]);
+                prop_self = cc.instantiate(this.Props[i]);
             }
         }
+
+        target.addChild(prop_target);
+        prop_target.setPosition(0, 0);
+        prop_target.zIndex = 1;
+
+        role.addChild(prop_self);
+        prop_self.setPosition(0, 300);
+        prop_self.zIndex = 1;
 
         let speed_Effect = cc.instantiate(this.Game.Pre_SpeedEffects);
         role.addChild(speed_Effect);
@@ -115,7 +128,7 @@ export class Magnet extends PropUseing {
             let arr = role.children;
             for (let i = 0; i < arr.length; i++) {
                 let speed_icon = arr[i];
-                if ((speed_icon.name === "7" && speed_icon.uuid !== prop.uuid) || (speed_icon.name === "win" && speed_icon.uuid !== speed_Effect.uuid)) {
+                if ((speed_icon.name === "7" && speed_icon.uuid !== prop_1.uuid) || (speed_icon.name === "win" && speed_icon.uuid !== speed_Effect.uuid)) {
                     speed_icon.destroy();
                 }
             }
@@ -130,9 +143,9 @@ export class Magnet extends PropUseing {
         let role_Speed_value = role_Class.Speed;
         role_Class.Speed = 1500;
 
-        role.addChild(prop);
-        prop.scale = 3;
-        prop.setPosition(0, 400);
+        role.addChild(prop_1);
+        prop_1.scale = 3;
+        prop_1.setPosition(0, 400);
 
         let callback = () => {
 
@@ -145,7 +158,9 @@ export class Magnet extends PropUseing {
             role_Class.Speed = role_Speed_value;
             target.stopAllActions();
             GameManage.Instance.StopTargetAction(role);
-            prop.destroy();
+            prop_1.destroy();
+            prop_target.destroy();
+            prop_self.destroy();
             speed_Effect.destroy();
             console.log("道具------------------>吸铁石");
         }
