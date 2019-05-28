@@ -85,7 +85,7 @@ export class EffectBananaSkin extends PropEffect {
         let sens = type_Class.Horizontal_Sensitivity;
         type_Class.Horizontal_Sensitivity = 20;
         type_Class.IsSpeedUp = false;
-        type_Class.Speed = speed_Value * 0.5;
+        type_Class.Speed = speed_Value * 0.3;
 
         let act_Rotate = cc.rotateTo(1, 1080);
         let act_callback = () => {

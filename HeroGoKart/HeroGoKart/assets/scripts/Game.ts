@@ -1015,6 +1015,10 @@ export default class Game extends cc.Component {
         if (!GameManage.Instance.IsTouchClick || !GameManage.Instance.IsGameStart || GameManage.Instance.IsPause || player.IsWaterPolo || player.IsFrozen || player.IsSky) {
             return;
         }
+        let act_scale_big = cc.scaleTo(0.05, 0.8);
+        let act_scale_small = cc.scaleTo(0.05, 0.5);
+        let act_callback = () => {
+        }
         // console.log(this.Player);
         this.Horizontal = -1;
 
@@ -1029,6 +1033,8 @@ export default class Game extends cc.Component {
         }
         let dra_car = this.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
         dra_car.playAnimation("a3", 0);
+        let act_seq = cc.sequence(act_scale_big, act_scale_small);
+        this.But_Left.runAction(act_scale_big);
     }
 
     /**
@@ -1043,6 +1049,9 @@ export default class Game extends cc.Component {
         if (!GameManage.Instance.IsGameStart || player.IsWaterPolo || player.IsFrozen || player.IsSky) {
             return;
         }
+        let act_scale = cc.scaleTo(0.05, 0.7).easing(cc.easeOut(0.1));
+        let act_callback = () => {
+        }
         this.Horizontal = 0;
         let dra_role = this.Current_Player_DraRoleNode.getComponent(dragonBones.ArmatureDisplay);
         dra_role.playAnimation("a1", 0);
@@ -1055,6 +1064,15 @@ export default class Game extends cc.Component {
         }
         let dra_car = this.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
         dra_car.playAnimation("a1", 0);
+        let act_seq = cc.sequence(act_scale, cc.callFunc(act_callback));
+        if (this.But_Left.scale !== 0.7) {
+            this.But_Left.stopAllActions();
+            this.But_Left.runAction(act_scale);
+        }
+        if (this.But_Right.scale !== 0.7) {
+            this.But_Right.stopAllActions();
+            this.But_Right.runAction(act_scale);
+        }
     }
 
     /**
@@ -1081,6 +1099,9 @@ export default class Game extends cc.Component {
         }
         let dra_car = this.Current_Player_DraCarNode.getComponent(dragonBones.ArmatureDisplay);
         dra_car.playAnimation("a6", 0);
+
+        let act_scale_big = cc.scaleTo(0.05, 0.8);
+        this.But_Right.runAction(act_scale_big);
     }
 
     /**
