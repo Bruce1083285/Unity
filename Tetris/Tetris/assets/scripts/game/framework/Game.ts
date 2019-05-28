@@ -1,4 +1,6 @@
-import { Click_Directions, Click_Function, Click_Set } from "../../commont/Enum";
+import { Click_Directions, Click_Function, Click_Set, EventType } from "../../commont/Enum";
+import { ViewManager_Game } from "./ViewManager_Game";
+import { EventCenter } from "../../commont/EventCenter";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -15,15 +17,72 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Game extends cc.Component {
 
+    /**
+     * @property [Array]待机区方块精灵帧
+     */
+    @property([cc.SpriteFrame])
+    private SprF_StandbyCubes: cc.SpriteFrame[] = [];
+    /**
+     * @property [Array]方块预制体
+     */
+    @property([cc.Prefab])
+    private Pre_Cubes: cc.Prefab[] = [];
+    /**
+     * @property 待机区域
+     */
+    private Area_Standby: cc.Node = null;
+    /**
+     * @property 按钮--->设置开关
+     */
+    private But_Switchs: cc.Node = null;
+    /**
+     * @property 按钮--->盒子
+     */
+    private But_Box: cc.Node = null;
+    /**
+     * @property 按钮--->开
+     */
+    private But_Open: cc.Node = null;
+    /**
+     * @property 按钮--->开
+     */
+    private But_Close: cc.Node = null;
+    /**
+     * @property 对象池存储数
+     */
+    private Pool_SaveNum: number = 6;
+    /**
+     * @property 方块对象池
+     */
+    public Pool_Cubes: cc.NodePool = null;
 
 
-    onLoad() { }
+    onLoad() {
+        this.Init();
+    }
 
     start() {
 
     }
 
     // update (dt) {}
+
+    /**
+     * 初始化
+     */
+    Init() {
+        //实例化对象池
+        this.Pool_Cubes = new cc.NodePool();
+        this.SetPoolCube();
+
+        this.Area_Standby = this.node.getChildByName("Area_Game").getChildByName("Area_Standby");
+        this.But_Switchs = this.node.getChildByName("But_Set").getChildByName("But_Switchs");
+        this.But_Box = this.node.getChildByName("But_Set").getChildByName("Box");
+        this.But_Open = this.But_Switchs.getChildByName("but_Open");
+        this.But_Close = this.But_Switchs.getChildByName("but_Close");
+
+        ViewManager_Game.Instance.UpdateStandby(this.Area_Standby, this.SprF_StandbyCubes);
+    }
 
     /**
      * 按钮点击
@@ -50,8 +109,10 @@ export default class Game extends cc.Component {
                 break;
             //设置键
             case Click_Set.Open:
+                ViewManager_Game.Instance.ButSetShow(this.But_Switchs, this.But_Open, this.But_Close, this.But_Box);
                 break;
             case Click_Set.Close:
+                ViewManager_Game.Instance.ButSetHide(this.But_Switchs, this.But_Open, this.But_Close, this.But_Box);
                 break;
             case Click_Set.CastAs:
                 break;
@@ -59,6 +120,27 @@ export default class Game extends cc.Component {
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * 添加监听
+     */
+    private AddListenter() {
+        //事件监听方块对象池
+        EventCenter.AddListenter(EventType.SetPoolCube, () => {
+            this.SetPoolCube();
+        }, "Game");
+    }
+
+    /**
+     * 设置方块对象池
+     */
+    private SetPoolCube() {
+        for (let i = 0; i < this.Pool_SaveNum; i++) {
+            let ran = Math.floor(Math.random() * this.Pre_Cubes.length);
+            let cube = cc.instantiate(this.Pre_Cubes[ran]);
+            this.Pool_Cubes.put(cube);
         }
     }
 }

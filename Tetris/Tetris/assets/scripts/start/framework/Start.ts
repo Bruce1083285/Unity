@@ -1,4 +1,4 @@
-import { ViewManager } from "./ViewManager";
+import { ViewManager_Start } from "./ViewManager_Start";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -75,7 +75,7 @@ export default class Start extends cc.Component {
      * @param mode_id 对应模式ID
      */
     private SelectModeShow(mode: cc.Node, mode_id: string) {
-        ViewManager.Instance.SelectModeShow(mode, mode_id);
+        ViewManager_Start.Instance.SelectModeShow(mode, mode_id);
         this.Current_Mode_ID = mode_id;
     }
 }

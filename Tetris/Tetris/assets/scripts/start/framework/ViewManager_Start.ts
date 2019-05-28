@@ -1,24 +1,24 @@
-import { ModeManager } from "../mode/ModeManager";
+import { Mode } from "../mode/Mode";
 
 /**
  * @class 视图管理器（UI管理器）
  */
-export class ViewManager {
+export class ViewManager_Start {
 
     /**
      * @property 单例
      */
-    public static Instance: ViewManager = new ViewManager();
+    public static Instance: ViewManager_Start = new ViewManager_Start();
     /**
-     * @property 模式管理器
+     * @property 管理--->模式类
      */
-    private Manage_Mode: ModeManager = null;
+    private Manage_Mode: Mode = null;
 
     /**
      * 私有化构造函数
      */
     private constructor() {
-        this.Manage_Mode = new ModeManager();
+        this.Manage_Mode = new Mode();
     }
 
     /**

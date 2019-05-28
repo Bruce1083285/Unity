@@ -1,8 +1,8 @@
 
 /**
- * @class 模式管理器
+ * @class 模式类
  */
-export class ModeManager {
+export class Mode {
 
     /**
      * 被选中模式显示
