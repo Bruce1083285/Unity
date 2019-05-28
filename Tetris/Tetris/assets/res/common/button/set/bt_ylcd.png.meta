@@ -1,0 +1,31 @@
+{
+  "ver": "2.2.0",
+  "uuid": "e49e3d8d-7033-4ce5-a6f5-c3e0a2461765",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "subMetas": {
+    "bt_ylcd": {
+      "ver": "1.0.3",
+      "uuid": "62eb73ca-47de-4372-9fc2-5e6a0823e8de",
+      "rawTextureUuid": "e49e3d8d-7033-4ce5-a6f5-c3e0a2461765",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 1,
+      "trimY": 1,
+      "width": 79,
+      "height": 79,
+      "rawWidth": 81,
+      "rawHeight": 81,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
