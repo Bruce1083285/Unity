@@ -1,18 +1,27 @@
 import { GameManager } from "../../commont/GameManager";
 
-/**
- * @class 备用方块类
- */
-export class Standby {
+// Learn TypeScript:
+//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
+//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
+// Learn Attribute:
+//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
+//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/reference/attributes.html
+// Learn life-cycle callbacks:
+//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
+//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class AreaStandby extends cc.Component {
 
     /**
      * 更新备用区域方块
-     * @param area_Standby 备用方块区域
      * @param sprf_standbyCubes 备用方块精灵帧
      */
-    public UpdateStandby(area_Standby: cc.Node, sprf_standbyCubes: cc.SpriteFrame[]) {
+    public UpdateStandby( sprf_standbyCubes: cc.SpriteFrame[]) {
         let arr_standbyC: cc.SpriteFrame[] = [];
-        let arr_chi: cc.Node[] = area_Standby.children;
+        let arr_chi: cc.Node[] = this.node.children;
         arr_chi[0].getComponent(cc.Sprite).spriteFrame = null;
         //获取备用待机区域备用方块的精灵帧
         for (let i = 0; i < arr_chi.length; i++) {

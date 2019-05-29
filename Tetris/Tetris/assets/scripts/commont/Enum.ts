@@ -108,4 +108,8 @@ export enum Cubes {
 export enum EventType {
     /**设置对象池 */
     SetPoolCube,
+    /**更新备用待机区 */
+    UpdateStandby,
+    /**更新开始点 */
+    UpdatePointBegin,
 }

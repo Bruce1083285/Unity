@@ -10,9 +10,17 @@ export class GameManager {
      */
     public static Instance: GameManager = new GameManager();
     /**
+     * @property 当前方块节点
+     */
+    public Current_Cube: cc.Node = null;
+    /**
      * @property 备用区域第一个方块ID
      */
     public Standby_FirstID: string = null;
+    // /**
+    //  * @property 暂存区域方块ID
+    //  */
+    // public Save_CubeID: string = null;
     /**
      * @property 点击--->功能管理
      */

@@ -1,5 +1,5 @@
 import { GameManager } from "../../commont/GameManager";
-import { Click_FunManage } from "../../commont/Enum";
+import { Click_FunManage, Cubes } from "../../commont/Enum";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -77,6 +77,7 @@ export default class Group extends cc.Component {
                 this.RotateClockwise();
                 break
             case Click_FunManage.Anticlockwise:
+                this.RotateAnticlockwise();
                 break
             case Click_FunManage.Save:
                 break
@@ -208,6 +209,19 @@ export default class Group extends cc.Component {
      * 顺时针旋转
      */
     private RotateClockwise() {
+        if (this.node.name === Cubes.CO) {
+            return;
+        }
         this.node.rotation += 90;
+    }
+
+    /**
+     * 逆时针旋转
+     */
+    private RotateAnticlockwise() {
+        if (this.node.name === Cubes.CO) {
+            return;
+        }
+        this.node.rotation -= 90;
     }
 }

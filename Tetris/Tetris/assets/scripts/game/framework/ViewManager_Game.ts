@@ -1,6 +1,8 @@
 import { Popup } from "../ui/Popup";
-import { Standby } from "../ui/Standby";
-import { AreaGame } from "../ui/AreaGame";
+import AreaStandby from "../ui/AreaStandby";
+import AreaGame from "../ui/AreaGame";
+import AreaSave from "../ui/AreaSave";
+import AreaBigDevil from "../ui/AreaBigDevil";
 
 /**
  * @class 视图管理器
@@ -18,19 +20,39 @@ export class ViewManager_Game {
     /**
      * @property 管理--->备用方块
      */
-    private Manage_Standby: Standby = null;
+    private Manage_AreaStandby: AreaStandby = null;
     /**
      * @property 管理--->游戏区域
      */
     private Manage_AreaGame: AreaGame = null;
+    /**
+     * @property 管理--->暂存区域
+     */
+    private Manage_AreaSave: AreaSave = null;
+    /**
+     * @property 管理--->大恶魔区域
+     */
+    private Manage_AreaBigDevil: AreaBigDevil = null;
 
     /**
      * 私有化构造函数
      */
-    private constructor() {
+    private constructor() { }
+
+    /**
+     * 初始化视图管理器
+     * @param arr [Array]脚本节点
+     */
+    public Init(...arr: cc.Node[]) {
+        let i = 0;
         this.Manage_Popup = new Popup();
-        this.Manage_Standby = new Standby();
-        this.Manage_AreaGame = new AreaGame();
+        this.Manage_AreaStandby = arr[i].getComponent(AreaStandby);
+        i++;
+        this.Manage_AreaGame = arr[i].getComponent(AreaGame);
+        i++;
+        this.Manage_AreaSave = arr[i].getComponent(AreaSave);
+        i++;
+        this.Manage_AreaBigDevil = arr[i].getComponent(AreaBigDevil);
     }
 
     /**
@@ -57,20 +79,28 @@ export class ViewManager_Game {
 
     /**
     * 更新备用区域方块
-    * @param area_Standby 备用方块区域
     * @param sprf_standbyCubes 备用方块精灵帧
     */
-    public UpdateStandby(area_Standby: cc.Node, sprf_standbyCubes: cc.SpriteFrame[]) {
-        this.Manage_Standby.UpdateStandby(area_Standby, sprf_standbyCubes);
+    public UpdateStandby(sprf_standbyCubes: cc.SpriteFrame[]) {
+        this.Manage_AreaStandby.UpdateStandby(sprf_standbyCubes);
     }
 
     /**
       * 更新游戏开始点
       * @param point_Begin 开始点节点
       * @param pre_Cubes [Array]方块预制体
-      * @param area_Game 游戏区域
+      * @param cube_ID 方块ID
       */
-    public UpdatePointBegin(point_Begin: cc.Node, pre_Cubes: cc.Prefab[], area_Game: cc.Node) {
-        this.Manage_AreaGame.UpdatePointBegin(point_Begin, pre_Cubes, area_Game);
+    public UpdatePointBegin(point_Begin: cc.Node, pre_Cubes: cc.Prefab[], cube_ID: string) {
+        this.Manage_AreaGame.UpdatePointBegin(point_Begin, pre_Cubes, cube_ID);
+    }
+
+    /**
+ * 更新暂存区
+ * @param current_Cube 当前方块节点
+ * @param sprF_StandbyCubes [Array]备用方块精灵帧
+ */
+    public UpdateSave(current_Cube: cc.Node, sprF_StandbyCubes: cc.SpriteFrame[]) {
+        this.Manage_AreaSave.UpdateSave(current_Cube, sprF_StandbyCubes);
     }
 }

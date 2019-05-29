@@ -37,6 +37,14 @@ export default class Game extends cc.Component {
      */
     private Area_Game: cc.Node = null;
     /**
+     * @property 暂存区域
+     */
+    private Area_Save: cc.Node = null;
+    /**
+     * @property 大恶魔区域
+     */
+    private Area_BigDevil: cc.Node = null;
+    /**
      * @property 游戏开始点
      */
     private Point_Begin: cc.Node = null;
@@ -86,15 +94,39 @@ export default class Game extends cc.Component {
 
         this.Area_Standby = this.node.getChildByName("Area_Game").getChildByName("Area_Standby");
         this.Area_Game = this.node.getChildByName("Area_Game").getChildByName("Area_Game");
+        this.Area_Save = this.node.getChildByName("Area_Game").getChildByName("Area_Save");
+        this.Area_BigDevil = this.node.getChildByName("Area_BigDevil");
         this.Point_Begin = this.node.getChildByName("Area_Game").getChildByName("BeginPoint");
         this.But_Switchs = this.node.getChildByName("But_Set").getChildByName("But_Switchs");
         this.But_Box = this.node.getChildByName("But_Set").getChildByName("Box");
         this.But_Open = this.But_Switchs.getChildByName("but_Open");
         this.But_Close = this.But_Switchs.getChildByName("but_Close");
 
-        ViewManager_Game.Instance.UpdateStandby(this.Area_Standby, this.SprF_StandbyCubes);
+        ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save,this.Area_BigDevil);
+        ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
 
         this.AddListenter();
+
+        this.Test();
+    }
+
+    /**
+     * 测试
+     */
+    Test() {
+        ViewManager_Game.Instance.UpdatePointBegin(this.Point_Begin, this.Pre_Cubes, GameManager.Instance.Standby_FirstID);
+        ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
+
+        // // 加载 Prefab
+        // cc.loader.loadRes("bigdevil/mowang", sp.SkeletonData, (err, asset) => {
+        //     console.log(asset);
+        //     let ske = this.test.getComponent(sp.Skeleton);
+        //     ske.skeletonData = asset;
+        //     ske.premultipliedAlpha = false;
+        //     ske.animation="daiji";
+        //     // var newNode = cc.instantiate(prefab);
+        //     // cc.director.getScene().addChild(newNode);
+        // });
     }
 
     /**
@@ -122,10 +154,10 @@ export default class Game extends cc.Component {
                 GameManager.Instance.Click_FunManage = Click_FunManage.Clockwise;
                 break;
             case Click_Function.Anticlockwise:
+                GameManager.Instance.Click_FunManage = Click_FunManage.Anticlockwise;
                 break;
             case Click_Function.Save:
-                ViewManager_Game.Instance.UpdatePointBegin(this.Point_Begin, this.Pre_Cubes, this.Area_Game);
-                ViewManager_Game.Instance.UpdateStandby(this.Area_Standby, this.SprF_StandbyCubes);
+                ViewManager_Game.Instance.UpdateSave(GameManager.Instance.Current_Cube, this.SprF_StandbyCubes);
                 break;
             //设置键
             case Click_Set.Open:
@@ -147,10 +179,34 @@ export default class Game extends cc.Component {
      * 添加监听
      */
     private AddListenter() {
-        //事件监听方块对象池
+        //事件监听--->方块对象池
         EventCenter.AddListenter(EventType.SetPoolCube, () => {
             this.SetPoolCube();
         }, "Game");
+
+        //事件监听--->更新备用待机区
+        EventCenter.AddListenter(EventType.UpdateStandby, () => {
+            ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
+        }, "Game");
+
+        //事件监听--->更新游戏开始点
+        EventCenter.AddListenter(EventType.UpdatePointBegin, (cube_ID: string) => {
+            ViewManager_Game.Instance.UpdatePointBegin(this.Point_Begin, this.Pre_Cubes, cube_ID);
+        }, "Game");
+    }
+
+    /**
+     * 移除监听
+     */
+    private RemoveListenter() {
+        //移除事件监听--->方块对象池
+        EventCenter.RemoveListenter(EventType.SetPoolCube, "Game");
+
+        //移除事件监听--->更新开始点和备用待机区
+        EventCenter.RemoveListenter(EventType.UpdateStandby, "Game");
+
+        //移除事件监听--->更新游戏开始点
+        EventCenter.RemoveListenter(EventType.UpdatePointBegin, "Game");
     }
 
     /**
