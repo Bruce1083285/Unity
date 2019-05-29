@@ -100,6 +100,10 @@ export class EffectPiers extends PropPassive {
         //     role_type.unscheduleAllCallbacks();
         // }
         if (role_type.IsSpeedUping) {
+            let magnet = role.getChildByName("8");
+            if (magnet) {
+                magnet.destroy();
+            }
             let speed = role.getChildByName("7");
             if (speed) {
                 speed.destroy();

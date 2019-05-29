@@ -155,6 +155,10 @@ export default class Animation_WaterPolo extends cc.Component {
                 type_Class.unscheduleAllCallbacks();
             }
             if (type_Class.IsSpeedUping) {
+                let magnet = target.getChildByName("8");
+                if (magnet) {
+                    magnet.destroy();
+                }
                 target.getChildByName("7").destroy();
                 target.getChildByName("win").destroy();
                 type_Class.IsSpeedUping = false;

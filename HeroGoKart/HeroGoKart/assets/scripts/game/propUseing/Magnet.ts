@@ -94,10 +94,20 @@ export class Magnet extends PropUseing {
         target.addChild(prop_target);
         prop_target.setPosition(0, 0);
         prop_target.zIndex = 1;
+        let act_move_up_1 = cc.moveBy(0.07, 10, 10);
+        let act_move_down_1 = cc.moveBy(0.07, -10, -10);
+        let act_dt_1 = cc.delayTime(1);
+        let act_seq_1 = cc.sequence(act_move_up_1, act_move_down_1, act_dt_1, act_move_up_1, act_move_down_1).repeatForever();
+        prop_target.runAction(act_seq_1);
 
         role.addChild(prop_self);
         prop_self.setPosition(0, 300);
         prop_self.zIndex = 1;
+        let act_move_up_2 = cc.moveBy(0.07, 10, 10);
+        let act_move_down_2 = cc.moveBy(0.07, -10, -10);
+        let act_dt_2 = cc.delayTime(1);
+        let act_seq_2 = cc.sequence(act_move_up_2, act_move_down_2, act_dt_2, act_move_up_2, act_move_down_2).repeatForever();
+        prop_self.runAction(act_seq_2);
 
         let speed_Effect = cc.instantiate(this.Game.Pre_SpeedEffects);
         role.addChild(speed_Effect);
@@ -129,6 +139,9 @@ export class Magnet extends PropUseing {
             for (let i = 0; i < arr.length; i++) {
                 let speed_icon = arr[i];
                 if ((speed_icon.name === "7" && speed_icon.uuid !== prop_1.uuid) || (speed_icon.name === "win" && speed_icon.uuid !== speed_Effect.uuid)) {
+                    speed_icon.destroy();
+                }
+                if (speed_icon.name === "8") {
                     speed_icon.destroy();
                 }
             }

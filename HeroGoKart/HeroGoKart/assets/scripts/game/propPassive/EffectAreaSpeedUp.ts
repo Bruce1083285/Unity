@@ -72,6 +72,9 @@ export class EffectAreaSpeedUp extends PropPassive {
                 if ((speed_icon.name === "7" && speed_icon.uuid !== prop.uuid) || (speed_icon.name === "win" && speed_icon.uuid !== speed_Effect.uuid)) {
                     speed_icon.destroy();
                 }
+                if (speed_icon.name === "8") {
+                    speed_icon.destroy();
+                }
             }
             // role.getChildByName("7").destroy();
             // role.getChildByName("win").destroy();

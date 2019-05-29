@@ -275,6 +275,7 @@ export default class AI extends Role {
     }
 
     update(dt) {
+        // return
         if (!GameManage.Instance.IsGameStart || !this.IsMove || GameManage.Instance.IsPause || GameManage.Instance.IsGameEnd || this.IsWaterPolo || this.IsFrozen || this.IsSky) {
             return;
         }

@@ -71,6 +71,10 @@ export class EffectHandrail extends PropPassive {
         let speed_Value = type_C.Speed;
         type_C.Speed = speed_Value * 0.5;
         if (type_C.IsSpeedUping) {
+            let magnet = role.getChildByName("8");
+            if (magnet) {
+                magnet.destroy();
+            }
             role.getChildByName("7").destroy();
             role.getChildByName("win").destroy();
             type_C.IsSpeedUping = false;

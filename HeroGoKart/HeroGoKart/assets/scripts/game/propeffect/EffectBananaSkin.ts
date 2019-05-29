@@ -73,6 +73,10 @@ export class EffectBananaSkin extends PropEffect {
             type_Class.unscheduleAllCallbacks();
         }
         if (type_Class.IsSpeedUping) {
+            let magnet = role.getChildByName("8");
+            if (magnet) {
+                magnet.destroy();
+            }
             role.getChildByName("7").destroy();
             role.getChildByName("win").destroy();
             type_Class.IsSpeedUping = false;

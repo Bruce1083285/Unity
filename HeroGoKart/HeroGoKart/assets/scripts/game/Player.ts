@@ -145,6 +145,7 @@ export default class Player extends Role {
     }
 
     update(dt) {
+        // return
         this.Speed_Level = Math.floor(this.Speed / 250);
         EventCenter.BroadcastOne<number>(EventType.Game_SetSpeedBar, this.Speed_Level);
         if (!this.Game || !GameManage.Instance.IsGameStart || GameManage.Instance.IsPortal || !this.IsMove || GameManage.Instance.IsPause || this.IsWaterPolo || this.IsFrozen || this.IsSky) {

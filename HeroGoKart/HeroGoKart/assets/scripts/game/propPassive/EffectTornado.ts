@@ -110,6 +110,10 @@ export class EffectTornado extends PropPassive {
             type_C.unscheduleAllCallbacks();
         }
         if (type_C.IsSpeedUping) {
+            let magnet = role.getChildByName("8");
+            if (magnet) {
+                magnet.destroy();
+            }
             let speed = role.getChildByName("7");
             if (speed) {
                 speed.destroy();

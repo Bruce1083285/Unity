@@ -873,10 +873,10 @@ export default class Game extends cc.Component {
             this.Player.addChild(arrows);
             arrows.setPosition(0, 300);
             arrows.scale = 0.5;
-            let act_Move_1 = cc.moveBy(0.07, 10, 10);
-            let act_Move_2 = cc.moveBy(0.07, -10, -10);
+            let act_Move_1 = cc.moveBy(0.5, 0, 20);
+            let act_Move_2 = cc.moveBy(0.5, 0, -20);
             let act_dt = cc.delayTime(2);
-            let act_seq = cc.sequence(act_Move_1, act_Move_2, act_dt, act_Move_1, act_Move_2).repeatForever();
+            let act_seq = cc.sequence(act_Move_1, act_Move_2, act_Move_1, act_Move_2).repeatForever();
             arrows.runAction(act_seq);
             let callback_2 = () => {
                 arrows.destroy();

@@ -80,6 +80,10 @@ export class EffectPaint extends PropPassive {
             type_C.unscheduleAllCallbacks();
         }
         if (type_C.IsSpeedUping) {
+            let magnet = role.getChildByName("8");
+            if (magnet) {
+                magnet.destroy();
+            }
             role.getChildByName("7").destroy();
             role.getChildByName("win").destroy();
             type_C.IsSpeedUping = false;

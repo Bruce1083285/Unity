@@ -150,6 +150,10 @@ export default class Animation_Bomb extends cc.Component {
             type_Class.IsSpeedUp = false;
             type_Class.Speed = 0;
             if (type_Class.IsSpeedUping) {
+                let magnet = target.getChildByName("8");
+                if (magnet) {
+                    magnet.destroy();
+                }
                 target.getChildByName("7").destroy();
                 target.getChildByName("win").destroy();
                 type_Class.IsSpeedUping = false;

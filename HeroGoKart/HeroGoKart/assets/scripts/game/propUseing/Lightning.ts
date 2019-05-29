@@ -165,16 +165,20 @@ export class Lightning extends PropUseing {
                     target_Class.unscheduleAllCallbacks();
                 }
                 if (target_Class.IsSpeedUping) {
-                    let speed = role.getChildByName("7");
+                    let magnet = target.getChildByName("8");
+                    if (magnet) {
+                        magnet.destroy();
+                    }
+                    let speed = target.getChildByName("7");
                     if (speed) {
                         speed.destroy();
                     }
-                    let win = role.getChildByName("win");
+                    let win = target.getChildByName("win");
                     if (win) {
                         win.destroy();
                     }
                     target_Class.IsSpeedUping = false;
-                    role.stopAllActions();
+                    target.stopAllActions();
                     GameManage.Instance.StopTargetAction(target);
                     target_Class.unscheduleAllCallbacks();
                 }

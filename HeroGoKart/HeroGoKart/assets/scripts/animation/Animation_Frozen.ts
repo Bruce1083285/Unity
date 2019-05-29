@@ -143,6 +143,10 @@ export default class Animation_Frozen extends cc.Component {
         }
         if (type_Class.IsSpeedUping) {
             console.log("冰冻开始--->5");
+            let magnet = target.getChildByName("8");
+            if (magnet) {
+                magnet.destroy();
+            }
             target.getChildByName("7").destroy();
             target.getChildByName("win").destroy();
             type_Class.IsSpeedUping = false;

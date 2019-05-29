@@ -11490,7 +11490,9 @@
     "_enabled": true,
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": null,
+    "_spriteFrame": {
+      "__uuid__": "6672c51b-4e01-4a2e-bd47-cdbf9dcb148b"
+    },
     "_type": 0,
     "_sizeMode": 0,
     "_fillType": 0,
