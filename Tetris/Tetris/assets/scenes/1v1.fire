@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.9999999999999819,
-      "y": 0.9999999999999819,
+      "x": 1,
+      "y": 1,
       "z": 1
     },
     "_quat": {
@@ -2001,18 +2001,18 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 388,
-      "height": 780
+      "width": 390,
+      "height": 781.08
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -2.55,
-      "y": -0.02,
+      "x": -197.38,
+      "y": -390.6,
       "z": 0
     },
     "_scale": {
@@ -2038,7 +2038,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Area_BeginPoint",
+    "_name": "BeginPoint",
     "_objFlags": 0,
     "_parent": {
       "__id__": 7
@@ -2058,8 +2058,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 42,
-      "height": 42
+      "width": 39,
+      "height": 39
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2068,8 +2068,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -22.3,
-      "y": 331,
+      "x": -22.1,
+      "y": 330.9,
       "z": 0
     },
     "_scale": {

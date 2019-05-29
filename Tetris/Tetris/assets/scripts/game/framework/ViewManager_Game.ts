@@ -1,5 +1,6 @@
 import { Popup } from "../ui/Popup";
 import { Standby } from "../ui/Standby";
+import { AreaGame } from "../ui/AreaGame";
 
 /**
  * @class 视图管理器
@@ -18,6 +19,10 @@ export class ViewManager_Game {
      * @property 管理--->备用方块
      */
     private Manage_Standby: Standby = null;
+    /**
+     * @property 管理--->游戏区域
+     */
+    private Manage_AreaGame: AreaGame = null;
 
     /**
      * 私有化构造函数
@@ -25,6 +30,7 @@ export class ViewManager_Game {
     private constructor() {
         this.Manage_Popup = new Popup();
         this.Manage_Standby = new Standby();
+        this.Manage_AreaGame = new AreaGame();
     }
 
     /**
@@ -56,5 +62,15 @@ export class ViewManager_Game {
     */
     public UpdateStandby(area_Standby: cc.Node, sprf_standbyCubes: cc.SpriteFrame[]) {
         this.Manage_Standby.UpdateStandby(area_Standby, sprf_standbyCubes);
+    }
+
+    /**
+      * 更新游戏开始点
+      * @param point_Begin 开始点节点
+      * @param pre_Cubes [Array]方块预制体
+      * @param area_Game 游戏区域
+      */
+    public UpdatePointBegin(point_Begin: cc.Node, pre_Cubes: cc.Prefab[], area_Game: cc.Node) {
+        this.Manage_AreaGame.UpdatePointBegin(point_Begin, pre_Cubes, area_Game);
     }
 }

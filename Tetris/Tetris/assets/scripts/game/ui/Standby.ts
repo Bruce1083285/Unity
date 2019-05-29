@@ -13,6 +13,7 @@ export class Standby {
     public UpdateStandby(area_Standby: cc.Node, sprf_standbyCubes: cc.SpriteFrame[]) {
         let arr_standbyC: cc.SpriteFrame[] = [];
         let arr_chi: cc.Node[] = area_Standby.children;
+        arr_chi[0].getComponent(cc.Sprite).spriteFrame = null;
         //获取备用待机区域备用方块的精灵帧
         for (let i = 0; i < arr_chi.length; i++) {
             let chi = arr_chi[i];

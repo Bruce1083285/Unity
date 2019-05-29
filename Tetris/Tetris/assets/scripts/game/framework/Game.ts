@@ -1,6 +1,7 @@
-import { Click_Directions, Click_Function, Click_Set, EventType } from "../../commont/Enum";
+import { Click_Directions, Click_Function, Click_Set, EventType, Click_FunManage } from "../../commont/Enum";
 import { ViewManager_Game } from "./ViewManager_Game";
 import { EventCenter } from "../../commont/EventCenter";
+import { GameManager } from "../../commont/GameManager";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -31,6 +32,14 @@ export default class Game extends cc.Component {
      * @property 待机区域
      */
     private Area_Standby: cc.Node = null;
+    /**
+     * @property 游戏区域
+     */
+    private Area_Game: cc.Node = null;
+    /**
+     * @property 游戏开始点
+     */
+    private Point_Begin: cc.Node = null;
     /**
      * @property 按钮--->设置开关
      */
@@ -71,17 +80,21 @@ export default class Game extends cc.Component {
      * 初始化
      */
     Init() {
-        //实例化对象池
+        //对象池
         this.Pool_Cubes = new cc.NodePool();
         this.SetPoolCube();
 
         this.Area_Standby = this.node.getChildByName("Area_Game").getChildByName("Area_Standby");
+        this.Area_Game = this.node.getChildByName("Area_Game").getChildByName("Area_Game");
+        this.Point_Begin = this.node.getChildByName("Area_Game").getChildByName("BeginPoint");
         this.But_Switchs = this.node.getChildByName("But_Set").getChildByName("But_Switchs");
         this.But_Box = this.node.getChildByName("But_Set").getChildByName("Box");
         this.But_Open = this.But_Switchs.getChildByName("but_Open");
         this.But_Close = this.But_Switchs.getChildByName("but_Close");
 
         ViewManager_Game.Instance.UpdateStandby(this.Area_Standby, this.SprF_StandbyCubes);
+
+        this.AddListenter();
     }
 
     /**
@@ -93,19 +106,26 @@ export default class Game extends cc.Component {
         switch (click) {
             //方向键
             case Click_Directions.Up:
+                GameManager.Instance.Click_FunManage = Click_FunManage.Up;
                 break;
             case Click_Directions.Down:
+                GameManager.Instance.Click_FunManage = Click_FunManage.Down;
                 break;
             case Click_Directions.Left:
+                GameManager.Instance.Click_FunManage = Click_FunManage.Left;
                 break;
             case Click_Directions.Right:
+                GameManager.Instance.Click_FunManage = Click_FunManage.Right;
                 break;
             //功能键
             case Click_Function.Clockwise:
+                GameManager.Instance.Click_FunManage = Click_FunManage.Clockwise;
                 break;
             case Click_Function.Anticlockwise:
                 break;
             case Click_Function.Save:
+                ViewManager_Game.Instance.UpdatePointBegin(this.Point_Begin, this.Pre_Cubes, this.Area_Game);
+                ViewManager_Game.Instance.UpdateStandby(this.Area_Standby, this.SprF_StandbyCubes);
                 break;
             //设置键
             case Click_Set.Open:
