@@ -213,7 +213,7 @@ export default class Group extends cc.Component {
 
         if (!target) {
             this.Cube_Foresee.setPosition(0, 0);
-            let dir_y = this.GetDownDirCubeForesee(this.Cube_Foresee);
+            let dir_y: number = this.GetDownDirCubeForesee(this.Cube_Foresee);
             if (dir_y === 0) {
                 this.Cube_Foresee.setPosition(this.node.position.x, GameManager.Instance.Interval_Value / 2);
             } else if (dir_y > 0) {
@@ -223,6 +223,12 @@ export default class Group extends cc.Component {
             let world_pos: cc.Vec2 = target.parent.convertToWorldSpaceAR(target.position);
             let node_pos: cc.Vec2 = this.node.parent.convertToNodeSpaceAR(world_pos);
             this.Cube_Foresee.setPosition(this.node.position.x, node_pos.y);
+            let dir_y: number = this.GetTargetDirCubeForesee(node_pos, this.Cube_Foresee);
+            if (dir_y === 0) {
+                this.Cube_Foresee.setPosition(this.node.position.x, this.Cube_Foresee.position.y + GameManager.Instance.Interval_Value);
+            } else if (dir_y > 0) {
+                this.Cube_Foresee.setPosition(this.node.position.x, this.Cube_Foresee.position.y + dir_y + GameManager.Instance.Interval_Value);
+            }
         }
     }
 
@@ -319,6 +325,39 @@ export default class Group extends cc.Component {
         }
 
         return Math.abs(min_y);
+    }
+
+    /**
+     * 获取越出目标点的距离
+     * @param target_pos 目标位置
+     * @param cube_Foresee 预知方块
+     * @returns 越出目标点的距离
+     */
+    private GetTargetDirCubeForesee(target_pos: cc.Vec2, cube_Foresee: cc.Node): number {
+        let arr: cc.Node[] = cube_Foresee.children;
+        //获取越出目标点的Y轴值
+        let arr_y: number[] = [];
+        for (let i = 0; i < arr.length; i++) {
+            let child = arr[i];
+            let world_pos = cube_Foresee.convertToWorldSpaceAR(child.position);
+            let node_pos = cube_Foresee.parent.convertToNodeSpaceAR(world_pos);
+            if (node_pos.y <= target_pos.y) {
+                let ind = arr_y.indexOf(node_pos.y);
+                if (ind === -1) {
+                    arr_y.push(node_pos.y);
+                }
+            }
+        }
+
+        //获取Y轴最小值
+        let min_y: number = arr_y[0];
+        for (let i = 0; i < arr_y.length; i++) {
+            if (min_y > arr_y[i]) {
+                min_y = arr_y[i];
+            }
+        }
+        let dir: number = target_pos.y - min_y;
+        return dir;
     }
 
     /**
