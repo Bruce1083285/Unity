@@ -500,6 +500,29 @@
       "__id__": 1
     },
     "_enabled": true,
+    "Pre_Cubes": [
+      {
+        "__uuid__": "4f112c04-5e45-449a-875f-f2efe090eeb2"
+      },
+      {
+        "__uuid__": "de69ed48-761f-474b-9177-00353322cc4c"
+      },
+      {
+        "__uuid__": "690f1f94-f6c6-48d7-a165-2ff4ee54d2a4"
+      },
+      {
+        "__uuid__": "97a10c73-403e-4237-b800-ac38cccf6bf4"
+      },
+      {
+        "__uuid__": "07c7afef-45ad-449a-9f52-b8ca963fc363"
+      },
+      {
+        "__uuid__": "068de895-4764-430c-8aab-dae66dac28cc"
+      },
+      {
+        "__uuid__": "cb624f36-7ca6-4cee-994c-51c44af69bfd"
+      }
+    ],
     "_id": ""
   },
   {

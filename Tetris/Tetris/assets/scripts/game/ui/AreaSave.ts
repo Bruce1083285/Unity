@@ -31,6 +31,8 @@ export default class AreaSave extends cc.Component {
             }
         }
 
+        EventCenter.Broadcast(EventType.CubeForeseeDestory);
+
         let sprF_Cube = this.node.getChildByName("cube").getComponent(cc.Sprite);
         if (!sprF_Cube.spriteFrame) {
             //更新游戏开始点

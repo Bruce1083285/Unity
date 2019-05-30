@@ -49,5 +49,28 @@ export class GameManager {
     /**
      * 私有化构造函数
      */
-    private constructor() { }
+    private constructor() {
+        this.Init();
+    }
+
+    /**
+     * 初始化
+     */
+    Init() {
+        this.SetGameGrid();
+    }
+
+    /**
+     * 设置游戏区域格子二维数组
+     */
+    private SetGameGrid() {
+        let arr: cc.Node[] = [];
+        for (let y = 0; y < this.Grid_Height; y++) {
+            for (let x = 0; x < this.Grid_Width; x++) {
+                arr.push(null);
+            }
+            this.Game_Grid.push(arr);
+            arr = [];
+        }
+    }
 }
