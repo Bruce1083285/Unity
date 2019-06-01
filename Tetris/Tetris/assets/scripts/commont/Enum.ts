@@ -130,6 +130,10 @@ export enum EventType {
     DestoryActtackCubeByNum,
     /**设置障碍灰格子 */
     SetObstacleGrid,
-    /**设置AI备用待机区 */
+    /**更新AI备用待机区 */
     UpdateAIStandbyCube,
+    /**更新AI暂存区 */
+    UpdateAISave,
+    /**重置AI游戏格子 */
+    ResetAIGameGrid,
 }

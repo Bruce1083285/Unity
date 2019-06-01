@@ -1,3 +1,7 @@
+import { GameManager } from "../../commont/GameManager";
+import { EventCenter } from "../../commont/EventCenter";
+import { EventType } from "../../commont/Enum";
+
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
@@ -13,87 +17,56 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class AreaAISave extends cc.Component {
 
-
     onLoad() {
-
+        this.Init();
     }
 
     update(dt) {
 
     }
 
+    Init() {
+        this.AddListenter()
+    }
+
     /**
      * 添加事件监听
      */
     private AddListenter() {
-        EventCenter.AddListenter(EventType.UpdateSaveCubeStatus, () => {
-            this.Cube_Yes.active = true;
-            this.Cube_No.active = false;
-        }, "AreaSave");
+        //更新存储
+        EventCenter.AddListenter(EventType.UpdateAISave, () => {
+            this.UpdateSave();
+        }, "AreaAISave");
     }
 
     /**
-    * 移除事件监听
-    */
-    private RemoveListenter() {
-        EventCenter.RemoveListenter(EventType.UpdateSaveCubeStatus, "AreaSave");
-    }
-
-    /**
-     * 更新暂存区
-     * @param current_Cube 当前方块节点
+     * 移除事件监听
      */
-    public UpdateSave(current_Cube: cc.Node) {
-        if (!GameManager.Instance.IsSave) {
+    private RemoveListenter() {
+        //更新存储
+        EventCenter.RemoveListenter(EventType.UpdateAISave, "AreaAISave");
+    }
+
+    /**
+     * 更新存储
+     */
+    private UpdateSave() {
+        if (!GameManager.Instance.IsAISave) {
             return;
         }
-        EventCenter.Broadcast(EventType.CubeForeseeDestory);
+        EventCenter.Broadcast(EventType.ResetAIGameGrid);
 
-        let sprF_Cube_yes = this.Cube_Yes.getComponent(cc.Sprite);
-        let sprF_Cube_no = this.Cube_No.getComponent(cc.Sprite);
-        if (!sprF_Cube_yes.spriteFrame && !sprF_Cube_no.spriteFrame) {
-            //更新游戏开始点
-            EventCenter.BroadcastOne<string>(EventType.UpdatePointBegin, GameManager.Instance.Standby_FirstID);
-            //更新暂存区
-            EventCenter.Broadcast(EventType.UpdateStandby);
-            GameManager.Instance.IsSave = true;
+        GameManager.Instance.Current_AICube.destroy();
+        let id: string = GameManager.Instance.AISave_Cube;
+        if (GameManager.Instance.AISave_Cube) {
+            GameManager.Instance.AISave_Cube = GameManager.Instance.Current_AICube.name
+            EventCenter.BroadcastOne<string>(EventType.UpdateAIPointBegin, id);
+            GameManager.Instance.IsAISave = false;
         } else {
-            //更新游戏开始点
-            EventCenter.BroadcastOne<string>(EventType.UpdatePointBegin, sprF_Cube_yes.spriteFrame.name);
-            GameManager.Instance.IsSave = false;
-        }
-        sprF_Cube_yes.spriteFrame = this.GetEnabledCubeFram(this.SpriteFrame_EnabledStanbyCubes, current_Cube);
-        sprF_Cube_no.spriteFrame = this.GetForbiddenCubeFram(this.SpriteFrame_ForbiddenStanbyCubes, current_Cube);
-        current_Cube.destroy();
-    }
-
-    /**
-     * 获取可以启用的方块精灵帧
-     * @param sprF_StandbyCubes 
-     * @param current_Cube 
-     */
-    private GetEnabledCubeFram(sprFrame_FStanbyCubes: cc.SpriteFrame[], current_Cube: cc.Node): cc.SpriteFrame {
-        let spr_F: cc.SpriteFrame = null;
-        for (let i = 0; i < sprFrame_FStanbyCubes.length; i++) {
-            spr_F = sprFrame_FStanbyCubes[i];
-            if (current_Cube.name === spr_F.name) {
-                return spr_F;
-            }
-        }
-    }
-
-    /**
-    * 获取禁用的方块精灵帧
-    * @param sprF_StandbyCubes 
-    * @param current_Cube 
-    */
-    private GetForbiddenCubeFram(sprF_StandbyCubes: cc.SpriteFrame[], current_Cube: cc.Node): cc.SpriteFrame {
-        let spr_F: cc.SpriteFrame = null;
-        for (let i = 0; i < sprF_StandbyCubes.length; i++) {
-            spr_F = sprF_StandbyCubes[i];
-            if (current_Cube.name === spr_F.name) {
-                return spr_F;
-            }
+            GameManager.Instance.AISave_Cube = GameManager.Instance.Current_AICube.name
+            EventCenter.Broadcast(EventType.UpdateAIPointBegin);
+            EventCenter.Broadcast(EventType.UpdateAIStandbyCube);
+            GameManager.Instance.IsAISave = true;
         }
     }
 }

@@ -116,7 +116,7 @@ export default class Group extends cc.Component {
             return;
         }
 
-        // this.AddListenter();
+        this.AddListenter();
         this.UpdateGameGrid();
     }
 
@@ -125,8 +125,8 @@ export default class Group extends cc.Component {
      */
     private AddListenter() {
         //添加事件监听--->销毁预知位置方块
-        EventCenter.AddListenter(EventType.CubeForeseeDestory, () => {
-            // this.CubeForeseeDestory();
+        EventCenter.AddListenter(EventType.ResetAIGameGrid, () => {
+           this.ResetGameGrid();
         }, "Group_AI");
     }
 
@@ -135,7 +135,21 @@ export default class Group extends cc.Component {
      */
     private RemoveListenter() {
         //移除事件监听--->销毁预知位置方块
-        EventCenter.RemoveListenter(EventType.CubeForeseeDestory, "Group_AI");
+        EventCenter.RemoveListenter(EventType.ResetAIGameGrid, "Group_AI");
+    }
+
+    /**
+     * 重置游戏格子
+     */
+    private ResetGameGrid() {
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            for (let x = 0; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+                let grid = GameManager.Instance.AIGame_Grid[y][x];
+                if (grid && grid.parent === GameManager.Instance.Current_AICube) {
+                    GameManager.Instance.AIGame_Grid[y][x] = null;
+                }
+            }
+        }
     }
 
     /**
@@ -340,6 +354,7 @@ export default class Group extends cc.Component {
         this.getComponent(Group).enabled = false;
         EventCenter.Broadcast(EventType.UpdateAIPointBegin);
         EventCenter.Broadcast(EventType.UpdateAIStandbyCube);
+        GameManager.Instance.IsAISave = true;
 
         if (this.IsSpeedUp) {
             GameManager.Instance.Time_AIInterval = 1;

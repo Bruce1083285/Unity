@@ -173,7 +173,8 @@ export default class Game extends cc.Component {
                 GameManager.Instance.Click_AIFunManage = Click_FunManage.Anticlockwise;
                 break;
             case Click_Function.Save:
-                ViewManager_Game.Instance.UpdateSave(GameManager.Instance.Current_Cube);
+                EventCenter.Broadcast(EventType.UpdateAISave);
+                // ViewManager_Game.Instance.UpdateSave(GameManager.Instance.Current_Cube);
                 break;
             //设置键
             case Click_Set.Open:
@@ -210,12 +211,12 @@ export default class Game extends cc.Component {
             ViewManager_Game.Instance.UpdatePointBegin(this.Point_Begin, this.Pre_Cubes, cube_ID);
         }, "Game");
 
-        //事件监听--->更新游戏开始点
-        EventCenter.AddListenter(EventType.UpdateAIPointBegin, () => {
-            AI.Instance.UpdatePointBegin_AI(this.Pre_AICubes);
+        //事件监听--->更新AI游戏开始点
+        EventCenter.AddListenter(EventType.UpdateAIPointBegin, (cube_ID?: string) => {
+            AI.Instance.UpdatePointBegin_AI(this.Pre_AICubes, cube_ID);
         }, "Game");
 
-        //事件监听--->更新游戏开始点
+        //事件监听--->更新AI暂存方块
         EventCenter.AddListenter(EventType.UpdateAIStandbyCube, () => {
             AI.Instance.UpdateStandbyCube();
         }, "Game");

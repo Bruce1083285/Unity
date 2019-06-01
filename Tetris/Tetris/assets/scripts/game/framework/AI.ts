@@ -32,9 +32,10 @@ export class AI {
     /**
     * 更新游戏开始点--->AI
     * @param pre_AICubes [Array]AI方块预制体
+    * @param cube_ID 方块
     */
-    public UpdatePointBegin_AI(pre_AICubes: cc.Prefab[]) {
-        this.Manage_AreaAIGame.UpdatePointBegin(pre_AICubes);
+    public UpdatePointBegin_AI(pre_AICubes: cc.Prefab[], cube_ID?: string) {
+        this.Manage_AreaAIGame.UpdatePointBegin(pre_AICubes, cube_ID);
     }
 
     /**

@@ -75,11 +75,20 @@ export default class AreaAIGame extends cc.Component {
      * @param pre_Cubes [Array]方块预制体
      * @param cube_ID 方块
      */
-    public UpdatePointBegin(pre_Cubes: cc.Prefab[]) {
+    public UpdatePointBegin(pre_Cubes: cc.Prefab[], cube_ID?: string) {
         if (GameManager.Instance.IsGameOver) {
             return;
         }
-
+        if (cube_ID) {
+            for (let i = 0; i < pre_Cubes.length; i++) {
+                let pre: cc.Prefab = pre_Cubes[i];
+                if (pre.name !== cube_ID) {
+                    continue;
+                }
+                this.SetCubeBeginPos(pre, this.node, this.Point_Begin);
+                return;
+            }
+        }
         for (let i = 0; i < pre_Cubes.length; i++) {
             let pre: cc.Prefab = pre_Cubes[i];
             if (pre.name !== GameManager.Instance.AIStandbyCubesID[0]) {
@@ -103,6 +112,7 @@ export default class AreaAIGame extends cc.Component {
         let world_pos = point_Begin.convertToWorldSpaceAR(cc.v2(0, 0));
         let node_pos = area_Game.convertToNodeSpaceAR(world_pos);
         cube.setPosition(node_pos);
+        GameManager.Instance.Current_AICube = cube;
     }
 
     /**

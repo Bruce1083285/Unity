@@ -22,6 +22,10 @@ export class GameManager {
      */
     public IsSave: boolean = true;
     /**
+     * @property 是否可以存储
+     */
+    public IsAISave: boolean = true;
+    /**
      * @property 备用区域第一个方块ID
      */
     public Standby_FirstID: string = null;
@@ -76,7 +80,15 @@ export class GameManager {
     /**
      * @property AI待机方块ID
      */
-    public AIStandbyCubesID:string[]=[];
+    public AIStandbyCubesID: string[] = [];
+    /**
+     * @property 当前AI方块
+     */
+    public Current_AICube: cc.Node = null;
+    /**
+    * @property AI暂存方块
+    */
+    public AISave_Cube: string = null;
 
     /**
      * 私有化构造函数
