@@ -1,5 +1,3 @@
-import { EventCenter } from "../../commont/EventCenter";
-import { EventType } from "../../commont/Enum";
 import { GameManager } from "../../commont/GameManager";
 
 // Learn TypeScript:
@@ -15,26 +13,44 @@ import { GameManager } from "../../commont/GameManager";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class AreaGame extends cc.Component {
+export default class AreaAIGame extends cc.Component {
+
+    /**
+     * @property 游戏开始节点
+     */
+    private Point_Begin: cc.Node = null;
+
+    // onLoad() {
+    //     this.Init();
+    // }
+
+    start() {
+
+    }
+
+    // update (dt) {}
+
+    /**
+     * 初始化
+     */
+    public Init() {
+        this.Point_Begin = this.node.parent.getChildByName("BeginPoint");
+    }
 
     /**
      * 更新游戏开始点
-     * @param point_Begin 开始点节点
      * @param pre_Cubes [Array]方块预制体
      * @param cube_ID 方块
      */
-    public UpdatePointBegin(point_Begin: cc.Node, pre_Cubes: cc.Prefab[], cube_ID: string) {
+    public UpdatePointBegin(pre_Cubes: cc.Prefab[]) {
         if (GameManager.Instance.IsGameOver) {
             return;
         }
 
         for (let i = 0; i < pre_Cubes.length; i++) {
-            let pre: cc.Prefab = pre_Cubes[i];
-            //获取对应方块预制体
-            if (pre.name !== cube_ID) {
-                continue;
-            }
-            this.SetCubeBeginPos(pre, this.node, point_Begin);
+            let ran = Math.floor(Math.random() * pre_Cubes.length);
+            let pre: cc.Prefab = pre_Cubes[ran];
+            this.SetCubeBeginPos(pre, this.node, this.Point_Begin);
             return;
         }
     }
@@ -51,6 +67,5 @@ export default class AreaGame extends cc.Component {
         let world_pos = point_Begin.convertToWorldSpaceAR(cc.v2(0, 0));
         let node_pos = area_Game.convertToNodeSpaceAR(world_pos);
         cube.setPosition(node_pos);
-        GameManager.Instance.Current_Cube = cube;
     }
 }

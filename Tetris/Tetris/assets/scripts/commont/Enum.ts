@@ -112,6 +112,8 @@ export enum EventType {
     UpdateStandby,
     /**更新开始点 */
     UpdatePointBegin,
+    /**更新AI开始点 */
+    UpdateAIPointBegin,
     /**销毁预知位置方块 */
     CubeForeseeDestory,
 }

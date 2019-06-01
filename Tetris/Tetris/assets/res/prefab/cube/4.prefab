@@ -500,6 +500,12 @@
       "__id__": 1
     },
     "_enabled": true,
+    "Pre_Eliminate": {
+      "__uuid__": "4b2d8340-9b72-4351-858f-cca4f80ef896"
+    },
+    "Pre_DropOut": {
+      "__uuid__": "0799509d-4f9e-464b-9883-2a5acd8b9c4b"
+    },
     "Pre_Cubes": [
       {
         "__uuid__": "4f112c04-5e45-449a-875f-f2efe090eeb2"

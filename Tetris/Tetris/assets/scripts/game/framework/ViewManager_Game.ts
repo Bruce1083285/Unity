@@ -3,6 +3,7 @@ import AreaStandby from "../ui/AreaStandby";
 import AreaGame from "../ui/AreaGame";
 import AreaSave from "../ui/AreaSave";
 import AreaBigDevil from "../ui/AreaBigDevil";
+import AreaAIGame from "../ui/AreaAIGame";
 
 /**
  * @class 视图管理器
@@ -33,6 +34,10 @@ export class ViewManager_Game {
      * @property 管理--->大恶魔区域
      */
     private Manage_AreaBigDevil: AreaBigDevil = null;
+    /**
+     * @property 管理--->AI游戏区域
+     */
+    private Manage_AreaAIGame: AreaAIGame = null;
 
     /**
      * 私有化构造函数
@@ -53,6 +58,9 @@ export class ViewManager_Game {
         this.Manage_AreaSave = arr[i].getComponent(AreaSave);
         i++;
         this.Manage_AreaBigDevil = arr[i].getComponent(AreaBigDevil);
+        i++;
+        this.Manage_AreaAIGame = arr[i].getComponent(AreaAIGame);
+        this.Manage_AreaAIGame.Init();
     }
 
     /**
@@ -102,5 +110,13 @@ export class ViewManager_Game {
  */
     public UpdateSave(current_Cube: cc.Node, sprF_StandbyCubes: cc.SpriteFrame[]) {
         this.Manage_AreaSave.UpdateSave(current_Cube, sprF_StandbyCubes);
+    }
+
+    /**
+     * 更新游戏开始点--->AI
+     * @param pre_AICubes [Array]AI方块预制体
+     */
+    public UpdatePointBegin_AI(pre_AICubes: cc.Prefab[]) {
+        this.Manage_AreaAIGame.UpdatePointBegin(pre_AICubes);
     }
 }

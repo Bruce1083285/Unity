@@ -20,6 +20,10 @@ export default class AreaStandby extends cc.Component {
      * @param sprf_standbyCubes 备用方块精灵帧
      */
     public UpdateStandby( sprf_standbyCubes: cc.SpriteFrame[]) {
+        if (GameManager.Instance.IsGameOver) {
+            return;
+        }
+
         let arr_standbyC: cc.SpriteFrame[] = [];
         let arr_chi: cc.Node[] = this.node.children;
         arr_chi[0].getComponent(cc.Sprite).spriteFrame = null;

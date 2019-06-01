@@ -29,6 +29,11 @@ export default class Game extends cc.Component {
     @property([cc.Prefab])
     private Pre_Cubes: cc.Prefab[] = [];
     /**
+     * @property [Array]AI方块预制体
+     */
+    @property([cc.Prefab])
+    private Pre_AICubes: cc.Prefab[] = [];
+    /**
      * @property 待机区域
      */
     private Area_Standby: cc.Node = null;
@@ -44,6 +49,10 @@ export default class Game extends cc.Component {
      * @property 大恶魔区域
      */
     private Area_BigDevil: cc.Node = null;
+    /**
+     * @property 管理--->AI游戏区域
+     */
+    private Area_AIGame: cc.Node = null;
     /**
      * @property 游戏开始点
      */
@@ -96,14 +105,16 @@ export default class Game extends cc.Component {
         this.Area_Game = this.node.getChildByName("Area_Game").getChildByName("Area_Game");
         this.Area_Save = this.node.getChildByName("Area_Game").getChildByName("Area_Save");
         this.Area_BigDevil = this.node.getChildByName("Area_BigDevil");
+        this.Area_AIGame = this.node.getChildByName("Area_OtherGame").getChildByName("Area_Game");
         this.Point_Begin = this.node.getChildByName("Area_Game").getChildByName("BeginPoint");
         this.But_Switchs = this.node.getChildByName("But_Set").getChildByName("But_Switchs");
         this.But_Box = this.node.getChildByName("But_Set").getChildByName("Box");
         this.But_Open = this.But_Switchs.getChildByName("but_Open");
         this.But_Close = this.But_Switchs.getChildByName("but_Close");
 
-        ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save,this.Area_BigDevil);
+        ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save, this.Area_BigDevil, this.Area_AIGame);
         ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
+        ViewManager_Game.Instance.UpdatePointBegin_AI(this.Pre_AICubes);
 
         this.AddListenter();
 
@@ -193,6 +204,11 @@ export default class Game extends cc.Component {
         EventCenter.AddListenter(EventType.UpdatePointBegin, (cube_ID: string) => {
             ViewManager_Game.Instance.UpdatePointBegin(this.Point_Begin, this.Pre_Cubes, cube_ID);
         }, "Game");
+
+        //事件监听--->更新游戏开始点
+        EventCenter.AddListenter(EventType.UpdateAIPointBegin, () => {
+            ViewManager_Game.Instance.UpdatePointBegin_AI(this.Pre_AICubes);
+        }, "Game");
     }
 
     /**
@@ -207,6 +223,9 @@ export default class Game extends cc.Component {
 
         //移除事件监听--->更新游戏开始点
         EventCenter.RemoveListenter(EventType.UpdatePointBegin, "Game");
+
+        //移除事件监听--->更新游戏开始点
+        EventCenter.RemoveListenter(EventType.UpdateAIPointBegin, "Game");
     }
 
     /**
