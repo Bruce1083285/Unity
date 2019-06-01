@@ -19,6 +19,10 @@ export default class Group extends cc.Component {
 
     //#region 
     /**
+     * @property 是否加速
+     */
+    private IsSpeedUp: boolean = false;
+    /**
      * @property 时间
      */
     private Time: number = 0;
@@ -34,6 +38,10 @@ export default class Group extends cc.Component {
      * @property 高度
      */
     private Max_Height: number = 0;
+    /**
+     * @property 连消数
+     */
+    private Continuous_Count: number = 0;
     /**
      * @property [Array]自身子节点
      */
@@ -79,6 +87,18 @@ export default class Group extends cc.Component {
         }
 
         GameManager.Instance.Click_AIFunManage = null;
+        this.ListenterContinuous();
+    }
+
+    /**
+    * 监听连消数
+    */
+    private ListenterContinuous() {
+        if (this.Continuous_Count >= 1) {
+            EventCenter.Broadcast(EventType.CreatorAIStarMove);
+            EventCenter.BroadcastOne(EventType.SetActtackCube, this.Continuous_Count);
+            this.Continuous_Count = 0;
+        }
     }
 
     /**
@@ -141,7 +161,8 @@ export default class Group extends cc.Component {
      * 移动--->上：瞬间移动到底部
      */
     private MoveDirUp() {
-
+        GameManager.Instance.Time_AIInterval = 0.00001;
+        this.IsSpeedUp = true;
     }
 
     /**
@@ -318,7 +339,24 @@ export default class Group extends cc.Component {
     private ForbiddenScript() {
         this.getComponent(Group).enabled = false;
         EventCenter.Broadcast(EventType.UpdateAIPointBegin);
+        EventCenter.Broadcast(EventType.UpdateAIStandbyCube);
+
+        if (this.IsSpeedUp) {
+            GameManager.Instance.Time_AIInterval = 1;
+            this.IsSpeedUp = false;
+        }
         // this.RemoveListenter();
+        this.RemoveParnet();
+        this.ClearFullGridByRow();
+        // console.log("预知方块为空------>4");
+        // console.log(this.Cube_Foresee);
+        // console.log(GameManager.Instance.AIGame_Grid);
+    }
+
+    /**
+     * 从父节点中移除
+     */
+    private RemoveParnet() {
         let arr = this.node.children;
         for (let i = 0; i < arr.length; i++) {
             let child = arr[i];
@@ -329,10 +367,6 @@ export default class Group extends cc.Component {
             child.setPosition(node_pos);
             i--;
         }
-        this.ClearFullGridByRow();
-        // console.log("预知方块为空------>4");
-        // console.log(this.Cube_Foresee);
-        // console.log(GameManager.Instance.AIGame_Grid);
     }
 
     /**
@@ -342,6 +376,7 @@ export default class Group extends cc.Component {
         for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
             let isFull = this.IsFullGrid(y);
             if (isFull) {
+                this.Continuous_Count++;
                 this.ClearFullGrid(y);
                 this.GridMove(y);
                 y--;

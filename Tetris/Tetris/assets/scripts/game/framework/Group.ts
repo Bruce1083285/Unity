@@ -57,6 +57,10 @@ export default class Group extends cc.Component {
      */
     private Max_Height: number = 0;
     /**
+     * @property 连消数
+     */
+    private Continuous_Count: number = 0;
+    /**
      * @property [Array]自身子节点
      */
     private Childers: cc.Node[] = [];
@@ -109,9 +113,9 @@ export default class Group extends cc.Component {
      * 监听连消数
      */
     private ListenterContinuous() {
-        if (GameManager.Instance.Continuous_Count >= 2) {
+        if (this.Continuous_Count >= 1) {
             EventCenter.Broadcast(EventType.CreatorStarMove);
-            GameManager.Instance.Continuous_Count = 0;
+            this.Continuous_Count = 0;
         }
     }
 
@@ -580,6 +584,9 @@ export default class Group extends cc.Component {
         this.RemoveListenter();
         this.RemoveParent();
         this.ClearFullGridByRow();
+        EventCenter.BroadcastOne(EventType.DestoryActtackCubeByNum, this.Continuous_Count);
+        EventCenter.Broadcast(EventType.SetObstacleGrid);
+        EventCenter.Broadcast(EventType.DestoryAllActtackCube);
         //预知方块是否存在
         if (!this.Cube_Foresee) {
             return
@@ -633,7 +640,7 @@ export default class Group extends cc.Component {
         for (let y = 0; y < GameManager.Instance.Game_Grid.length; y++) {
             let isFull = this.IsFullGrid(y);
             if (isFull) {
-                GameManager.Instance.Continuous_Count++;
+                this.Continuous_Count++;
                 this.ClearFullGrid(y);
                 this.CreatorEliminateSpine(y);
                 this.GridMove(y);

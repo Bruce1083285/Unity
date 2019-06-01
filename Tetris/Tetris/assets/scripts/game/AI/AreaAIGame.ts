@@ -46,7 +46,7 @@ export default class AreaAIGame extends cc.Component {
     public Init() {
         this.Point_Begin = this.node.parent.getChildByName("BeginPoint");
         this.StarSmall_Target = this.node.parent.parent.getChildByName("Area_BigDevil");
-        this.StarBig_Target = this.node.parent.parent.getChildByName("Area_OtherGame");
+        this.StarBig_Target = this.node.parent.parent.getChildByName("Area_Game");
 
         this.AddListenter();
     }
@@ -55,11 +55,20 @@ export default class AreaAIGame extends cc.Component {
      * 添加事件监听
      */
     private AddListenter() {
-        EventCenter.AddListenter(EventType.CreatorStarMove, () => {
+        //监听创建AI星星移动
+        EventCenter.AddListenter(EventType.CreatorAIStarMove, () => {
             this.SetStarMove(this.Pre_Star_Big, this.StarBig_Target, 0.5);
             this.SetStarMove(this.Pre_Star_Small, this.StarSmall_Target, 0.5);
-        }, "AreaGame");
+        }, "AreaAIGame");
     }
+
+    /**
+     * 移除事件监听
+     */
+    private RemoveListenter() {
+        EventCenter.RemoveListenter(EventType.CreatorAIStarMove, "AreaAIGame");
+    }
+
 
     /**
      * 更新游戏开始点
@@ -72,9 +81,12 @@ export default class AreaAIGame extends cc.Component {
         }
 
         for (let i = 0; i < pre_Cubes.length; i++) {
-            let ran = Math.floor(Math.random() * pre_Cubes.length);
-            let pre: cc.Prefab = pre_Cubes[ran];
+            let pre: cc.Prefab = pre_Cubes[i];
+            if (pre.name !== GameManager.Instance.AIStandbyCubesID[0]) {
+                continue;
+            }
             this.SetCubeBeginPos(pre, this.node, this.Point_Begin);
+            GameManager.Instance.AIStandbyCubesID.splice(0, 1);
             return;
         }
     }
@@ -101,13 +113,11 @@ export default class AreaAIGame extends cc.Component {
     */
     private SetStarMove(pre_Star: cc.Prefab, target: cc.Node, dt: number) {
         let star = cc.instantiate(pre_Star);
-        let parent = this.node.parent;
+        let parent = this.node.parent.parent;
         parent.addChild(star);
-        star.setPosition(0, 0);
+        star.setPosition(this.node.parent.position);
 
-        let world_pos = target.parent.convertToWorldSpaceAR(target.position);
-        let node_pos = parent.convertToNodeSpaceAR(world_pos);
-        let act_Move = cc.moveTo(dt, node_pos);
+        let act_Move = cc.moveTo(dt, target.position);
         let callback = () => {
             star.destroy();
         }

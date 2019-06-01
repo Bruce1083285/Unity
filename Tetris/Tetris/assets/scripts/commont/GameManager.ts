@@ -54,10 +54,6 @@ export class GameManager {
      */
     public Interval_AIValue: number = 22.5;
     /**
-     * @property 连消数
-     */
-    public Continuous_Count: number = 0;
-    /**
      * @property 格子宽度
      */
     public Grid_Width: number = 10;
@@ -66,6 +62,10 @@ export class GameManager {
      */
     public Grid_Height: number = 20;
     /**
+     * @property 攻击方块数
+     */
+    public ActtackCube_Num: number = 0;
+    /**
      * @property 游戏区域格子
      */
     public Game_Grid: cc.Node[][] = [];
@@ -73,6 +73,10 @@ export class GameManager {
      * @property AI游戏区域格子
      */
     public AIGame_Grid: cc.Node[][] = [];
+    /**
+     * @property AI待机方块ID
+     */
+    public AIStandbyCubesID:string[]=[];
 
     /**
      * 私有化构造函数

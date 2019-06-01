@@ -2,6 +2,7 @@ import { Click_Directions, Click_Function, Click_Set, EventType, Click_FunManage
 import { ViewManager_Game } from "./ViewManager_Game";
 import { EventCenter } from "../../commont/EventCenter";
 import { GameManager } from "../../commont/GameManager";
+import { AI } from "./AI";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -112,9 +113,11 @@ export default class Game extends cc.Component {
         this.But_Open = this.But_Switchs.getChildByName("but_Open");
         this.But_Close = this.But_Switchs.getChildByName("but_Close");
 
-        ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save, this.Area_BigDevil, this.Area_AIGame);
+        ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save, this.Area_BigDevil);
         ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
-        ViewManager_Game.Instance.UpdatePointBegin_AI(this.Pre_AICubes);
+
+        AI.Instance.Init(this.Area_AIGame);
+        AI.Instance.UpdateStandbyCube();
 
         this.AddListenter();
 
@@ -128,6 +131,8 @@ export default class Game extends cc.Component {
         ViewManager_Game.Instance.UpdatePointBegin(this.Point_Begin, this.Pre_Cubes, GameManager.Instance.Standby_FirstID);
         ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
 
+        AI.Instance.UpdatePointBegin_AI(this.Pre_AICubes);
+        AI.Instance.UpdateStandbyCube();
         // // 加载 Prefab
         // cc.loader.loadRes("bigdevil/mowang", sp.SkeletonData, (err, asset) => {
         //     console.log(asset);
@@ -149,23 +154,23 @@ export default class Game extends cc.Component {
         switch (click) {
             //方向键
             case Click_Directions.Up:
-                GameManager.Instance.Click_FunManage = Click_FunManage.Up;
+                GameManager.Instance.Click_AIFunManage = Click_FunManage.Up;
                 break;
             case Click_Directions.Down:
-                GameManager.Instance.Click_FunManage = Click_FunManage.Down;
+                GameManager.Instance.Click_AIFunManage = Click_FunManage.Down;
                 break;
             case Click_Directions.Left:
-                GameManager.Instance.Click_FunManage = Click_FunManage.Left;
+                GameManager.Instance.Click_AIFunManage = Click_FunManage.Left;
                 break;
             case Click_Directions.Right:
-                GameManager.Instance.Click_FunManage = Click_FunManage.Right;
+                GameManager.Instance.Click_AIFunManage = Click_FunManage.Right;
                 break;
             //功能键
             case Click_Function.Clockwise:
-                GameManager.Instance.Click_FunManage = Click_FunManage.Clockwise;
+                GameManager.Instance.Click_AIFunManage = Click_FunManage.Clockwise;
                 break;
             case Click_Function.Anticlockwise:
-                GameManager.Instance.Click_FunManage = Click_FunManage.Anticlockwise;
+                GameManager.Instance.Click_AIFunManage = Click_FunManage.Anticlockwise;
                 break;
             case Click_Function.Save:
                 ViewManager_Game.Instance.UpdateSave(GameManager.Instance.Current_Cube);
@@ -207,7 +212,12 @@ export default class Game extends cc.Component {
 
         //事件监听--->更新游戏开始点
         EventCenter.AddListenter(EventType.UpdateAIPointBegin, () => {
-            ViewManager_Game.Instance.UpdatePointBegin_AI(this.Pre_AICubes);
+            AI.Instance.UpdatePointBegin_AI(this.Pre_AICubes);
+        }, "Game");
+
+        //事件监听--->更新游戏开始点
+        EventCenter.AddListenter(EventType.UpdateAIStandbyCube, () => {
+            AI.Instance.UpdateStandbyCube();
         }, "Game");
     }
 

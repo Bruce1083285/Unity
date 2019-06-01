@@ -118,6 +118,18 @@ export enum EventType {
     UpdateSaveCubeStatus,
     /**创建星星移动 */
     CreatorStarMove,
+    /**创建星星移动 */
+    CreatorAIStarMove,
     /**销毁预知位置方块 */
     CubeForeseeDestory,
+    /**设置攻击方块 */
+    SetActtackCube,
+    /**销毁所有攻击方块 */
+    DestoryAllActtackCube,
+    /**通过连消数销毁攻击方块 */
+    DestoryActtackCubeByNum,
+    /**设置障碍灰格子 */
+    SetObstacleGrid,
+    /**设置AI备用待机区 */
+    UpdateAIStandbyCube,
 }

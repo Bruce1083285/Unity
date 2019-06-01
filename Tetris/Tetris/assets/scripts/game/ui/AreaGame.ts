@@ -18,6 +18,11 @@ const { ccclass, property } = cc._decorator;
 export default class AreaGame extends cc.Component {
 
     /**
+     * @property 灰色格子预制体
+     */
+    @property(cc.Prefab)
+    private Pre_GrayGrid: cc.Prefab = null;
+    /**
      * @property 大星星
      */
     @property(cc.Prefab)
@@ -54,9 +59,15 @@ export default class AreaGame extends cc.Component {
      * 添加事件监听
      */
     private AddListenter() {
+        //创建星星移动
         EventCenter.AddListenter(EventType.CreatorStarMove, () => {
             this.SetStarMove(this.Pre_Star_Big, this.StarBig_Target, 0.5);
             this.SetStarMove(this.Pre_Star_Small, this.StarSmall_Target, 0.5);
+        }, "AreaGame");
+
+        //监听设置障碍灰格子
+        EventCenter.AddListenter(EventType.SetObstacleGrid, () => {
+            this.SetObstacleGrid();
         }, "AreaGame");
     }
 
@@ -64,7 +75,11 @@ export default class AreaGame extends cc.Component {
      * 移除事件监听
      */
     private RemoveListenter() {
+        //创建星星移动
         EventCenter.RemoveListenter(EventType.CreatorStarMove, "AreaGame");
+
+        //设置障碍灰格子
+        EventCenter.RemoveListenter(EventType.SetObstacleGrid, "AreaGame");
     }
 
     /**
@@ -112,17 +127,73 @@ export default class AreaGame extends cc.Component {
      */
     private SetStarMove(pre_Star: cc.Prefab, target: cc.Node, dt: number) {
         let star = cc.instantiate(pre_Star);
-        let parent = this.node.parent;
+        let parent = this.node.parent.parent;
         parent.addChild(star);
         star.setPosition(0, 0);
 
-        let world_pos = target.parent.convertToWorldSpaceAR(target.position);
-        let node_pos = parent.convertToNodeSpaceAR(world_pos);
-        let act_Move = cc.moveTo(dt, node_pos);
+        let act_Move = cc.moveTo(dt, target.position);
         let callback = () => {
             star.destroy();
         }
         let act_Sea = cc.sequence(act_Move, cc.callFunc(callback));
         star.runAction(act_Sea);
+    }
+
+    /**
+     * 设置障碍格子
+     */
+    private SetObstacleGrid() {
+        if (GameManager.Instance.ActtackCube_Num <= 0) {
+            return;
+        }
+        this.SetNowCubeGrids();
+        this.SetGaryGrids();
+    }
+
+    /**
+     * 设置现有方块格子
+     */
+    private SetNowCubeGrids() {
+        let arr_Record: cc.Node[] = [];
+        let num = GameManager.Instance.ActtackCube_Num;
+        for (let y = GameManager.Instance.Game_Grid.length - 1; y >= 0; y--) {
+            for (let x = 0; x < GameManager.Instance.Game_Grid[y].length; x++) {
+                let grid = GameManager.Instance.Game_Grid[y][x];
+                if (grid !== null && grid.parent !== GameManager.Instance.Current_Cube) {
+                    let ind = arr_Record.indexOf(grid);
+                    if (ind !== -1) {
+                        continue;
+                    }
+                    let max_y: number = y + num;
+                    if (max_y >= GameManager.Instance.Grid_Height) {
+                        max_y = GameManager.Instance.Grid_Height - 1;
+                    }
+                    GameManager.Instance.Game_Grid[y][x] = null;
+                    GameManager.Instance.Game_Grid[max_y][x] = grid;
+                    grid.setPosition(grid.position.x, grid.position.y + GameManager.Instance.Interval_Value * num);
+
+                    arr_Record.push(grid);
+                }
+            }
+        }
+    }
+
+    /**
+     * 设置灰色格子
+     */
+    private SetGaryGrids() {
+        let i_Value = GameManager.Instance.Interval_Value
+        for (let y = 0; y < GameManager.Instance.ActtackCube_Num; y++) {
+            let ran = Math.floor(Math.random() * GameManager.Instance.Game_Grid[y].length);
+            for (let x = 0; x < GameManager.Instance.Game_Grid[y].length; x++) {
+                if (x === ran) {
+                    continue;
+                }
+                let grid = cc.instantiate(this.Pre_GrayGrid);
+                this.node.addChild(grid);
+                grid.setPosition(x * i_Value + i_Value / 2, y * i_Value + i_Value / 2);
+                GameManager.Instance.Game_Grid[y][x] = grid;
+            }
+        }
     }
 }

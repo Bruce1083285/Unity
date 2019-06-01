@@ -1,24 +1,46 @@
-// Learn TypeScript:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+import AreaAIGame from "../AI/AreaAIGame";
+import AreaAIStandby from "../AI/AreaAIStandby";
 
-const {ccclass, property} = cc._decorator;
-
-@ccclass
-export default class AI extends cc.Component {
+/**
+ * @class AI
+ */
+export class AI {
 
     /**
-     * 初始化
+     * @property 单例
      */
-    Init(){
+    public static Instance: AI = new AI();
+    /**
+     * @property 管理--->AI游戏区域
+     */
+    private Manage_AreaAIGame: AreaAIGame = null;
+    /**
+     * @property 管理--->AI暂存待机区域
+     */
+    private Manage_AreaAIStandby: AreaAIStandby = null;
 
+    private constructor() { }
+
+    public Init(...arr: cc.Node[]) {
+        let i = 0;
+        this.Manage_AreaAIGame = arr[i].getComponent(AreaAIGame);
+        this.Manage_AreaAIGame.Init();
+        this.Manage_AreaAIStandby = arr[i].getComponent(AreaAIStandby);
+        this.Manage_AreaAIStandby.Init();
     }
 
-    
+    /**
+    * 更新游戏开始点--->AI
+    * @param pre_AICubes [Array]AI方块预制体
+    */
+    public UpdatePointBegin_AI(pre_AICubes: cc.Prefab[]) {
+        this.Manage_AreaAIGame.UpdatePointBegin(pre_AICubes);
+    }
+
+    /**
+     * 设置暂存区方块
+     */
+    public UpdateStandbyCube() {
+        this.Manage_AreaAIStandby.UpdateStandbyCube();
+    }
 }
