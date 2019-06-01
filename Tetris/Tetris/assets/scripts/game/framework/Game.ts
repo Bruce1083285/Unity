@@ -168,7 +168,7 @@ export default class Game extends cc.Component {
                 GameManager.Instance.Click_FunManage = Click_FunManage.Anticlockwise;
                 break;
             case Click_Function.Save:
-                ViewManager_Game.Instance.UpdateSave(GameManager.Instance.Current_Cube, this.SprF_StandbyCubes);
+                ViewManager_Game.Instance.UpdateSave(GameManager.Instance.Current_Cube);
                 break;
             //设置键
             case Click_Set.Open:

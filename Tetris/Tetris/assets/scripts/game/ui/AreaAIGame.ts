@@ -1,4 +1,6 @@
 import { GameManager } from "../../commont/GameManager";
+import { EventCenter } from "../../commont/EventCenter";
+import { EventType } from "../../commont/Enum";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -16,25 +18,47 @@ const { ccclass, property } = cc._decorator;
 export default class AreaAIGame extends cc.Component {
 
     /**
+     * @property 大星星
+     */
+    @property(cc.Prefab)
+    private Pre_Star_Big: cc.Prefab = null;
+    /**
+    * @property 小星星
+    */
+    @property(cc.Prefab)
+    private Pre_Star_Small: cc.Prefab = null;
+    /**
+     * @property 大星星目标节点
+     */
+    private StarBig_Target: cc.Node = null;
+    /**
+     * @property 小星星目标节点
+     */
+    private StarSmall_Target: cc.Node = null;
+    /**
      * @property 游戏开始节点
      */
     private Point_Begin: cc.Node = null;
-
-    // onLoad() {
-    //     this.Init();
-    // }
-
-    start() {
-
-    }
-
-    // update (dt) {}
 
     /**
      * 初始化
      */
     public Init() {
         this.Point_Begin = this.node.parent.getChildByName("BeginPoint");
+        this.StarSmall_Target = this.node.parent.parent.getChildByName("Area_BigDevil");
+        this.StarBig_Target = this.node.parent.parent.getChildByName("Area_OtherGame");
+
+        this.AddListenter();
+    }
+
+    /**
+     * 添加事件监听
+     */
+    private AddListenter() {
+        EventCenter.AddListenter(EventType.CreatorStarMove, () => {
+            this.SetStarMove(this.Pre_Star_Big, this.StarBig_Target, 0.5);
+            this.SetStarMove(this.Pre_Star_Small, this.StarSmall_Target, 0.5);
+        }, "AreaGame");
     }
 
     /**
@@ -67,5 +91,27 @@ export default class AreaAIGame extends cc.Component {
         let world_pos = point_Begin.convertToWorldSpaceAR(cc.v2(0, 0));
         let node_pos = area_Game.convertToNodeSpaceAR(world_pos);
         cube.setPosition(node_pos);
+    }
+
+    /**
+    * 设置星星移动
+    * @param pre_Star 星星预制体
+    * @param target 目标节点
+    * @param dt 持续时间
+    */
+    private SetStarMove(pre_Star: cc.Prefab, target: cc.Node, dt: number) {
+        let star = cc.instantiate(pre_Star);
+        let parent = this.node.parent;
+        parent.addChild(star);
+        star.setPosition(0, 0);
+
+        let world_pos = target.parent.convertToWorldSpaceAR(target.position);
+        let node_pos = parent.convertToNodeSpaceAR(world_pos);
+        let act_Move = cc.moveTo(dt, node_pos);
+        let callback = () => {
+            star.destroy();
+        }
+        let act_Sea = cc.sequence(act_Move, cc.callFunc(callback));
+        star.runAction(act_Sea);
     }
 }

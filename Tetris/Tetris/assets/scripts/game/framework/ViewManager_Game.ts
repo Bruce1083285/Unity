@@ -104,12 +104,11 @@ export class ViewManager_Game {
     }
 
     /**
- * 更新暂存区
- * @param current_Cube 当前方块节点
- * @param sprF_StandbyCubes [Array]备用方块精灵帧
- */
-    public UpdateSave(current_Cube: cc.Node, sprF_StandbyCubes: cc.SpriteFrame[]) {
-        this.Manage_AreaSave.UpdateSave(current_Cube, sprF_StandbyCubes);
+     * 更新暂存区
+     * @param current_Cube 当前方块节点
+     */
+    public UpdateSave(current_Cube: cc.Node) {
+        this.Manage_AreaSave.UpdateSave(current_Cube);
     }
 
     /**

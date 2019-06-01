@@ -18,6 +18,10 @@ export class GameManager {
      */
     public IsGameOver: boolean = false;
     /**
+     * @property 是否可以存储
+     */
+    public IsSave: boolean = true;
+    /**
      * @property 备用区域第一个方块ID
      */
     public Standby_FirstID: string = null;
@@ -49,6 +53,10 @@ export class GameManager {
      * @property AI间隔值
      */
     public Interval_AIValue: number = 22.5;
+    /**
+     * @property 连消数
+     */
+    public Continuous_Count: number = 0;
     /**
      * @property 格子宽度
      */

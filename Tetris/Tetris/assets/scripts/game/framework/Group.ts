@@ -28,11 +28,6 @@ export default class Group extends cc.Component {
     @property(cc.Prefab)
     private Pre_DropOut: cc.Prefab = null;
     /**
-     * @property 闪光--->星星
-     */
-    @property(cc.Prefab)
-    private Pre_Star: cc.Prefab = null;
-    /**
      * @property [Array]方块预制体
      */
     @property([cc.Prefab])
@@ -106,6 +101,18 @@ export default class Group extends cc.Component {
         }
 
         GameManager.Instance.Click_FunManage = null;
+
+        this.ListenterContinuous();
+    }
+
+    /**
+     * 监听连消数
+     */
+    private ListenterContinuous() {
+        if (GameManager.Instance.Continuous_Count >= 2) {
+            EventCenter.Broadcast(EventType.CreatorStarMove);
+            GameManager.Instance.Continuous_Count = 0;
+        }
     }
 
     /**
@@ -557,6 +564,10 @@ export default class Group extends cc.Component {
      * 禁用脚本
      */
     private ForbiddenScript() {
+        if (!GameManager.Instance.IsSave) {
+            GameManager.Instance.IsSave = true;
+            // EventCenter.Broadcast(EventType.UpdateSaveCubeStatus);
+        }
         EventCenter.BroadcastOne(EventType.UpdatePointBegin, GameManager.Instance.Standby_FirstID);
         EventCenter.Broadcast(EventType.UpdateStandby);
 
@@ -622,12 +633,13 @@ export default class Group extends cc.Component {
         for (let y = 0; y < GameManager.Instance.Game_Grid.length; y++) {
             let isFull = this.IsFullGrid(y);
             if (isFull) {
+                GameManager.Instance.Continuous_Count++;
                 this.ClearFullGrid(y);
                 this.CreatorEliminateSpine(y);
-                let callback = () => {
-                    this.GridMove(y);
-                }
-                this.scheduleOnce(callback, 0.1);
+                this.GridMove(y);
+                // let callback = () => {
+                // }
+                // this.scheduleOnce(callback, 0.1);
                 y--;
                 continue;
             }

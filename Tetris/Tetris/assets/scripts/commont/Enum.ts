@@ -114,6 +114,10 @@ export enum EventType {
     UpdatePointBegin,
     /**更新AI开始点 */
     UpdateAIPointBegin,
+    /**更新暂存区方块状态 */
+    UpdateSaveCubeStatus,
+    /**创建星星移动 */
+    CreatorStarMove,
     /**销毁预知位置方块 */
     CubeForeseeDestory,
 }

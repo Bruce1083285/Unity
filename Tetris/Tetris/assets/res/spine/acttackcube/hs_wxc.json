@@ -1,0 +1,39 @@
+{
+"skeleton": { "hash": "JM7PeNCW8fr/Jh5DpAVSHiL3Qeg", "spine": "3.7.91", "width": 42, "height": 42, "images": "./zc/", "audio": "" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "bone", "parent": "root" }
+],
+"slots": [
+	{ "name": "bg_fk_hui", "bone": "bone", "dark": "000000", "attachment": "bg_fk_hong" },
+	{ "name": "bg_fk_hong_a", "bone": "bone", "attachment": "bg_fk_hong_a" }
+],
+"skins": {
+	"default": {
+		"bg_fk_hong_a": {
+			"bg_fk_hong_a": { "width": 42, "height": 42 }
+		},
+		"bg_fk_hui": {
+			"bg_fk_hong": { "width": 42, "height": 42 },
+			"bg_fk_hui": { "width": 42, "height": 42 }
+		}
+	}
+},
+"animations": {
+	"animation": {
+		"slots": {
+			"bg_fk_hong_a": {
+				"color": [
+					{ "time": 0, "color": "ffffffff" },
+					{ "time": 0.1667, "color": "ffffff00" },
+					{ "time": 0.3333, "color": "ffffffff" },
+					{ "time": 0.5, "color": "ffffff00" },
+					{ "time": 0.6667, "color": "ffffffff" },
+					{ "time": 0.8333, "color": "ffffff00" },
+					{ "time": 1, "color": "ffffffff" }
+				]
+			}
+		}
+	}
+}
+}
