@@ -51,9 +51,13 @@ export default class Game extends cc.Component {
      */
     private Area_BigDevil: cc.Node = null;
     /**
-     * @property 管理--->AI游戏区域
+     * @property AI游戏区域
      */
     private Area_AIGame: cc.Node = null;
+    /**
+     * @property 游戏结束页
+     */
+    private Page_Over: cc.Node = null;
     /**
      * @property 游戏开始点
      */
@@ -107,13 +111,14 @@ export default class Game extends cc.Component {
         this.Area_Save = this.node.getChildByName("Area_Game").getChildByName("Area_Save");
         this.Area_BigDevil = this.node.getChildByName("Area_BigDevil");
         this.Area_AIGame = this.node.getChildByName("Area_OtherGame").getChildByName("Area_Game");
+        this.Page_Over=this.node.getChildByName("Page_Over");
         this.Point_Begin = this.node.getChildByName("Area_Game").getChildByName("BeginPoint");
         this.But_Switchs = this.node.getChildByName("But_Set").getChildByName("But_Switchs");
         this.But_Box = this.node.getChildByName("But_Set").getChildByName("Box");
         this.But_Open = this.But_Switchs.getChildByName("but_Open");
         this.But_Close = this.But_Switchs.getChildByName("but_Close");
 
-        ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save, this.Area_BigDevil);
+        ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save, this.Area_BigDevil,this.Page_Over);
         ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
 
         AI.Instance.Init(this.Area_AIGame);

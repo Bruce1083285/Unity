@@ -114,8 +114,12 @@ export default class Group extends cc.Component {
      */
     private ListenterContinuous() {
         if (this.Continuous_Count >= 1) {
+            EventCenter.Broadcast(EventType.UpdateMaxDoubleHitCount);
             EventCenter.Broadcast(EventType.CreatorStarMove);
             EventCenter.BroadcastOne(EventType.SetAIActtackCube, this.Continuous_Count);
+            EventCenter.BroadcastOne(EventType.UpdatePlayerBarAttack, this.Continuous_Count);
+
+            GameManager.Instance.AddUpAttack_Value += this.Continuous_Count;
             this.Continuous_Count = 0;
         }
     }
@@ -128,16 +132,29 @@ export default class Group extends cc.Component {
         this.Max_Width = this.node.parent.getContentSize().width;
         this.Max_Height = this.node.parent.getContentSize().height;
 
+
+        let isOver = this.GameOver();
+        if (isOver) {
+            return;
+        }
+        this.AddListenter();
+        // this.GetCubeForesee();
+        this.UpdateGameGrid();
+    }
+
+    /**
+     * 游戏结束
+     * @returns 游戏是否结束
+     */
+    private GameOver(): boolean {
         if (!this.IsValidGridPos()) {
             console.log("游戏结束");
             this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_Value);
             GameManager.Instance.IsGameOver = true;
-            return;
+            EventCenter.BroadcastOne(EventType.SetPageOver, false);
+            return true;
         }
-
-        this.AddListenter();
-        // this.GetCubeForesee();
-        this.UpdateGameGrid();
+        return false;
     }
 
     /**

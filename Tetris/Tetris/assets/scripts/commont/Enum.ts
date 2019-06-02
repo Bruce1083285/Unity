@@ -116,6 +116,10 @@ export enum EventType {
     UpdateAIPointBegin,
     /**更新暂存区方块状态 */
     UpdateSaveCubeStatus,
+    /**更新大恶魔激活次数 */
+    UpdateBigDevilCount,
+    /**更新最高连击数 */
+    UpdateMaxDoubleHitCount,
     /**创建星星移动 */
     CreatorStarMove,
     /**创建星星移动 */
@@ -140,6 +144,20 @@ export enum EventType {
     SetAIActtackCube,
     /**通过连消数销毁AI攻击方块 */
     DestoryAIActtackCubeByNum,
-     /**设置AI障碍灰格子 */
-     SetAIObstacleGrid,
+    /**设置AI障碍灰格子 */
+    SetAIObstacleGrid,
+    /**更新AI能量槽 */
+    UpdateAIBarAttack,
+    /**更新玩家能量槽 */
+    UpdatePlayerBarAttack,
+    /**设置结束页 */
+    SetPageOver,
+}
+
+/**
+ * @enum 缓存类型
+ */
+export enum CacheType{
+    /**金币 */
+    Coin,
 }

@@ -147,6 +147,5 @@ export default class AreaActtackCube extends cc.Component {
         for (let i = 0; i < arr.length; i++) {
             arr[i].destroy();
         }
-        GameManager.Instance.ActtackCube_Num = 0;
     }
 }

@@ -21,6 +21,10 @@ export class GameManager {
      * @property 游戏是否结束
      */
     public IsAIGameOver: boolean = false;
+    // /**
+    //  * @property 玩家是否胜利
+    //  */
+    // public IsPlayerWin: boolean = false;
     /**
      * @property 是否可以存储
      */
@@ -45,6 +49,10 @@ export class GameManager {
      * @property 点击--->功能管理
      */
     public Click_AIFunManage: Click_FunManage = null;
+    /**
+     * @property 累计供给制
+     */
+    public AddUpAttack_Value: number = 0;
     /**
      * @property 时间间隔
      */
@@ -97,6 +105,10 @@ export class GameManager {
     * @property AI暂存方块
     */
     public AISave_Cube: string = null;
+    /**
+    * @property 累计供给制
+    */
+    public AIAddUpAttack_Value: number = 0;
 
     /**
      * 私有化构造函数

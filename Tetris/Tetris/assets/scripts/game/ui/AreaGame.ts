@@ -148,6 +148,7 @@ export default class AreaGame extends cc.Component {
         }
         this.SetNowCubeGrids();
         this.SetGaryGrids();
+        GameManager.Instance.ActtackCube_Num = 0;
     }
 
     /**

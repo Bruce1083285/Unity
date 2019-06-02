@@ -3,6 +3,7 @@ import AreaStandby from "../ui/AreaStandby";
 import AreaGame from "../ui/AreaGame";
 import AreaSave from "../ui/AreaSave";
 import AreaBigDevil from "../ui/AreaBigDevil";
+import PageOver from "./PageOver";
 
 /**
  * @class 视图管理器
@@ -33,7 +34,11 @@ export class ViewManager_Game {
      * @property 管理--->大恶魔区域
      */
     private Manage_AreaBigDevil: AreaBigDevil = null;
-  
+    /**
+     * @property 管理--->游戏结束页
+     */
+    private Manage_PageOver: PageOver = null;
+
 
     /**
      * 私有化构造函数
@@ -54,6 +59,9 @@ export class ViewManager_Game {
         this.Manage_AreaSave = arr[i].getComponent(AreaSave);
         i++;
         this.Manage_AreaBigDevil = arr[i].getComponent(AreaBigDevil);
+        i++;
+        this.Manage_PageOver = arr[i].getComponent(PageOver);
+        this.Manage_PageOver.Init();
     }
 
     /**
@@ -104,5 +112,5 @@ export class ViewManager_Game {
         this.Manage_AreaSave.UpdateSave(current_Cube);
     }
 
-   
+
 }
