@@ -18,7 +18,7 @@ export class GameManager {
      */
     public IsGameOver: boolean = false;
     /**
-     * @property 游戏是否结束
+     * @property AI游戏是否结束
      */
     public IsAIGameOver: boolean = false;
     // /**
@@ -30,7 +30,7 @@ export class GameManager {
      */
     public IsSave: boolean = true;
     /**
-     * @property 是否可以存储
+     * @property AI是否可以存储
      */
     public IsAISave: boolean = true;
     /**
@@ -60,7 +60,7 @@ export class GameManager {
     /**
      * @property AI时间间隔
      */
-    public Time_AIInterval: number = 1;
+    public Time_AIInterval: number = 0.2;
     /**
      * @property 间隔值
      */
@@ -121,8 +121,33 @@ export class GameManager {
      * 初始化
      */
     Init() {
+        this.ResetProperty();
         this.SetGameGrid();
         this.SetAIGameGrid();
+    }
+
+    /**
+     * 重置属性
+     */
+    public ResetProperty() {
+        this.Current_Cube = null;
+        this.IsGameOver = false;
+        this.IsSave = true;
+        this.IsAISave = true;
+        this.Standby_FirstID = null;
+        this.Click_FunManage = null;
+        this.Click_AIFunManage = null;
+        this.AddUpAttack_Value = 0;
+        this.Time_Interval = 1;
+        this.Time_AIInterval = 0.2;
+        this.ActtackCube_Num = 0;
+        this.AIActtackCube_Num = 0;
+        this.Game_Grid = [];
+        this.AIGame_Grid = [];
+        this.AIStandbyCubesID = [];
+        this.Current_AICube = null;
+        this.AISave_Cube = null;
+        this.AIAddUpAttack_Value = 0;
     }
 
     /**

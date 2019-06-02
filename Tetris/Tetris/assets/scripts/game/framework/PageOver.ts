@@ -36,14 +36,16 @@ export default class PageOver extends cc.Component {
     public IsPlayerWin: boolean = false;
 
     onLoad() {
-
+        // this.AddListenter();
     }
 
     start() {
 
     }
 
-    // update (dt) {}
+    update(dt) {
+
+    }
 
     /**
      * 初始化
@@ -64,14 +66,39 @@ export default class PageOver extends cc.Component {
     private ButtonClick(lv: any, click: string) {
         switch (click) {
             case "back":
-                cc.director.loadScene("Start");
+                this.Back();
                 break
             case "restart":
-                cc.director.loadScene("1v1");
+                this.Restart();
                 break
             default:
                 break;
         }
+    }
+
+    /**
+     * 返回
+     */
+    private Back() {
+        this.ResetGame();
+        cc.director.loadScene("Start");
+    }
+
+    /**
+     * 重新开始
+     */
+    private Restart() {
+        this.ResetGame();
+        cc.director.loadScene("1v1");
+    }
+
+    /**
+     * 重置游戏
+     */
+    private ResetGame() {
+        GameManager.Instance.Init();
+        // EventCenter.Broadcast(EventType.RemoveListenter);
+        EventCenter.RemoveAllListenter();
     }
 
     /**
@@ -83,6 +110,11 @@ export default class PageOver extends cc.Component {
             this.IsPlayerWin = isPlayerWin;
             this.SetPageOver();
         }, "PageOver");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "PageOver");
     }
 
     /**
@@ -91,6 +123,9 @@ export default class PageOver extends cc.Component {
     private RemoveListenter() {
         /**设置结束页 */
         EventCenter.RemoveListenter(EventType.SetPageOver, "PageOver");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "PageOver");
     }
 
     /**
@@ -98,7 +133,7 @@ export default class PageOver extends cc.Component {
      */
     private SetPageOver() {
         this.node.active = true;
-        
+
         if (this.IsPlayerWin) {
             this.SetWin();
             return;

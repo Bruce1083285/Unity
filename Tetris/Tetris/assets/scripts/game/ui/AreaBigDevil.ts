@@ -162,6 +162,11 @@ export default class AreaBigDevil extends cc.Component {
         EventCenter.AddListenter(EventType.UpdatePlayerBarAttack, (value: number) => {
             this.UpdatePlayerBarAttack(value);
         }, "AreaBigDevil");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "AreaBigDevil");
     }
 
     /**
@@ -173,6 +178,9 @@ export default class AreaBigDevil extends cc.Component {
 
         //更新玩家能量槽
         EventCenter.RemoveListenter(EventType.UpdatePlayerBarAttack, "AreaBigDevil");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "AreaBigDevil");
     }
 
     /**

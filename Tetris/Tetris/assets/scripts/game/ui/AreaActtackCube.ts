@@ -57,6 +57,12 @@ export default class AreaActtackCube extends cc.Component {
         EventCenter.AddListenter(EventType.DestoryActtackCubeByNum, (num: number) => {
             this.DestoryActtackCubeByNum(num);
         }, "AreaActtackCube");
+
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "AreaActtackCube");
     }
 
     /**
@@ -71,6 +77,9 @@ export default class AreaActtackCube extends cc.Component {
 
         //通过连消数销毁攻击方块
         EventCenter.RemoveListenter(EventType.DestoryActtackCubeByNum, "AreaActtackCube");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "AreaActtackCube");
     }
 
     /**

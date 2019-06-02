@@ -69,6 +69,11 @@ export default class AreaSave extends cc.Component {
             this.Cube_Yes.active = true;
             this.Cube_No.active = false;
         }, "AreaSave");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "AreaSave");
     }
 
     /**
@@ -76,6 +81,9 @@ export default class AreaSave extends cc.Component {
     */
     private RemoveListenter() {
         EventCenter.RemoveListenter(EventType.UpdateSaveCubeStatus, "AreaSave");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "AreaSave");
     }
 
     /**

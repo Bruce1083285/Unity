@@ -45,7 +45,7 @@ export enum Click_Set {
     Open = "Open",
     /**设置--->关 */
     Close = "Close",
-    /**设置--->投像 */
+    /**设置--->投降 */
     CastAs = "CastAs",
     /**设置--->音效 */
     Set = "Set",
@@ -152,12 +152,16 @@ export enum EventType {
     UpdatePlayerBarAttack,
     /**设置结束页 */
     SetPageOver,
+    /**显示设置页 */
+    ShowPageSet,
+    /**移除所有监听 */
+    RemoveListenter,
 }
 
 /**
  * @enum 缓存类型
  */
-export enum CacheType{
+export enum CacheType {
     /**金币 */
     Coin,
 }

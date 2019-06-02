@@ -70,6 +70,11 @@ export default class AreaAIGame extends cc.Component {
         EventCenter.AddListenter(EventType.SetAIObstacleGrid, () => {
             this.SetObstacleGrid();
         }, "AreaAIGame");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "AreaAIGame");
     }
 
     /**
@@ -80,8 +85,10 @@ export default class AreaAIGame extends cc.Component {
 
         //监听设置障碍灰格子
         EventCenter.RemoveListenter(EventType.SetAIObstacleGrid, "AreaAIGame");
-    }
 
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "AreaAIGame");
+    }
 
     /**
      * 更新游戏开始点
@@ -89,7 +96,7 @@ export default class AreaAIGame extends cc.Component {
      * @param cube_ID 方块
      */
     public UpdatePointBegin(pre_Cubes: cc.Prefab[], cube_ID?: string) {
-        if (GameManager.Instance.IsAIGameOver) {
+        if (GameManager.Instance.IsGameOver) {
             return;
         }
         if (cube_ID) {
@@ -126,6 +133,30 @@ export default class AreaAIGame extends cc.Component {
         let node_pos = area_Game.convertToNodeSpaceAR(world_pos);
         cube.setPosition(node_pos);
         GameManager.Instance.Current_AICube = cube;
+        this.UpdateSave();
+    }
+
+    /**
+     * 更新暂存
+     */
+    private UpdateSave() {
+        let ind = GameManager.Instance.AIStandbyCubesID.indexOf("1");
+        if (ind === -1) {
+            let ran = Math.floor(Math.random() * 100);
+            if (ran <= 20) {
+                let callback = () => {
+                    EventCenter.Broadcast(EventType.UpdateAISave);
+                }
+                this.scheduleOnce(callback, 3);
+            }
+        } else {
+            if (GameManager.Instance.Current_AICube.name === "1") {
+                let callback = () => {
+                    EventCenter.Broadcast(EventType.UpdateAISave);
+                }
+                this.scheduleOnce(callback, 3);
+            }
+        }
     }
 
     /**

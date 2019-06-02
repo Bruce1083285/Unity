@@ -59,6 +59,10 @@ export default class Game extends cc.Component {
      */
     private Page_Over: cc.Node = null;
     /**
+     * @property 设置页
+     */
+    private Page_Set: cc.Node = null;
+    /**
      * @property 游戏开始点
      */
     private Point_Begin: cc.Node = null;
@@ -96,29 +100,31 @@ export default class Game extends cc.Component {
 
     }
 
-    // update (dt) {}
+    update(dt) {
+    }
 
     /**
      * 初始化
      */
     Init() {
         //对象池
-        this.Pool_Cubes = new cc.NodePool();
-        this.SetPoolCube();
+        // this.Pool_Cubes = new cc.NodePool();
+        // this.SetPoolCube();
 
         this.Area_Standby = this.node.getChildByName("Area_Game").getChildByName("Area_Standby");
         this.Area_Game = this.node.getChildByName("Area_Game").getChildByName("Area_Game");
         this.Area_Save = this.node.getChildByName("Area_Game").getChildByName("Area_Save");
         this.Area_BigDevil = this.node.getChildByName("Area_BigDevil");
         this.Area_AIGame = this.node.getChildByName("Area_OtherGame").getChildByName("Area_Game");
-        this.Page_Over=this.node.getChildByName("Page_Over");
+        this.Page_Over = this.node.getChildByName("Page_Over");
+        this.Page_Set = this.node.getChildByName("Page_Set");
         this.Point_Begin = this.node.getChildByName("Area_Game").getChildByName("BeginPoint");
         this.But_Switchs = this.node.getChildByName("But_Set").getChildByName("But_Switchs");
         this.But_Box = this.node.getChildByName("But_Set").getChildByName("Box");
         this.But_Open = this.But_Switchs.getChildByName("but_Open");
         this.But_Close = this.But_Switchs.getChildByName("but_Close");
 
-        ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save, this.Area_BigDevil,this.Page_Over);
+        ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save, this.Area_BigDevil, this.Page_Over, this.Page_Set);
         ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
 
         AI.Instance.Init(this.Area_AIGame);
@@ -178,7 +184,6 @@ export default class Game extends cc.Component {
                 GameManager.Instance.Click_FunManage = Click_FunManage.Anticlockwise;
                 break;
             case Click_Function.Save:
-                // EventCenter.Broadcast(EventType.UpdateAISave);
                 ViewManager_Game.Instance.UpdateSave(GameManager.Instance.Current_Cube);
                 break;
             //设置键
@@ -189,8 +194,11 @@ export default class Game extends cc.Component {
                 ViewManager_Game.Instance.ButSetHide(this.But_Switchs, this.But_Open, this.But_Close, this.But_Box);
                 break;
             case Click_Set.CastAs:
+                GameManager.Instance.IsGameOver = true;
+                EventCenter.BroadcastOne<boolean>(EventType.SetPageOver, false);
                 break;
             case Click_Set.Set:
+                EventCenter.Broadcast(EventType.ShowPageSet);
                 break;
             default:
                 break;
@@ -201,10 +209,10 @@ export default class Game extends cc.Component {
      * 添加监听
      */
     private AddListenter() {
-        //事件监听--->方块对象池
-        EventCenter.AddListenter(EventType.SetPoolCube, () => {
-            this.SetPoolCube();
-        }, "Game");
+        // //事件监听--->方块对象池
+        // EventCenter.AddListenter(EventType.SetPoolCube, () => {
+        //     this.SetPoolCube();
+        // }, "Game");
 
         //事件监听--->更新备用待机区
         EventCenter.AddListenter(EventType.UpdateStandby, () => {
@@ -218,6 +226,8 @@ export default class Game extends cc.Component {
 
         //事件监听--->更新AI游戏开始点
         EventCenter.AddListenter(EventType.UpdateAIPointBegin, (cube_ID?: string) => {
+            console.log("AI方块预制体");
+            console.log(this.Pre_AICubes);
             AI.Instance.UpdatePointBegin_AI(this.Pre_AICubes, cube_ID);
         }, "Game");
 
@@ -225,14 +235,19 @@ export default class Game extends cc.Component {
         EventCenter.AddListenter(EventType.UpdateAIStandbyCube, () => {
             AI.Instance.UpdateStandbyCube();
         }, "Game");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "Game");
     }
 
     /**
      * 移除监听
      */
     private RemoveListenter() {
-        //移除事件监听--->方块对象池
-        EventCenter.RemoveListenter(EventType.SetPoolCube, "Game");
+        // //移除事件监听--->方块对象池
+        // EventCenter.RemoveListenter(EventType.SetPoolCube, "Game");
 
         //移除事件监听--->更新开始点和备用待机区
         EventCenter.RemoveListenter(EventType.UpdateStandby, "Game");
@@ -242,6 +257,9 @@ export default class Game extends cc.Component {
 
         //移除事件监听--->更新游戏开始点
         EventCenter.RemoveListenter(EventType.UpdateAIPointBegin, "Game");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "Game");
     }
 
     /**

@@ -4,6 +4,7 @@ import AreaGame from "../ui/AreaGame";
 import AreaSave from "../ui/AreaSave";
 import AreaBigDevil from "../ui/AreaBigDevil";
 import PageOver from "./PageOver";
+import PageSet from "./PageSet";
 
 /**
  * @class 视图管理器
@@ -38,6 +39,10 @@ export class ViewManager_Game {
      * @property 管理--->游戏结束页
      */
     private Manage_PageOver: PageOver = null;
+    /**
+     * @property 管理--->游戏结束页
+     */
+    private Manage_PageSet: PageSet = null;
 
 
     /**
@@ -62,6 +67,9 @@ export class ViewManager_Game {
         i++;
         this.Manage_PageOver = arr[i].getComponent(PageOver);
         this.Manage_PageOver.Init();
+        i++;
+        this.Manage_PageSet = arr[i].getComponent(PageSet);
+        this.Manage_PageSet.Init();
     }
 
     /**

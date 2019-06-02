@@ -35,9 +35,9 @@ export class EventCenter {
         if (ind === null) {
             arr.push(call);
         } else {
-            console.log("重复添加回调" + call);
+            // console.log("重复添加回调" + call);
             // return;
-            // console.error("重复添加回调" + call);
+            console.error("重复添加回调,事件类型--->" + eventType);
         }
     }
 
@@ -48,10 +48,13 @@ export class EventCenter {
      */
     public static RemoveListenter(eventType: EventType, call_class: string) {
         if (!EventCenter.Listenter[eventType]) {
-            console.error("移除对象未添加监听");
+            console.error("移除对象未添加监听,事件类型--->" + eventType);
             return;
         }
         let arr = EventCenter.Listenter[eventType];
+        // if (arr.length <= 0) {
+        //     return;
+        // }
         let ind: number = null;
         //遍历回调函数类型是否存在
         for (let i = 0; i < arr.length; i++) {
@@ -62,10 +65,23 @@ export class EventCenter {
         }
 
         if (ind === null) {
-            console.error("移除对象为空");
+            console.error("移除对象为空,事件类型--->" + eventType);
         } else {
             arr.splice(ind, 1);
         }
+    }
+
+    /**
+     * 移除监听--->无参数的回调函数
+     * @param eventType 事件类型
+     * @param call_class 回调函数所属类型
+     */
+    public static RemoveAllListenter() {
+        for (let callback in EventCenter.Listenter) {
+            // console.log(EventCenter.Listenter[callback])
+            EventCenter.Listenter[callback] = [];
+        }
+        // EventCenter.Listenter={};
     }
 
     /**
@@ -79,7 +95,7 @@ export class EventCenter {
                 callbacks[i].Callback();
             }
         } else {
-            console.error("广播对象为空");
+            console.error("广播对象为空,事件类型--->" + eventType);
         }
     }
 
@@ -95,7 +111,7 @@ export class EventCenter {
                 callbacks[i].Callback(param);
             }
         } else {
-            console.error("广播对象为空");
+            console.error("广播对象为空,事件类型--->" + eventType);
         }
     }
 
@@ -112,7 +128,7 @@ export class EventCenter {
                 callbacks[i].Callback(param_1, param_2);
             }
         } else {
-            console.error("广播对象为空");
+            console.error("广播对象为空,事件类型--->" + eventType);
         }
     }
 
@@ -130,7 +146,7 @@ export class EventCenter {
                 callbacks[i].Callback(param_1, param_2, param_3);
             }
         } else {
-            console.error("广播对象为空");
+            console.error("广播对象为空,事件类型--->" + eventType);
         }
     }
 
@@ -149,7 +165,7 @@ export class EventCenter {
                 callbacks[i].Callback(param_1, param_2, param_3, param_4);
             }
         } else {
-            console.error("广播对象为空");
+            console.error("广播对象为空,事件类型--->" + eventType);
         }
     }
 
@@ -169,7 +185,7 @@ export class EventCenter {
                 callbacks[i].Callback(param_1, param_2, param_3, param_4, param_5);
             }
         } else {
-            console.error("广播对象为空");
+            console.error("广播对象为空,事件类型--->" + eventType);
         }
     }
 }

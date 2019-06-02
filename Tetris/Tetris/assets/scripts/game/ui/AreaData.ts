@@ -70,7 +70,7 @@ export default class AreaData extends cc.Component {
         this.ActivateLabel_BigDevil = this.node.getChildByName("Activate_BigDevil").getChildByName("label_count").getComponent(cc.Label);
         this.ActivateLabel_MaxDoubleHit = this.node.getChildByName("Activate_MaxDoubleHit").getChildByName("label_count").getComponent(cc.Label);
         this.ActivateLabel_AddUpAttackValue = this.node.getChildByName("Activate_AddUpAttackValue").getChildByName("label_count").getComponent(cc.Label);
-        
+
         this.AddListenter();
     }
 
@@ -87,6 +87,11 @@ export default class AreaData extends cc.Component {
         EventCenter.AddListenter(EventType.UpdateMaxDoubleHitCount, () => {
             this.UpdateMaxDoubleHitCount();
         }, "AreaData");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "AreaData");
     }
 
     /**
@@ -98,6 +103,9 @@ export default class AreaData extends cc.Component {
 
         //更新最高连击数
         EventCenter.RemoveListenter(EventType.UpdateMaxDoubleHitCount, "AreaData");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "AreaData");
     }
 
 

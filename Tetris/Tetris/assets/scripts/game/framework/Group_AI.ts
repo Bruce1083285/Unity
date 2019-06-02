@@ -118,6 +118,7 @@ export default class Group extends cc.Component {
         }
         this.AddListenter();
         this.UpdateGameGrid();
+          // EventCenter.Broadcast(EventType.UpdateAISave);
     }
 
     /**
@@ -143,6 +144,11 @@ export default class Group extends cc.Component {
         EventCenter.AddListenter(EventType.ResetAIGameGrid, () => {
             this.ResetGameGrid();
         }, "Group_AI");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "Group_AI");
     }
 
     /**
@@ -151,6 +157,9 @@ export default class Group extends cc.Component {
     private RemoveListenter() {
         //移除事件监听--->销毁预知位置方块
         EventCenter.RemoveListenter(EventType.ResetAIGameGrid, "Group_AI");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "Group_AI");
     }
 
     /**
@@ -177,12 +186,76 @@ export default class Group extends cc.Component {
             this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
             if (this.IsValidGridPos()) {
                 this.UpdateGameGrid();
+                this.AI();
             } else {
                 this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
                 this.ForbiddenScript();
             }
 
             this.Time_Current = this.Time;
+        }
+    }
+
+    /**
+     * AI
+     */
+    private AI() {
+        if (this.IsSpeedUp) {
+            return;
+        }
+        let ran_1 = Math.floor(Math.random() * 100);
+        if (ran_1 <= 70) {
+            this.LeftOrRight();
+            return
+        }
+        let ran_2 = Math.floor(Math.random() * 100);
+        if (ran_1 <= 50) {
+            this.MoveDown();
+            return
+        }
+        let ran_3 = Math.floor(Math.random() * 100);
+        if (ran_3 <= 33) {
+            this.LeftOrRight();
+        } else if (ran_3 > 33 && ran_3 <= 66) {
+            this.ClockwiseOrAnticlockwise();
+        } else {
+            this.MoveDown();
+        }
+    }
+
+    /**
+     * 左或者右
+     */
+    private LeftOrRight() {
+        let ran = Math.floor(Math.random() * 100);
+        if (ran <= 40) {
+            GameManager.Instance.Click_AIFunManage = Click_FunManage.Left;
+        } else if (ran <= 80 && ran > 40) {
+            GameManager.Instance.Click_AIFunManage = Click_FunManage.Right;
+        }
+    }
+
+    /**
+     * 顺序旋转或者逆序旋转
+     */
+    private ClockwiseOrAnticlockwise() {
+        let ran = Math.floor(Math.random() * 100);
+        if (ran <= 40) {
+            GameManager.Instance.Click_AIFunManage = Click_FunManage.Clockwise;
+        } else if (ran <= 80 && ran > 40) {
+            GameManager.Instance.Click_AIFunManage = Click_FunManage.Anticlockwise;
+        }
+    }
+
+    /**
+     * 下移
+     */
+    private MoveDown() {
+        let ran = Math.floor(Math.random() * 100);
+        if (ran <= 50) {
+            GameManager.Instance.Click_AIFunManage = Click_FunManage.Up;
+        } else {
+            GameManager.Instance.Click_AIFunManage = Click_FunManage.Down;
         }
     }
 
@@ -367,15 +440,16 @@ export default class Group extends cc.Component {
      */
     private ForbiddenScript() {
         this.getComponent(Group).enabled = false;
+        this.RemoveListenter();
+        
         EventCenter.Broadcast(EventType.UpdateAIPointBegin);
         EventCenter.Broadcast(EventType.UpdateAIStandbyCube);
         GameManager.Instance.IsAISave = true;
 
         if (this.IsSpeedUp) {
-            GameManager.Instance.Time_AIInterval = 1;
+            GameManager.Instance.Time_AIInterval = 0.2;
             this.IsSpeedUp = false;
         }
-        this.RemoveListenter();
         this.RemoveParnet();
         this.ClearFullGridByRow();
         EventCenter.BroadcastOne(EventType.DestoryAIActtackCubeByNum, this.Continuous_Count);

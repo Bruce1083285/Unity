@@ -69,6 +69,11 @@ export default class AreaGame extends cc.Component {
         EventCenter.AddListenter(EventType.SetObstacleGrid, () => {
             this.SetObstacleGrid();
         }, "AreaGame");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "AreaGame");
     }
 
     /**
@@ -80,6 +85,9 @@ export default class AreaGame extends cc.Component {
 
         //设置障碍灰格子
         EventCenter.RemoveListenter(EventType.SetObstacleGrid, "AreaGame");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "AreaGame");
     }
 
     /**

@@ -75,6 +75,7 @@ export default class Group extends cc.Component {
     update(dt) {
 
         if (GameManager.Instance.IsGameOver) {
+            // this.RemoveListenter();
             return;
         }
 
@@ -191,6 +192,11 @@ export default class Group extends cc.Component {
         EventCenter.AddListenter(EventType.CubeForeseeDestory, () => {
             this.CubeForeseeDestory();
         }, "Group");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "Group");
     }
 
     /**
@@ -199,6 +205,9 @@ export default class Group extends cc.Component {
     private RemoveListenter() {
         //移除事件监听--->销毁预知位置方块
         EventCenter.RemoveListenter(EventType.CubeForeseeDestory, "Group");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "Group");
     }
 
     /**
@@ -593,6 +602,7 @@ export default class Group extends cc.Component {
             GameManager.Instance.IsSave = true;
             // EventCenter.Broadcast(EventType.UpdateSaveCubeStatus);
         }
+        this.RemoveListenter();
         EventCenter.BroadcastOne(EventType.UpdatePointBegin, GameManager.Instance.Standby_FirstID);
         EventCenter.Broadcast(EventType.UpdateStandby);
 
@@ -602,7 +612,7 @@ export default class Group extends cc.Component {
             this.CreatroDropOut();
             this.IsSpeedUp = false;
         }
-        this.RemoveListenter();
+        // this.RemoveListenter();
         this.RemoveParent();
         this.ClearFullGridByRow();
         EventCenter.BroadcastOne(EventType.DestoryActtackCubeByNum, this.Continuous_Count);

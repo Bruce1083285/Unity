@@ -37,6 +37,11 @@ export default class AreaAISave extends cc.Component {
         EventCenter.AddListenter(EventType.UpdateAISave, () => {
             this.UpdateSave();
         }, "AreaAISave");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "AreaAISave");
     }
 
     /**
@@ -45,6 +50,9 @@ export default class AreaAISave extends cc.Component {
     private RemoveListenter() {
         //更新存储
         EventCenter.RemoveListenter(EventType.UpdateAISave, "AreaAISave");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "AreaAISave");
     }
 
     /**
