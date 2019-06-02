@@ -115,6 +115,7 @@ export default class Group extends cc.Component {
     private ListenterContinuous() {
         if (this.Continuous_Count >= 1) {
             EventCenter.Broadcast(EventType.CreatorStarMove);
+            EventCenter.BroadcastOne(EventType.SetAIActtackCube, this.Continuous_Count);
             this.Continuous_Count = 0;
         }
     }
@@ -492,6 +493,9 @@ export default class Group extends cc.Component {
             let y: number = Math.floor(node_pos.y / GameManager.Instance.Interval_Value);
             if (y <= 0) {
                 y = 0;
+            }
+            if (y >= GameManager.Instance.Grid_Height) {
+                y = GameManager.Instance.Grid_Height - 1;
             }
             let x: number = Math.floor(node_pos.x / GameManager.Instance.Interval_Value);
             if (x <= 0) {

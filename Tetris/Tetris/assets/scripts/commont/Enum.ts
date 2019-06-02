@@ -136,4 +136,10 @@ export enum EventType {
     UpdateAISave,
     /**重置AI游戏格子 */
     ResetAIGameGrid,
+    /**设置AI攻击方块 */
+    SetAIActtackCube,
+    /**通过连消数销毁AI攻击方块 */
+    DestoryAIActtackCubeByNum,
+     /**设置AI障碍灰格子 */
+     SetAIObstacleGrid,
 }

@@ -18,6 +18,10 @@ export class GameManager {
      */
     public IsGameOver: boolean = false;
     /**
+     * @property 游戏是否结束
+     */
+    public IsAIGameOver: boolean = false;
+    /**
      * @property 是否可以存储
      */
     public IsSave: boolean = true;
@@ -69,6 +73,10 @@ export class GameManager {
      * @property 攻击方块数
      */
     public ActtackCube_Num: number = 0;
+    /**
+    * @property AI攻击方块数
+    */
+    public AIActtackCube_Num: number = 0;
     /**
      * @property 游戏区域格子
      */

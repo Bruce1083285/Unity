@@ -56,7 +56,7 @@ export default class Group extends cc.Component {
 
     update(dt) {
 
-        if (GameManager.Instance.IsGameOver) {
+        if (GameManager.Instance.IsAIGameOver) {
             return;
         }
 
@@ -112,7 +112,7 @@ export default class Group extends cc.Component {
         if (!this.IsValidGridPos()) {
             console.log("游戏结束");
             this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
-            GameManager.Instance.IsGameOver = true;
+            GameManager.Instance.IsAIGameOver = true;
             return;
         }
 
@@ -126,7 +126,7 @@ export default class Group extends cc.Component {
     private AddListenter() {
         //添加事件监听--->销毁预知位置方块
         EventCenter.AddListenter(EventType.ResetAIGameGrid, () => {
-           this.ResetGameGrid();
+            this.ResetGameGrid();
         }, "Group_AI");
     }
 
@@ -360,9 +360,11 @@ export default class Group extends cc.Component {
             GameManager.Instance.Time_AIInterval = 1;
             this.IsSpeedUp = false;
         }
-        // this.RemoveListenter();
+        this.RemoveListenter();
         this.RemoveParnet();
         this.ClearFullGridByRow();
+        EventCenter.BroadcastOne(EventType.DestoryAIActtackCubeByNum, this.Continuous_Count);
+        EventCenter.Broadcast(EventType.SetAIObstacleGrid);
         // console.log("预知方块为空------>4");
         // console.log(this.Cube_Foresee);
         // console.log(GameManager.Instance.AIGame_Grid);

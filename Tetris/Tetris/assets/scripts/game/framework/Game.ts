@@ -154,27 +154,27 @@ export default class Game extends cc.Component {
         switch (click) {
             //方向键
             case Click_Directions.Up:
-                GameManager.Instance.Click_AIFunManage = Click_FunManage.Up;
+                GameManager.Instance.Click_FunManage = Click_FunManage.Up;
                 break;
             case Click_Directions.Down:
-                GameManager.Instance.Click_AIFunManage = Click_FunManage.Down;
+                GameManager.Instance.Click_FunManage = Click_FunManage.Down;
                 break;
             case Click_Directions.Left:
-                GameManager.Instance.Click_AIFunManage = Click_FunManage.Left;
+                GameManager.Instance.Click_FunManage = Click_FunManage.Left;
                 break;
             case Click_Directions.Right:
-                GameManager.Instance.Click_AIFunManage = Click_FunManage.Right;
+                GameManager.Instance.Click_FunManage = Click_FunManage.Right;
                 break;
             //功能键
             case Click_Function.Clockwise:
-                GameManager.Instance.Click_AIFunManage = Click_FunManage.Clockwise;
+                GameManager.Instance.Click_FunManage = Click_FunManage.Clockwise;
                 break;
             case Click_Function.Anticlockwise:
-                GameManager.Instance.Click_AIFunManage = Click_FunManage.Anticlockwise;
+                GameManager.Instance.Click_FunManage = Click_FunManage.Anticlockwise;
                 break;
             case Click_Function.Save:
-                EventCenter.Broadcast(EventType.UpdateAISave);
-                // ViewManager_Game.Instance.UpdateSave(GameManager.Instance.Current_Cube);
+                // EventCenter.Broadcast(EventType.UpdateAISave);
+                ViewManager_Game.Instance.UpdateSave(GameManager.Instance.Current_Cube);
                 break;
             //设置键
             case Click_Set.Open:
