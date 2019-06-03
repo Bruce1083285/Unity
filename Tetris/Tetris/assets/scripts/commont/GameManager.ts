@@ -94,6 +94,10 @@ export class GameManager {
      */
     public AIGame_Grid: cc.Node[][] = [];
     /**
+     * @property AI游戏区域格子模拟
+     */
+    public AIGame_Grid_Simulation: cc.Node[][] = [];
+    /**
      * @property AI待机方块ID
      */
     public AIStandbyCubesID: string[] = [];
@@ -124,6 +128,7 @@ export class GameManager {
         this.ResetProperty();
         this.SetGameGrid();
         this.SetAIGameGrid();
+        this.SetAIGameGridSimulation();
     }
 
     /**
@@ -144,6 +149,7 @@ export class GameManager {
         this.AIActtackCube_Num = 0;
         this.Game_Grid = [];
         this.AIGame_Grid = [];
+        this.AIGame_Grid_Simulation = [];
         this.AIStandbyCubesID = [];
         this.Current_AICube = null;
         this.AISave_Cube = null;
@@ -182,6 +188,20 @@ export class GameManager {
                 arr.push(null);
             }
             this.AIGame_Grid.push(arr);
+            arr = [];
+        }
+    }
+
+    /**
+     * 设置AI游戏区域格子二维数组
+     */
+    private SetAIGameGridSimulation() {
+        let arr: cc.Node[] = [];
+        for (let y = 0; y < this.Grid_Height; y++) {
+            for (let x = 0; x < this.Grid_Width; x++) {
+                arr.push(null);
+            }
+            this.AIGame_Grid_Simulation.push(arr);
             arr = [];
         }
     }

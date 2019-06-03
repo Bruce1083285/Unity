@@ -114,6 +114,9 @@ export default class AreaAIGame extends cc.Component {
             if (pre.name !== GameManager.Instance.AIStandbyCubesID[0]) {
                 continue;
             }
+            // if (pre.name !== "4") {
+            //     continue;
+            // }
             this.SetCubeBeginPos(pre, this.node, this.Point_Begin);
             GameManager.Instance.AIStandbyCubesID.splice(0, 1);
             return;

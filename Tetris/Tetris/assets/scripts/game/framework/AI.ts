@@ -44,4 +44,5 @@ export class AI {
     public UpdateStandbyCube() {
         this.Manage_AreaAIStandby.UpdateStandbyCube();
     }
+
 }
