@@ -19,6 +19,11 @@ export default class Group extends cc.Component {
 
     //#region 
     /**
+     * @property [Array]方块预制体
+     */
+    @property([cc.Prefab])
+    private Pre_Cubes: cc.Prefab[] = [];
+    /**
      * @property 方块初始位置
      */
     private Cube_Init_Pos: cc.Vec2 = null;
@@ -55,6 +60,14 @@ export default class Group extends cc.Component {
      */
     private Move_RandomValue: number = 0;
     /**
+     * @property 非空洞X轴Y轴
+     */
+    private NotCavity_XandY = []
+    /**
+     * @property [Array]空洞X轴Y轴记录
+     */
+    private Record_Cavity_XandY = [];
+    /**
      * @property [Array]自身子节点
      */
     private Childers: cc.Node[] = [];
@@ -70,33 +83,33 @@ export default class Group extends cc.Component {
      * @property 最佳路线
      */
     private TheBestRoute: any = {}
-    /**
-     * @property 路径对象
-     */
-    private Path = {
-        /**X轴 */
-        x: null,
-        /**Y轴 */
-        y: null,
-        /**高度 */
-        height: null,
-        /**旋转 */
-        rotation: null,
-        /**消除层数 */
-        eliminate_tier: null,
-        /**贡献方块数 */
-        contribution_Num: null,
-        /**行变换数 */
-        conversion_Row: null,
-        /**列变换数 */
-        conversion_Line: null,
-        /**空洞数 */
-        cavity_Num: null,
-        /**井数 */
-        well_Num: null,
-        /**权重值 */
-        weight: null,
-    };
+    // /**
+    //  * @property 路径对象
+    //  */
+    // private Path = {
+    //     /**X轴 */
+    //     x: null,
+    //     /**Y轴 */
+    //     y: null,
+    //     /**高度 */
+    //     height: null,
+    //     /**旋转 */
+    //     rotation: null,
+    //     /**消除层数 */
+    //     eliminate_tier: null,
+    //     /**贡献方块数 */
+    //     contribution_Num: null,
+    //     /**行变换数 */
+    //     conversion_Row: null,
+    //     /**列变换数 */
+    //     conversion_Line: null,
+    //     /**空洞数 */
+    //     cavity_Num: null,
+    //     /**井数 */
+    //     well_Num: null,
+    //     /**权重值 */
+    //     weight: null,
+    // };
 
     onLoad() {
 
@@ -108,39 +121,8 @@ export default class Group extends cc.Component {
 
     update(dt) {
         this.UpdateMoveDown(dt);
-        return
-        if (GameManager.Instance.IsGameOver) {
-            return;
-        }
-
-        this.UpdateMoveDown(dt);
-        // this.UpdateTargetPos();
-
-        switch (GameManager.Instance.Click_AIFunManage) {
-            case Click_FunManage.Up:
-                this.MoveDirUp();
-                break;
-            case Click_FunManage.Down:
-                this.MoveDirDown();
-                break
-            case Click_FunManage.Left:
-                this.MoveDirLeft();
-                break
-            case Click_FunManage.Right:
-                this.MoveDirRight();
-                break
-            case Click_FunManage.Clockwise:
-                this.RotateClockwise();
-                break
-            case Click_FunManage.Anticlockwise:
-                this.RotateAnticlockwise();
-                break
-            default:
-                break;
-        }
-
-        GameManager.Instance.Click_AIFunManage = null;
         this.ListenterContinuous();
+        this.ListenterCurrentMaxTier();
     }
 
     /**
@@ -158,6 +140,35 @@ export default class Group extends cc.Component {
     }
 
     /**
+     * 监听当前最高层数
+     */
+    private ListenterCurrentMaxTier() {
+        for (let y = GameManager.Instance.AIGame_Grid.length - 1; y >= 0; y--) {
+            let isHave = this.IsHaveCube(y);
+            if (isHave) {
+                GameManager.Instance.AICurrent_MaxTier = y;
+                return;
+            }
+        }
+    }
+
+    /**
+     * 是否存在方块
+     * @param y Y轴
+     * @returns 是否存在方块
+     */
+    private IsHaveCube(y: number): boolean {
+        for (let x = 0; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
+            if (grid && grid.parent !== this.node) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * 初始化
      */
     Init() {
@@ -170,26 +181,12 @@ export default class Group extends cc.Component {
         if (isOver) {
             return;
         }
-        this.AI(GameManager.Instance.Interval_AIValue, 0);
-        // console.log("路径---------------------");
-        // console.log(this.AI_Path);
-        this.Move_RandomValue = this.GetRandom();
-        this.TheBestRoute = this.GetTheBestRoute();
-        console.log(this.TheBestRoute);
         this.AddListenter();
         this.UpdateGameGrid();
-        // EventCenter.Broadcast(EventType.UpdateAISave);
-        // console.log("测试");
-        // console.log(!null);
-        // let isNull: boolean = false;
-        // if (!null) {
-        //     isNull = true;
-        // }
-        // if (isNull === false) {
-        //     console.log("测试--->1");
-        // } else {
-        //     console.log("测试--->2");
-        // }
+        this.AI(GameManager.Instance.Interval_AIValue / 2, 0);
+        console.log(GameManager.Instance.AIGame_Grid);
+        this.Move_RandomValue = this.GetRandom();
+        this.TheBestRoute = this.GetTheBestRoute();
     }
 
     /**
@@ -198,10 +195,10 @@ export default class Group extends cc.Component {
      */
     private GameOver(): boolean {
         if (!this.IsValidGridPos()) {
-            console.log("游戏结束");
+            // console.log("游戏结束");
             this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
             GameManager.Instance.IsGameOver = true;
-            EventCenter.BroadcastOne(EventType.SetPageOver, true);
+            EventCenter.BroadcastOne(EventType.PlayGameOver, true);
             return true;
         }
         return false;
@@ -284,7 +281,6 @@ export default class Group extends cc.Component {
             this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
             if (this.IsValidGridPos()) {
                 this.UpdateGameGrid();
-                this.UpdateGameGrid_Simulation();
             } else {
                 this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
                 this.ForbiddenScript();
@@ -296,10 +292,10 @@ export default class Group extends cc.Component {
                 this.MoveDirRight();
 
             }
-            let ran = this.GetRandom();
-            if (ran <= 5) {
-                this.MoveDirUp();
-            }
+            // let ran = this.GetRandom();
+            // if (ran <= 5) {
+            //     this.MoveDirUp();
+            // }
 
             this.Time_Current = this.Time;
         }
@@ -309,74 +305,9 @@ export default class Group extends cc.Component {
      * AI
      */
     private AI(pos_x: number, rotation: number) {
-        // if(this.node.name==="4"){
-        //     console.log(this.node);
-        // }
         while (true) {
-            this.node.rotation = this.node.rotation + rotation;
-            if (this.node.rotation > 360) {
-                this.node.rotation = 0;
-                break;
-            }
-            this.node.setPosition(pos_x, this.Cube_Init_Pos.y);
-            let isBorder = this.IsBorder_Right();
-            if (isBorder) {
-                // let dir = this.GetDirRightX();
-                // if (dir) {
-                //     this.node.setPosition(this.node.x - dir, this.node.position.y);
-                // }
-                // while (true) {
-                //     this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
-                //     if (this.IsValidGridPos_Simulation()) {
-                //         this.UpdateGameGrid_Simulation();
-                //     } else {
-                //         this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
-                //         this.Path.eliminate_tier = this.GetFullRowNum();
-                //         this.Path.contribution_Num = this.GetContributionCount();
-                //         this.Path.conversion_Row = this.GetConversion_Row();
-                //         this.Path.conversion_Line = this.GetConversion_Line();
-                //         this.Path.cavity_Num = this.GetCavity();
-                //         this.Path.well_Num = this.GetWellNum();
-                //         this.Path.weight = 10 * this.Path.eliminate_tier * this.Path.contribution_Num - 1 * this.Path.conversion_Row - 0.6 * this.Path.conversion_Line - 1 * this.Path.y - 0.3 * this.Path.cavity_Num - 0.5 * this.Path.well_Num;
-                //         this.AI_Path.push(this.Path);
-                //         break;
-                //     }
-                // }
-                this.RemoveGameGrid_Simulation();
-                this.node.setPosition(this.Cube_Init_Pos);
-                this.IsStartGame = true;
-                return;
-            }
-            let dir = this.GetDirX();
-            if (dir) {
-                this.node.setPosition(this.node.x + dir, this.node.position.y);
-            }
-            this.UpdateGameGrid_Simulation();
-            this.Path.x = this.node.position.x;
-            this.Path.y = this.node.position.y;
-            this.Path.rotation = this.node.rotation;
-            this.Path.height = this.GetCurrentYToDownYHeight();
-            console.log("模拟方块");
-            console.log(GameManager.Instance.AIGame_Grid_Simulation);
-            while (true) {
-                this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
-                if (this.IsValidGridPos_Simulation()) {
-                    this.UpdateGameGrid_Simulation();
-                } else {
-                    this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
-                    this.Path.eliminate_tier = this.GetFullRowNum();
-                    this.Path.contribution_Num = this.GetContributionCount();
-                    this.Path.conversion_Row = this.GetConversion_Row();
-                    this.Path.conversion_Line = this.GetConversion_Line();
-                    this.Path.cavity_Num = this.GetCavity();
-                    this.Path.well_Num = this.GetWellNum();
-                    this.Path.weight = 10 * this.Path.eliminate_tier * this.Path.contribution_Num - 1 * this.Path.conversion_Row - 0.6 * this.Path.conversion_Line - 1 * this.Path.y - 0.3 * this.Path.cavity_Num - 0.5 * this.Path.well_Num;
-                    this.AI_Path.push(this.Path);
-                    break;
-                }
-            }
-
-            this.Path = {
+            //路径对象
+            let Path = {
                 /**X轴 */
                 x: null,
                 /**Y轴 */
@@ -400,46 +331,143 @@ export default class Group extends cc.Component {
                 /**权重值 */
                 weight: null,
             };
-            rotation += 90;
+            this.node.rotation = this.node.rotation + rotation;
+            if (this.node.rotation > 360) {
+                this.node.rotation = 0;
+                break;
+            }
+            this.node.setPosition(pos_x, this.Cube_Init_Pos.y);
+            let isBorder = this.IsBorder_Right();
+            if (isBorder) {
+                this.RemoveGameGrid();
+                this.node.setPosition(this.Cube_Init_Pos);
+                this.IsStartGame = true;
+                return;
+            }
+            let dir = this.GetDirX();
+            if (dir) {
+                this.node.setPosition(this.node.x + dir, this.node.position.y);
+            }
+            Path.x = this.node.position.x;
+            Path.y = this.node.position.y;
+            Path.rotation = this.node.rotation;
+            Path.height = this.GetCurrentYToDownYHeight();
+            while (true) {
+                this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
+                if (this.IsValidGridPos()) {
+                    this.UpdateGameGrid();
+                    console.log(GameManager.Instance.AIGame_Grid);
+                } else {
+                    console.log(GameManager.Instance.AIGame_Grid);
+                    this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
+                    Path.eliminate_tier = this.GetFullRowNum();
+                    Path.contribution_Num = this.GetContributionCount();
+                    Path.conversion_Row = this.GetConversion_Row();
+                    Path.conversion_Line = this.GetConversion_Line();
+                    Path.cavity_Num = this.GetCavity();
+                    Path.well_Num = this.GetWellNum();
+                    Path.weight = 10 * Path.eliminate_tier * Path.contribution_Num - 1 * Path.conversion_Row - 0.6 * Path.conversion_Line - 1 * Path.height - 0.3 * Path.cavity_Num - 0.5 * Path.well_Num;
+                    let isHave: boolean = false;
+                    for (let i = 0; i < this.AI_Path.length; i++) {
+                        let obj = this.AI_Path[i];
+                        if (Path.x === obj.x) {
+                            isHave = true;
+                            break;
+                        }
+                    }
+                    if (!isHave) {
+                        this.AI_Path.push(Path);
+                    }
+                    this.AI_Path.push(Path);
+                    break;
+                }
+            }
+            this.Record_Cavity_XandY = [];
+            this.NotCavity_XandY = [];
+            rotation = 90;
         }
         // while (true) {
-        //     this.node.rotation += 90;
+        //     //路径对象
+        //     let Path = {
+        //         /**X轴 */
+        //         x: null,
+        //         /**Y轴 */
+        //         y: null,
+        //         /**高度 */
+        //         height: null,
+        //         /**旋转 */
+        //         rotation: null,
+        //         /**消除层数 */
+        //         eliminate_tier: null,
+        //         /**贡献方块数 */
+        //         contribution_Num: null,
+        //         /**行变换数 */
+        //         conversion_Row: null,
+        //         /**列变换数 */
+        //         conversion_Line: null,
+        //         /**空洞数 */
+        //         cavity_Num: null,
+        //         /**井数 */
+        //         well_Num: null,
+        //         /**权重值 */
+        //         weight: null,
+        //     };
+        //     this.node.rotation = this.node.rotation + rotation;
         //     if (this.node.rotation > 360) {
+        //         this.node.rotation = 0;
         //         break;
         //     }
-        //     this.Path.x = this.node.position.x;
-        //     this.Path.y = this.GetCurrentYToDownYHeight();
+        //     this.node.setPosition(pos_x, this.Cube_Init_Pos.y);
+        //     let isBorder = this.IsBorder_Right();
+        //     if (isBorder) {
+        //         this.RemoveGameGrid();
+        //         this.node.setPosition(this.Cube_Init_Pos);
+        //         this.IsStartGame = true;
+        //         return;
+        //     }
+        //     let dir = this.GetDirX();
+        //     if (dir) {
+        //         this.node.setPosition(this.node.x + dir, this.node.position.y);
+        //     }
+        //     Path.x = this.node.position.x;
+        //     Path.y = this.node.position.y;
+        //     Path.rotation = this.node.rotation;
+        //     Path.height = this.GetCurrentYToDownYHeight();
+        //     // console.log("模拟方块");
+        //     // console.log(GameManager.Instance.AIGame_Grid_Simulation);
         //     while (true) {
         //         this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
-        //         if (this.IsValidGridPos_Simulation()) {
-        //             this.UpdateGameGrid_Simulation();
+        //         if (this.IsValidGridPos()) {
+        //             this.UpdateGameGrid();
         //         } else {
         //             this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
-        //             this.Path.eliminate_tier = this.GetFullRowNum();
-        //             this.Path.contribution_Num = this.GetContributionCount();
-        //             this.Path.conversion_Row = this.GetConversion_Row();
-        //             this.Path.conversion_Line = this.GetConversion_Line();
-        //             this.Path.cavity_Num = this.GetCavity();
-        //             this.Path.well_Num = this.GetWellNum();
-        //             this.Path.weight = 10 * this.Path.eliminate_tier * this.Path.contribution_Num - 1 * this.Path.conversion_Row - 0.6 * this.Path.conversion_Line - 1 * this.Path.y - 0.3 * this.Path.cavity_Num - 0.5 * this.Path.well_Num;
-        //             this.AI_Path.push(this.Path);
+        //             Path.eliminate_tier = this.GetFullRowNum();
+        //             Path.contribution_Num = this.GetContributionCount();
+        //             Path.conversion_Row = this.GetConversion_Row();
+        //             Path.conversion_Line = this.GetConversion_Line();
+        //             Path.cavity_Num = this.GetCavity();
+        //             Path.well_Num = this.GetWellNum();
+        //             Path.weight = 10 * Path.eliminate_tier * Path.contribution_Num - 1 * Path.conversion_Row - 0.6 * Path.conversion_Line - 1 * Path.y - 0.3 * Path.cavity_Num - 0.5 * Path.well_Num;
+        //             this.AI_Path.push(Path);
         //             break;
         //         }
         //     }
+        //     this.Record_Cavity_XandY = [];
+        //     rotation += 90;
         // }
 
-        this.AI(this.node.position.x + GameManager.Instance.Interval_AIValue, 0);
+        this.AI(this.node.position.x + GameManager.Instance.Interval_AIValue*2, 0);
     }
 
     /**
      * 移除模拟游戏格子中自身节点位置
      */
-    private RemoveGameGrid_Simulation() {
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            for (let x = 0; x < GameManager.Instance.AIGame_Grid_Simulation[y].length; x++) {
-                let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
+    private RemoveGameGrid() {
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            for (let x = 0; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+                let grid = GameManager.Instance.AIGame_Grid[y][x];
                 if (grid && grid.parent === this.node) {
-                    GameManager.Instance.AIGame_Grid_Simulation[y][x] = null;
+                    GameManager.Instance.AIGame_Grid[y][x] = null;
                 }
             }
         }
@@ -470,29 +498,31 @@ export default class Group extends cc.Component {
      * @returns 距离最小的Y轴
      */
     private GetCurrentYToDownYHeight(): number {
-        //距离
-        let dir_y: number[] = [];
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            for (let x = 0; x < GameManager.Instance.AIGame_Grid_Simulation[y].length; x++) {
-                let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
-                if (grid && grid.parent === this.node) {
-                    let ind = dir_y.indexOf(y);
-                    if (ind !== -1) {
-                        continue;
-                    }
-                    dir_y.push(y);
-                }
-            }
-        }
+        // //距离
+        // let dir_y: number[] = [];
+        // for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
+        //     for (let x = 0; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+        //         let grid = GameManager.Instance.AIGame_Grid[y][x];
+        //         if (grid && grid.parent === this.node) {
+        //             let ind = dir_y.indexOf(y);
+        //             if (ind !== -1) {
+        //                 continue;
+        //             }
+        //             dir_y.push(y);
+        //         }
+        //     }
+        // }
 
-        let min_y: number = dir_y[0];
-        for (let i = 0; i < dir_y.length; i++) {
-            if (min_y > dir_y[i]) {
-                min_y = dir_y[i];
-            }
-        }
+        // let min_y: number = dir_y[0];
+        // for (let i = 0; i < dir_y.length; i++) {
+        //     if (min_y > dir_y[i]) {
+        //         min_y = dir_y[i];
+        //     }
+        // }
 
-        return min_y;
+        let height = Math.floor(this.node.position.y / GameManager.Instance.Interval_AIValue);
+
+        return height;
     }
 
     /**
@@ -500,7 +530,7 @@ export default class Group extends cc.Component {
      */
     private GetFullRowNum(): number {
         let count: number = 0;
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
             let isFull = this.IsFullGrid_Simulation(y);
             if (isFull) {
                 count++;
@@ -516,9 +546,9 @@ export default class Group extends cc.Component {
      */
     private GetContributionCount(): number {
         let count: number = 0;
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            for (let x = 0; x < GameManager.Instance.AIGame_Grid_Simulation[y].length; x++) {
-                let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            for (let x = 0; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+                let grid = GameManager.Instance.AIGame_Grid[y][x];
                 if (grid && grid.parent === this.node) {
                     let isFull = this.IsFullGrid_Simulation(y);
                     if (isFull) {
@@ -536,52 +566,305 @@ export default class Group extends cc.Component {
      * @returns 空洞数
      */
     private GetCavity(): number {
-        let count: number = 0;
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            for (let x = 0; x < GameManager.Instance.AIGame_Grid_Simulation[y].length; x++) {
-                let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
+        //获取非空洞和空洞的X轴和Y轴
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            for (let x = 0; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+                let grid = GameManager.Instance.AIGame_Grid[y][x];
                 if (grid) {
                     continue;
                 }
 
+                let obj = {
+                    x: x,
+                    y: y,
+                }
                 let isCavity_Up = this.IsCavity_UP(x, y);
-                if (isCavity_Up) {
-                    count++;
+                if (!isCavity_Up) {
+                    let isLeft = this.IsHaveCube_Left(x, y);
+                    if (isLeft) {
+                        let isHave: boolean = this.IsHave(obj, this.NotCavity_XandY);
+                        if (!isHave) {
+                            this.NotCavity_XandY.push(obj);
+                        }
+                        continue;
+                    }
+                    let isRight = this.IsHaveCube_Right(x, y);
+                    if (isRight) {
+                        let isHave: boolean = this.IsHave(obj, this.NotCavity_XandY);
+                        if (!isHave) {
+                            this.NotCavity_XandY.push(obj);
+                        }
+                        continue;
+                    }
                     continue;
+                }
+                let isHave: boolean = this.IsHave(obj, this.Record_Cavity_XandY);
+                if (!isHave) {
+                    this.Record_Cavity_XandY.push(obj);
                 }
             }
         }
 
+        //获取所有非空洞的X轴和Y轴
+        for (let i = 0; i < this.NotCavity_XandY.length; i++) {
+            let obj = this.NotCavity_XandY[i];
+            this.SelectNotCavity_Left(obj.x, obj.y);
+            this.SelectNotCavity_Right(obj.x, obj.y);
+        }
+
+        for (let i = 0; i < this.Record_Cavity_XandY.length; i++) {
+            let obj = this.Record_Cavity_XandY[i];
+            let isHave: boolean = this.IsHave(obj, this.NotCavity_XandY);
+            if (!isHave) {
+                continue;
+            }
+            this.Record_Cavity_XandY.splice(i, 1);
+        }
+
+        let count: number = this.Record_Cavity_XandY.length;
         return count;
+    }
+
+    /**
+     * 向上是否为空洞
+     * @param x X轴
+     * @param start_y 开始Y轴
+     * @returns 是否为空洞
+     */
+    private IsCavity_UP(target_x: number, start_y: number): boolean {
+        for (let y = start_y + 1; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][target_x];
+            if (grid && grid.parent !== this.node) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 数组中是否已存在
+     * @param obj 包含X轴和Y轴的对象
+     * @returns 是否已存在
+     */
+    private IsHave(obj, cavity): boolean {
+        for (let i = 0; i < cavity.length; i++) {
+            let notCavity = cavity[i];
+            if (obj.x === notCavity.x && obj.y === notCavity.y) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 向左是否有方块
+     * @param start_x 开始X轴
+     * @param y Y轴
+     * @returns 是否为空洞
+     */
+    private IsHaveCube_Left(start_x: number, y: number): boolean {
+        if (start_x - 1 < 0) {
+            return false;
+        }
+        for (let x = start_x - 1; x >= 0; x--) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
+            if (grid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 向右是否有方块
+     * @param start_x 开始X轴
+     * @param y Y轴
+     * @returns 是否为空洞
+     */
+    private IsHaveCube_Right(start_x: number, y: number): boolean {
+        if (start_x + 1 >= GameManager.Instance.Grid_Width) {
+            return false;
+        }
+        for (let x = start_x + 1; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
+            if (grid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 查找非空洞--->左
+     * @param start_x 开始点X轴
+     * @param y Y轴
+     */
+    private SelectNotCavity_Left(start_x: number, y: number) {
+        if (start_x - 1 < 0) {
+            return;
+        }
+        for (let x = start_x - 1; x >= 0; x--) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
+            if (grid) {
+                return
+            }
+            let obj = {
+                x: x,
+                y: y,
+            }
+            let isHave = this.IsHave(obj, this.NotCavity_XandY);
+            if (isHave) {
+                continue;
+            }
+            this.NotCavity_XandY.push(obj);
+        }
+    }
+
+    /**
+    * 查找非空洞--->右
+    * @param start_x 开始点X轴
+    * @param y Y轴
+    */
+    private SelectNotCavity_Right(start_x: number, y: number) {
+        if (start_x + 1 >= GameManager.Instance.AIGame_Grid[y].length) {
+            return;
+        }
+        for (let x = start_x + 1; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
+            if (grid) {
+                return
+            }
+            let obj = {
+                x: x,
+                y: y,
+            }
+            let isHave = this.IsHave(obj, this.NotCavity_XandY);
+            if (isHave) {
+                continue;
+            }
+            this.NotCavity_XandY.push(obj);
+        }
+    }
+
+    /**
+     * 空洞是否存在
+     * @param x X轴
+     * @param y Y轴
+     * @returns 是否存在
+     */
+    private IsHaveCavity(x: number, y: number): boolean {
+        for (let i = 0; i < this.Record_Cavity_XandY.length; i++) {
+            let cavity_XandY = this.Record_Cavity_XandY[i]
+            if (cavity_XandY.x === x && cavity_XandY.y === y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * 获取井的总数
      */
     private GetWellNum(): number {
-        let sum: number = 0;
+        let arr: number[] = [];
+        //获取每列所有井的深度递加之和
         for (let x = 0; x < GameManager.Instance.Grid_Width; x++) {
-            let sum_height: number = 0;
-            for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-                let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
-                if (grid) {
-                    continue;
-                }
-                let height: number = this.GetWellHeight(x, y);
-                if (height <= 1) {
-                    height = 0;
-                    continue;
-                }
-                //递减之和
-                for (let i = 0; i < height; i++) {
-                    sum_height = sum_height + (height - i)
-                }
-                break;
+            let num = this.GetWellHeightByX(x);
+            if (num !== 0) {
+                arr.push(num);
             }
-            sum += sum_height;
+        }
+
+        /**
+         * 获取所有列所有井的神帝递加总和
+         */
+        let sum: number = 0;
+        for (let i = 0; i < arr.length; i++) {
+            sum = sum + arr[i];
         }
 
         return sum;
+    }
+
+    /**
+     * 通过X轴获取每一列所有井的深度之和
+     * @param x X轴
+     * @returns 所有井的深度之和
+     */
+    private GetWellHeightByX(x: number): number {
+        let height: number = 0;
+        let arr: number[] = [];
+        //获取每一个井的深度
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            let grid: cc.Node = GameManager.Instance.AIGame_Grid[y][x];
+            if (grid) {
+                let num = this.DecreasingHeight(height);
+                if (num !== 0) {
+                    arr.push(num);
+                }
+                height = 0;
+                continue;
+            }
+            let isHave_Left: boolean = this.IsHaveCubeToOneByHorizontal(x - 1, y);
+            if (!isHave_Left) {
+                let num = this.DecreasingHeight(height);
+                if (num !== 0) {
+                    arr.push(num);
+                }
+                height = 0;
+                continue;
+            }
+            let isHave_Right: boolean = this.IsHaveCubeToOneByHorizontal(x + 1, y);
+            if (!isHave_Right) {
+                let num = this.DecreasingHeight(height);
+                if (num !== 0) {
+                    arr.push(num);
+                }
+                height = 0;
+                continue;
+            }
+            height++;
+        }
+
+        //计算当前列所有井的深度之和
+        let sum: number = 0;
+        for (let i = 0; i < arr.length; i++) {
+            sum = sum + arr[i];
+        }
+
+        return sum;
+    }
+
+    /**
+     * 深度(高度)递加
+     * @param height 高度
+     * @returns 递加结果
+     */
+    private DecreasingHeight(height: number): number {
+        let sum: number = 0;
+        for (let i = 0; i < height; i++) {
+            sum = sum + (height - i);
+        }
+        return sum;
+    }
+
+    /**
+     * 通过水平移动一个格子的位置是否存在方块
+     * @param x X轴
+     * @param y Y轴
+     * @returns 是否存在方块
+     */
+    private IsHaveCubeToOneByHorizontal(x: number, y: number): boolean {
+        if (x < 0 || x >= GameManager.Instance.Grid_Width) {
+            return true;
+        }
+        let grid = GameManager.Instance.AIGame_Grid[y][x];
+        if (grid) {
+            return true
+        }
+        return false;
     }
 
     /**
@@ -592,15 +875,15 @@ export default class Group extends cc.Component {
      */
     private GetWellHeight(x: number, start_y: number): number {
         let height: number = 0;
-        for (let y = start_y; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
+        for (let y = start_y; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
             if (grid) {
                 continue
             }
 
             if (x + 1 < GameManager.Instance.Grid_Width) {
                 //右查找
-                let grid_right = GameManager.Instance.AIGame_Grid_Simulation[y][x + 1];
+                let grid_right = GameManager.Instance.AIGame_Grid[y][x + 1];
                 if (!grid_right) {
                     return height;
                 }
@@ -608,7 +891,7 @@ export default class Group extends cc.Component {
 
             //左查找
             if (x - 1 >= 0) {
-                let grid_Left = GameManager.Instance.AIGame_Grid_Simulation[y][x - 1];
+                let grid_Left = GameManager.Instance.AIGame_Grid[y][x - 1];
                 if (!grid_Left) {
                     return height;
                 }
@@ -620,29 +903,12 @@ export default class Group extends cc.Component {
     }
 
     /**
-     * 向上是否为空洞
-     * @param x X轴
-     * @param start_y 开始Y轴
-     * @returns 是否为空洞
-     */
-    private IsCavity_UP(target_x: number, start_y: number): boolean {
-        for (let y = start_y + 1; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            let grid = GameManager.Instance.AIGame_Grid_Simulation[y][target_x];
-            if (grid) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * 获取行变换数
      * @returns 行变换数
      */
     private GetConversion_Row(): number {
         let count: number = 0;
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
             let isFull = this.IsFullGrid_Simulation(y);
             if (isFull) {
                 continue;
@@ -666,8 +932,8 @@ export default class Group extends cc.Component {
      */
     private GetConversionRow_Count(start_x: number, y: number, result: boolean): number {
         let count: number = 0;
-        for (let x = start_x; x < GameManager.Instance.AIGame_Grid_Simulation[y].length; x++) {
-            let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
+        for (let x = start_x; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
             let isNull: boolean = false;
             if (!grid) {
                 isNull = true;
@@ -679,8 +945,11 @@ export default class Group extends cc.Component {
                 return sum;
             }
         }
-        let num = count + 1;
-        return num;
+        let sum: number = 0;
+        if (!result) {
+            sum = count + 1;
+        }
+        return sum;
     }
 
     /**
@@ -713,8 +982,8 @@ export default class Group extends cc.Component {
      * @returns 是否为满员列
      */
     private IsFullGrid_Line(x: number): boolean {
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
             if (!grid) {
                 return false;
             }
@@ -728,8 +997,8 @@ export default class Group extends cc.Component {
      * @returns 是否为空格列
      */
     private IsNullGrid_Line(x: number): boolean {
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
             if (grid) {
                 return false;
             }
@@ -745,8 +1014,8 @@ export default class Group extends cc.Component {
      */
     private GetConversionLine_Count(start_y: number, x: number, result: boolean) {
         let count: number = 0;
-        for (let y = start_y; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
+        for (let y = start_y; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x];
             let isNull: boolean = false;
             if (!grid) {
                 isNull = true;
@@ -758,8 +1027,11 @@ export default class Group extends cc.Component {
                 return sum;
             }
         }
-        let num = count + 1;
-        return num;
+        let sum: number = 0;
+        if (!result) {
+            sum = count + 1;
+        }
+        return sum;
     }
 
     /**
@@ -768,8 +1040,8 @@ export default class Group extends cc.Component {
      * @returns 是否满员
      */
     private IsFullGrid_Simulation(y: number): boolean {
-        for (let x = 0; x < GameManager.Instance.AIGame_Grid_Simulation[y].length; x++) {
-            let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x]
+        for (let x = 0; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x]
             if (!grid) {
                 return false;
             }
@@ -783,49 +1055,12 @@ export default class Group extends cc.Component {
      * @returns 是否为空行
      */
     private IsNullGrid_Simulation(y: number): boolean {
-        for (let x = 0; x < GameManager.Instance.AIGame_Grid_Simulation[y].length; x++) {
-            let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x]
+        for (let x = 0; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x]
             if (grid) {
                 return false;
             }
         }
-        return true;
-    }
-
-    /**
-    * 是否为有效位置
-    * @returns 位置是否有效
-    */
-    private IsValidGridPos_Simulation(): boolean {
-        let arr_child = this.node.children;
-        for (let i = 0; i < arr_child.length; i++) {
-            let child = arr_child[i];
-
-            let world_pos = this.node.convertToWorldSpaceAR(child.position);
-            let node_pos = this.node.parent.convertToNodeSpaceAR(world_pos);
-            // let pos = this.PosRound(node_pos);
-            if (!this.IsBorder(node_pos)) {
-                return false;
-            }
-
-            let y: number = Math.floor(node_pos.y / GameManager.Instance.Interval_AIValue);
-            if (y <= 0) {
-                y = 0;
-            }
-            if (y >= 20) {
-                y = 19;
-            }
-            let x: number = Math.floor(node_pos.x / GameManager.Instance.Interval_AIValue);
-            if (x <= 0) {
-                x = 0;
-            }
-            // console.log(x + "<-----X轴");
-            // console.log(y + "<-----Y轴");
-            if (GameManager.Instance.AIGame_Grid_Simulation[y][x] !== null && GameManager.Instance.AIGame_Grid_Simulation[y][x].parent !== this.node) {
-                return false;
-            }
-        }
-
         return true;
     }
 
@@ -890,102 +1125,6 @@ export default class Group extends cc.Component {
     }
 
     /**
-     * 查找模拟位置
-     */
-    private SelectSimulationPos() {
-        let arr_x: number[] = this.GetCubesX();
-        let arr_y: number[] = [];
-        for (let i = 0; i < arr_x.length; i++) {
-            for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-                let grid = GameManager.Instance.AIGame_Grid_Simulation[y][arr_x[i]];
-                if (grid && grid.parent !== this.node) {
-                    arr_y.push(y);
-                }
-            }
-
-            for (let i = 0; i < arr_y.length - 1; i++) {
-                if (arr_y[i] < arr_y[i + 1]) {
-                    arr_y.splice(i, 1);
-                } else {
-                    arr_y.splice(i + 1, 1);
-                }
-                i--;
-            }
-        }
-    }
-
-    /**
-     * 获取方块所有格子的X轴
-     * @returns 所有格子的X轴
-     */
-    private GetCubesX(): number[] {
-        let arr_x: number[] = [];
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            for (let x = 0; x < GameManager.Instance.AIGame_Grid_Simulation[y].length; x++) {
-                let grid: cc.Node = GameManager.Instance.AIGame_Grid_Simulation[y][x];
-                if (grid && grid.parent === this.node) {
-                    let ind = arr_x.indexOf(x);
-                    if (ind !== -1) {
-                        continue;
-                    }
-                    arr_x.push(x);
-                }
-            }
-        }
-        return arr_x;
-    }
-    // /**
-    //  * AI
-    //  */
-    // private AI() {
-    //     if (this.IsSpeedUp) {
-    //         return;
-    //     }
-    //     let ran_1 = Math.floor(Math.random() * 100);
-    //     if (ran_1 <= 70) {
-    //         this.LeftOrRight();
-    //         return
-    //     }
-    //     let ran_2 = Math.floor(Math.random() * 100);
-    //     if (ran_1 <= 50) {
-    //         this.MoveDown();
-    //         return
-    //     }
-    //     let ran_3 = Math.floor(Math.random() * 100);
-    //     if (ran_3 <= 33) {
-    //         this.LeftOrRight();
-    //     } else if (ran_3 > 33 && ran_3 <= 66) {
-    //         this.ClockwiseOrAnticlockwise();
-    //     } else {
-    //         this.MoveDown();
-    //     }
-    // }
-
-    // /**
-    //  * 左或者右
-    //  */
-    // private LeftOrRight() {
-    //     let ran = Math.floor(Math.random() * 100);
-    //     if (ran <= 40) {
-    //         GameManager.Instance.Click_AIFunManage = Click_FunManage.Left;
-    //     } else if (ran <= 80 && ran > 40) {
-    //         GameManager.Instance.Click_AIFunManage = Click_FunManage.Right;
-    //     }
-    // }
-
-    // /**
-    //  * 顺序旋转或者逆序旋转
-    //  */
-    // private ClockwiseOrAnticlockwise() {
-    //     let ran = Math.floor(Math.random() * 100);
-    //     if (ran <= 40) {
-    //         GameManager.Instance.Click_AIFunManage = Click_FunManage.Clockwise;
-    //     } else if (ran <= 80 && ran > 40) {
-    //         GameManager.Instance.Click_AIFunManage = Click_FunManage.Anticlockwise;
-    //     }
-    // }
-
-    /**
      * 下移
      */
     private MoveDown() {
@@ -1012,7 +1151,6 @@ export default class Group extends cc.Component {
         this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
         if (this.IsValidGridPos()) {
             this.UpdateGameGrid();
-            this.UpdateGameGrid_Simulation();
         } else {
             this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
             this.ForbiddenScript();
@@ -1031,7 +1169,6 @@ export default class Group extends cc.Component {
         // this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_AIValue, this.node.position.y);
         if (this.IsValidGridPos()) {
             this.UpdateGameGrid();
-            this.UpdateGameGrid_Simulation();
         } else {
             this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_AIValue, this.node.position.y);
         }
@@ -1067,7 +1204,6 @@ export default class Group extends cc.Component {
         this.node.rotation += 90;
         if (this.IsValidGridPos()) {
             this.UpdateGameGrid();
-            this.UpdateGameGrid_Simulation();
         } else {
             this.node.rotation -= 90;
         }
@@ -1088,7 +1224,6 @@ export default class Group extends cc.Component {
         this.node.rotation -= 90;
         if (this.IsValidGridPos()) {
             this.UpdateGameGrid();
-            this.UpdateGameGrid_Simulation();
         } else {
             this.node.rotation += 90;
         }
@@ -1190,42 +1325,6 @@ export default class Group extends cc.Component {
                 y = 19;
             }
             GameManager.Instance.AIGame_Grid[y][x] = child;
-        }
-    }
-
-    /**
-     * 更新模拟游戏格子
-     */
-    private UpdateGameGrid_Simulation() {
-        //清除上一次方块所在格子二维数组中的位置
-        for (let y = 0; y < GameManager.Instance.AIGame_Grid_Simulation.length; y++) {
-            for (let x = 0; x < GameManager.Instance.AIGame_Grid_Simulation[y].length; x++) {
-                let grid = GameManager.Instance.AIGame_Grid_Simulation[y][x];
-                if (grid && grid.parent === this.node) {
-                    GameManager.Instance.AIGame_Grid_Simulation[y][x] = null;
-                }
-            }
-        }
-
-        //更新方块现在在格子二维数组中的位置
-        let arr: cc.Node[] = this.node.children;
-        for (let i = 0; i < arr.length; i++) {
-            let child = arr[i];
-            let world_pos = this.node.convertToWorldSpaceAR(child.position);
-            let node_pos = this.node.parent.convertToNodeSpaceAR(world_pos);
-            let pos = this.PosRound(node_pos);
-            let x = Math.floor(pos.x / GameManager.Instance.Interval_AIValue);
-            if (x <= 0) {
-                x = 0;
-            }
-            let y = Math.floor(pos.y / GameManager.Instance.Interval_AIValue);
-            if (y <= 0) {
-                y = 0;
-            }
-            if (y >= 20) {
-                y = 19;
-            }
-            GameManager.Instance.AIGame_Grid_Simulation[y][x] = child;
         }
     }
 

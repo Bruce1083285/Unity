@@ -156,6 +156,8 @@ export enum EventType {
     ShowPageSet,
     /**移除所有监听 */
     RemoveListenter,
+    /**播放游戏结束 */
+    PlayGameOver,
 }
 
 /**

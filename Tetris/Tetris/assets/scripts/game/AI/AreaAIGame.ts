@@ -44,6 +44,60 @@ export default class AreaAIGame extends cc.Component {
      * @property 游戏开始节点
      */
     private Point_Begin: cc.Node = null;
+    /**
+     * @property 警报器
+     */
+    private Alarm: cc.Node = null;
+    /**
+     * @property 警报器是否开启
+     */
+    private IsOpenAlarm: boolean = false;
+    /**
+     * @property 时间
+     */
+    private Time: number = 0;
+    /**
+     * @property 当前时间
+     */
+    private Time_Current: number = 0;
+
+
+    update(dt) {
+        this.UpdateTime(dt);
+        this.ListenterCurrentMaxTier();
+    }
+
+    /**
+     * 更新时间
+     * @param dt 时间区间
+     */
+    private UpdateTime(dt: number) {
+        this.Time += dt;
+        if (this.Time - this.Time_Current >= GameManager.Instance.AIGameSpeed_Value) {
+            GameManager.Instance.Time_AIInterval = GameManager.Instance.Time_AIInterval / 2;
+            this.Time_Current = this.Time;
+        }
+    }
+
+    /**
+     * 监听当前最高层
+     */
+    private ListenterCurrentMaxTier() {
+        if (GameManager.Instance.AICurrent_MaxTier >= GameManager.Instance.AIAlarm_Value && !this.IsOpenAlarm) {
+            this.Alarm.active = true;
+            this.IsOpenAlarm = true;
+            let dt: number = 0.3;
+            let act_Fout = cc.fadeOut(dt);
+            let act_Fin = cc.fadeIn(dt);
+            let act_seq = cc.sequence(act_Fout, act_Fin).repeatForever();
+            this.Alarm.runAction(act_seq);
+        }
+        if (GameManager.Instance.AICurrent_MaxTier < GameManager.Instance.AIAlarm_Value && this.IsOpenAlarm) {
+            this.Alarm.stopAllActions();
+            this.Alarm.active = false;
+            this.IsOpenAlarm = false;
+        }
+    }
 
     /**
      * 初始化
@@ -52,6 +106,7 @@ export default class AreaAIGame extends cc.Component {
         this.Point_Begin = this.node.parent.getChildByName("BeginPoint");
         this.StarSmall_Target = this.node.parent.parent.getChildByName("Area_BigDevil");
         this.StarBig_Target = this.node.parent.parent.getChildByName("Area_Game");
+        this.Alarm = this.node.parent.getChildByName("Alarm");
 
         this.AddListenter();
     }

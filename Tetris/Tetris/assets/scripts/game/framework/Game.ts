@@ -67,6 +67,22 @@ export default class Game extends cc.Component {
      */
     private Point_Begin: cc.Node = null;
     /**
+     * @property 按钮---上
+     */
+    private But_Up: cc.Node = null;
+    /**
+     * @property 按钮---下
+     */
+    private But_Down: cc.Node = null;
+    /**
+     * @property 按钮---左
+     */
+    private But_Left: cc.Node = null;
+    /**
+     * @property 按钮---右
+     */
+    private But_Right: cc.Node = null;
+    /**
      * @property 按钮--->设置开关
      */
     private But_Switchs: cc.Node = null;
@@ -123,6 +139,10 @@ export default class Game extends cc.Component {
         this.But_Box = this.node.getChildByName("But_Set").getChildByName("Box");
         this.But_Open = this.But_Switchs.getChildByName("but_Open");
         this.But_Close = this.But_Switchs.getChildByName("but_Close");
+        this.But_Up = this.node.getChildByName("But_Directions").getChildByName("up");
+        this.But_Down = this.node.getChildByName("But_Directions").getChildByName("down");
+        this.But_Left = this.node.getChildByName("But_Directions").getChildByName("left");
+        this.But_Right = this.node.getChildByName("But_Directions").getChildByName("right");
 
         ViewManager_Game.Instance.Init(this.Area_Standby, this.Area_Game, this.Area_Save, this.Area_BigDevil, this.Page_Over, this.Page_Set);
         ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
@@ -131,6 +151,7 @@ export default class Game extends cc.Component {
         AI.Instance.UpdateStandbyCube();
 
         this.AddListenter();
+        this.TouchOn();
 
         this.Test();
     }
@@ -139,21 +160,30 @@ export default class Game extends cc.Component {
      * 测试
      */
     Test() {
-        ViewManager_Game.Instance.UpdatePointBegin(this.Point_Begin, this.Pre_Cubes, GameManager.Instance.Standby_FirstID);
-        ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
+        let time: number = 3;
+        let callback = () => {
+            time--;
 
-        AI.Instance.UpdatePointBegin_AI(this.Pre_AICubes);
-        AI.Instance.UpdateStandbyCube();
-        // // 加载 Prefab
-        // cc.loader.loadRes("bigdevil/mowang", sp.SkeletonData, (err, asset) => {
-        //     console.log(asset);
-        //     let ske = this.test.getComponent(sp.Skeleton);
-        //     ske.skeletonData = asset;
-        //     ske.premultipliedAlpha = false;
-        //     ske.animation="daiji";
-        //     // var newNode = cc.instantiate(prefab);
-        //     // cc.director.getScene().addChild(newNode);
-        // });
+            if (time <= 0) {
+                ViewManager_Game.Instance.UpdatePointBegin(this.Point_Begin, this.Pre_Cubes, GameManager.Instance.Standby_FirstID);
+                ViewManager_Game.Instance.UpdateStandby(this.SprF_StandbyCubes);
+
+                AI.Instance.UpdatePointBegin_AI(this.Pre_AICubes);
+                AI.Instance.UpdateStandbyCube();
+                // // 加载 Prefab
+                // cc.loader.loadRes("bigdevil/mowang", sp.SkeletonData, (err, asset) => {
+                // console.log(asset);
+                //     let ske = this.test.getComponent(sp.Skeleton);
+                //     ske.skeletonData = asset;
+                //     ske.premultipliedAlpha = false;
+                //     ske.animation="daiji";
+                //     // var newNode = cc.instantiate(prefab);
+                //     // cc.director.getScene().addChild(newNode);
+                // });
+                this.unschedule(callback);
+            }
+        }
+        this.schedule(callback, 1);
     }
 
     /**
@@ -167,15 +197,15 @@ export default class Game extends cc.Component {
             case Click_Directions.Up:
                 GameManager.Instance.Click_FunManage = Click_FunManage.Up;
                 break;
-            case Click_Directions.Down:
-                GameManager.Instance.Click_FunManage = Click_FunManage.Down;
-                break;
-            case Click_Directions.Left:
-                GameManager.Instance.Click_FunManage = Click_FunManage.Left;
-                break;
-            case Click_Directions.Right:
-                GameManager.Instance.Click_FunManage = Click_FunManage.Right;
-                break;
+            // case Click_Directions.Down:
+            //     GameManager.Instance.Click_FunManage = Click_FunManage.Down;
+            //     break;
+            // case Click_Directions.Left:
+            //     GameManager.Instance.Click_FunManage = Click_FunManage.Left;
+            //     break;
+            // case Click_Directions.Right:
+            //     GameManager.Instance.Click_FunManage = Click_FunManage.Right;
+            //     break;
             //功能键
             case Click_Function.Clockwise:
                 GameManager.Instance.Click_FunManage = Click_FunManage.Clockwise;
@@ -195,7 +225,7 @@ export default class Game extends cc.Component {
                 break;
             case Click_Set.CastAs:
                 GameManager.Instance.IsGameOver = true;
-                EventCenter.BroadcastOne<boolean>(EventType.SetPageOver, false);
+                EventCenter.BroadcastOne<boolean>(EventType.PlayGameOver, false);
                 break;
             case Click_Set.Set:
                 EventCenter.Broadcast(EventType.ShowPageSet);
@@ -226,8 +256,8 @@ export default class Game extends cc.Component {
 
         //事件监听--->更新AI游戏开始点
         EventCenter.AddListenter(EventType.UpdateAIPointBegin, (cube_ID?: string) => {
-            console.log("AI方块预制体");
-            console.log(this.Pre_AICubes);
+            // console.log("AI方块预制体");
+            // console.log(this.Pre_AICubes);
             AI.Instance.UpdatePointBegin_AI(this.Pre_AICubes, cube_ID);
         }, "Game");
 
@@ -260,6 +290,60 @@ export default class Game extends cc.Component {
 
         //移除监听
         EventCenter.RemoveListenter(EventType.RemoveListenter, "Game");
+    }
+
+    /**
+     * 注册触摸事件
+     */
+    private TouchOn() {
+        // this.But_Up.on(cc.Node.EventType.TOUCH_START, this.TouchUp, this);
+        // this.But_Up.on(cc.Node.EventType.TOUCH_END, this.TouchEnd, this);
+
+        this.But_Down.on(cc.Node.EventType.TOUCH_START, this.TouchDown, this);
+        this.But_Down.on(cc.Node.EventType.TOUCH_END, this.TouchEnd, this);
+
+        this.But_Left.on(cc.Node.EventType.TOUCH_START, this.TouchLeft, this);
+        this.But_Left.on(cc.Node.EventType.TOUCH_END, this.TouchEnd, this);
+
+        this.But_Right.on(cc.Node.EventType.TOUCH_START, this.TouchRight, this);
+        this.But_Right.on(cc.Node.EventType.TOUCH_END, this.TouchEnd, this);
+    }
+
+    /**
+     * 上键触摸
+     * @param event 触摸信息
+     */
+    private TouchUp(event) {
+        GameManager.Instance.Click_FunManage = Click_FunManage.Up;
+    }
+    /**
+    * 下键触摸
+    * @param event 触摸信息
+    */
+    private TouchDown(event) {
+        GameManager.Instance.Click_FunManage = Click_FunManage.Down;
+    }
+    /**
+    * 左键触摸
+    * @param event 触摸信息
+    */
+    private TouchLeft(event) {
+        GameManager.Instance.Click_FunManage = Click_FunManage.Left;
+    }
+    /**
+    * 右键触摸
+    * @param event 触摸信息
+    */
+    private TouchRight(event) {
+        GameManager.Instance.Click_FunManage = Click_FunManage.Right;
+    }
+
+    /**
+     * 触摸结束
+     * @param event 触摸信息
+     */
+    private TouchEnd(event) {
+        GameManager.Instance.Click_FunManage = null;
     }
 
     /**

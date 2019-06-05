@@ -16,6 +16,15 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class PageSet extends cc.Component {
 
+    /**
+     * @property 滑动组件--->BGM
+     */
+    private Slider_BGM: cc.Slider = null;
+    /**
+     * @property 滑动组件--->BGM
+     */
+    private Slider_Sound: cc.Slider = null;
+
     onLoad() {
 
     }
@@ -27,6 +36,8 @@ export default class PageSet extends cc.Component {
     // update (dt) {}
 
     Init() {
+        this.Slider_BGM = this.node.getChildByName("Box").getChildByName("BGM").getChildByName("Slider_BGM").getComponent(cc.Slider);
+        this.Slider_Sound = this.node.getChildByName("Box").getChildByName("Sound").getChildByName("Slider_Sound").getComponent(cc.Slider);
 
         this.AddListenter();
     }
@@ -96,13 +107,21 @@ export default class PageSet extends cc.Component {
      * 设置背景音乐音量
      */
     private SetBGM() {
-
+        let bg = this.Slider_BGM.node.getChildByName("Mask").getChildByName("Background");
+        let handle = this.Slider_BGM.node.getChildByName("Handle");
+        let world_pos = this.Slider_BGM.node.convertToWorldSpaceAR(handle.position);
+        let node_pos = bg.parent.convertToNodeSpaceAR(world_pos);
+        bg.setPosition(node_pos);
     }
 
     /**
      * 设置背景音效音量
      */
     private SetSound() {
-
+        let bg = this.Slider_Sound.node.getChildByName("Mask").getChildByName("Background");
+        let handle = this.Slider_Sound.node.getChildByName("Handle");
+        let world_pos = this.Slider_Sound.node.convertToWorldSpaceAR(handle.position);
+        let node_pos = bg.parent.convertToNodeSpaceAR(world_pos);
+        bg.setPosition(node_pos);
     }
 }

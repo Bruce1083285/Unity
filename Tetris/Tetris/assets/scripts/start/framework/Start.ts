@@ -22,6 +22,14 @@ export default class Start extends cc.Component {
      */
     private Mode: cc.Node = null;
     /**
+     * @property 提示框--->金币不足
+     */
+    private Hint_Coin: cc.Node = null;
+    /**
+     * @property 金币不租弹框初始位置
+     */
+    private HintBox_Coin_StartPos: cc.Vec2 = null;
+    /**
      * @property 金币label
      */
     private Labe_Coin: cc.Label = null;
@@ -63,6 +71,8 @@ export default class Start extends cc.Component {
     Init() {
         this.Mode = this.node.getChildByName("Mode");
         this.Labe_Coin = this.node.getChildByName("Box_Coin").getChildByName("labe").getComponent(cc.Label);
+        this.Hint_Coin = this.node.getChildByName("Hint_Coin");
+        this.HintBox_Coin_StartPos = this.Hint_Coin.position;
 
         this.GetCoinCache();
     }
@@ -72,8 +82,8 @@ export default class Start extends cc.Component {
      */
     private GetCoinCache() {
         let coin = Cache.GetCache(CacheType.Coin);
+        coin = "10000"
         if (!coin) {
-            coin = "10000"
         }
         this.Labe_Coin.string = coin;
         Cache.SetCache(CacheType.Coin, coin);
@@ -102,7 +112,7 @@ export default class Start extends cc.Component {
         if (!this.Current_Mode_ID) {
             return
         }
-        console.log(this.Current_Mode_ID);
+        // console.log(this.Current_Mode_ID);
         this.Current_Mode_ID = "1v1";
         let num: number = 0;
         for (let i = 0; i < this.Mode_Cost.length; i++) {
@@ -113,14 +123,19 @@ export default class Start extends cc.Component {
             }
         }
         let coin = Cache.GetCache(CacheType.Coin);
+        let coin_num: number = 0;
         if (coin) {
-            let coin_num: number = parseInt(coin);
-            let value: number = coin_num - num;
-            if (value <= 0) {
-                value = 0;
-            }
-            Cache.SetCache(CacheType.Coin, value + "");
+            coin_num = parseInt(coin);
         }
+        if (coin_num < num) {
+            this.CommontCoinPopup();
+            return
+        }
+        let value: number = coin_num - num;
+        if (value <= 0) {
+            value = 0;
+        }
+        Cache.SetCache(CacheType.Coin, value + "");
 
         cc.director.loadScene(this.Current_Mode_ID);
     }
@@ -133,5 +148,27 @@ export default class Start extends cc.Component {
     private SelectModeShow(mode: cc.Node, mode_id: string) {
         ViewManager_Start.Instance.SelectModeShow(mode, mode_id);
         this.Current_Mode_ID = mode_id;
+    }
+
+
+    /**
+     * 通用购买金币不足弹出
+     */
+    private CommontCoinPopup() {
+        if (this.Hint_Coin.active) {
+            this.Hint_Coin.stopAllActions();
+            this.Hint_Coin.setPosition(this.HintBox_Coin_StartPos);
+        } else {
+            this.Hint_Coin.active = true;
+            // this.HintBox_Coin_StartPos = this.Hint_Coin.position;
+        }
+        this.Hint_Coin.scale = 0;
+        this.Hint_Coin.opacity = 255;
+        let Act_scale = cc.scaleTo(0.5, 1);
+        let Act_moveTop = cc.moveBy(0.5, 0, 100);
+        let Act_hide = cc.fadeOut(0.5);
+        let Act_spawn = cc.spawn(Act_moveTop, Act_hide);
+        let Act_sequence = cc.sequence(Act_scale, Act_spawn);
+        this.Hint_Coin.runAction(Act_sequence);
     }
 }

@@ -506,6 +506,9 @@
     "Pre_DropOut": {
       "__uuid__": "0799509d-4f9e-464b-9883-2a5acd8b9c4b"
     },
+    "Pre_DropOut_Star": {
+      "__uuid__": "9000334b-6b0d-401d-a68b-8ecb6c2df89f"
+    },
     "Pre_Cubes": [
       {
         "__uuid__": "4f112c04-5e45-449a-875f-f2efe090eeb2"

@@ -144,9 +144,24 @@ export default class AreaBigDevil extends cc.Component {
         this.Spine_Devil = this.node.getChildByName("BigDevil").getComponent(sp.Skeleton);
 
         this.AddListenter();
-        this.UpdateTime();
-        this.SetBigDevilStatus(Anima_Devil.chenshui);
+        this.Time();
         // this.UpdatePlayerBarAttack(50);
+    }
+
+    /**
+     * 倒计时
+     */
+    private Time() {
+        let time: number = 3;
+        let callback = () => {
+            time--;
+            if (time <= 0) {
+                this.UpdateTime();
+                this.SetBigDevilStatus(Anima_Devil.chenshui);
+                this.unschedule(callback);
+            }
+        }
+        this.schedule(callback, 1);
     }
 
     /**

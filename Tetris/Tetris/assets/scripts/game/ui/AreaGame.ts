@@ -21,6 +21,11 @@ export default class AreaGame extends cc.Component {
      * @property 灰色格子预制体
      */
     @property(cc.Prefab)
+    private Pre_OverStar: cc.Prefab = null;
+    /**
+     * @property 灰色格子预制体
+     */
+    @property(cc.Prefab)
     private Pre_GrayGrid: cc.Prefab = null;
     /**
      * @property 大星星
@@ -40,9 +45,66 @@ export default class AreaGame extends cc.Component {
      * @property 小星星目标节点
      */
     private StarSmall_Target: cc.Node = null;
+    /**
+     * @property 结束动画节点
+     */
+    private Anima_Over: cc.Node = null;
+    /**
+     * @property 警报器
+     */
+    private Alarm: cc.Node = null;
+    /**
+     * @property 警报是否开启
+     */
+    private IsOpenAlarm: boolean = false;
+    /**
+     * @property 时间
+     */
+    private Time: number = 0;
+    /**
+     * @property 当前时间
+     */
+    private Time_Current: number = 0;
 
     onLoad() {
         this.Init();
+    }
+
+    update(dt) {
+        this.UpdateTime(dt);
+        this.ListenterCurrentMaxTier();
+    }
+
+    /**
+     * 更新时间
+     * @param dt 时间区间
+     */
+    private UpdateTime(dt: number) {
+        this.Time += dt;
+        if (this.Time - this.Time_Current >= GameManager.Instance.GameSpeed_Value) {
+            GameManager.Instance.Time_Interval = GameManager.Instance.Time_Interval / 2;
+            this.Time_Current = this.Time;
+        }
+    }
+
+    /**
+     * 监听当前最高层
+     */
+    private ListenterCurrentMaxTier() {
+        if (GameManager.Instance.Current_MaxTier >= GameManager.Instance.Alarm_Value && !this.IsOpenAlarm) {
+            this.Alarm.active = true;
+            this.IsOpenAlarm = true;
+            let dt: number = 0.3;
+            let act_Fout = cc.fadeOut(dt);
+            let act_Fin = cc.fadeIn(dt);
+            let act_seq = cc.sequence(act_Fout, act_Fin).repeatForever();
+            this.Alarm.runAction(act_seq);
+        }
+        if (GameManager.Instance.Current_MaxTier < GameManager.Instance.Alarm_Value && this.IsOpenAlarm) {
+            this.Alarm.stopAllActions();
+            this.Alarm.active = false;
+            this.IsOpenAlarm = false;
+        }
     }
 
     /**
@@ -51,6 +113,8 @@ export default class AreaGame extends cc.Component {
     private Init() {
         this.StarSmall_Target = this.node.parent.parent.getChildByName("Area_BigDevil");
         this.StarBig_Target = this.node.parent.parent.getChildByName("Area_OtherGame");
+        this.Alarm = this.node.parent.getChildByName("Alarm");
+        this.Anima_Over = this.node.parent.getChildByName("Over");
 
         this.AddListenter();
     }
@@ -59,6 +123,12 @@ export default class AreaGame extends cc.Component {
      * 添加事件监听
      */
     private AddListenter() {
+
+        //播放游戏结束
+        EventCenter.AddListenter(EventType.PlayGameOver, (isPlayerWin: boolean) => {
+            this.PlayGameOver(isPlayerWin);
+        }, "AreaGame");
+
         //创建星星移动
         EventCenter.AddListenter(EventType.CreatorStarMove, () => {
             this.SetStarMove(this.Pre_Star_Big, this.StarBig_Target, 0.5);
@@ -204,5 +274,31 @@ export default class AreaGame extends cc.Component {
                 GameManager.Instance.Game_Grid[y][x] = grid;
             }
         }
+    }
+
+    /**
+     * 播放游戏结束
+     * @param isPlayerWin 玩家是否胜利
+     */
+    private PlayGameOver(isPlayerWin: boolean) {
+        EventCenter.Broadcast(EventType.CubeForeseeDestory);
+
+        this.Anima_Over.active = true;
+        this.Anima_Over.getChildByName("Victory").active = isPlayerWin;;
+        this.Anima_Over.getChildByName("Failure").active = !isPlayerWin;
+
+        GameManager.Instance.Star_Over = cc.instantiate(this.Pre_OverStar);
+        this.node.addChild(GameManager.Instance.Star_Over);
+        let width = this.node.getContentSize().width;
+        let height = this.node.getContentSize().height;
+        GameManager.Instance.Star_Over.setPosition(width / 2, 0);
+        let act_move = cc.moveBy(1, 0, height);
+        let callback = () => {
+            this.Anima_Over.active = false;
+            GameManager.Instance.Star_Over.destroy();
+            EventCenter.BroadcastOne<boolean>(EventType.SetPageOver, isPlayerWin);
+        }
+        let act_seq = cc.sequence(act_move, cc.callFunc(callback));
+        GameManager.Instance.Star_Over.runAction(act_seq);
     }
 }

@@ -28,6 +28,11 @@ export default class Group extends cc.Component {
     @property(cc.Prefab)
     private Pre_DropOut: cc.Prefab = null;
     /**
+     * @property 闪光--->掉落
+     */
+    @property(cc.Prefab)
+    private Pre_DropOut_Star: cc.Prefab = null;
+    /**
      * @property [Array]方块预制体
      */
     @property([cc.Prefab])
@@ -45,9 +50,33 @@ export default class Group extends cc.Component {
      */
     private Time: number = 0;
     /**
+     * @property 时间--->下
+     */
+    private Time_Down: number = 0;
+    /**
+     * @property 时间--->左
+     */
+    private Time_Left: number = 0;
+    /**
+     * @property 时间--->右
+     */
+    private Time_Right: number = 0;
+    /**
      * @property 当前时间
      */
     private Time_Current: number = 0;
+    /**
+     * @property 当前时间--->下
+     */
+    private Time_Current_Down: number = 0;
+    /**
+     * @property 当前时间--->左
+     */
+    private Time_Current_Left: number = 0;
+    /**
+     * @property 当前时间--->右
+     */
+    private Time_Current_Right: number = 0;
     /**
      * @property 宽度
      */
@@ -76,38 +105,40 @@ export default class Group extends cc.Component {
 
         if (GameManager.Instance.IsGameOver) {
             // this.RemoveListenter();
+            this.ClearGameGrid();
             return;
         }
 
         this.UpdateMoveDown(dt);
-        // this.UpdateTargetPos();
 
         switch (GameManager.Instance.Click_FunManage) {
             case Click_FunManage.Up:
                 this.MoveDirUp();
+                GameManager.Instance.Click_FunManage = null;
                 break;
             case Click_FunManage.Down:
-                this.MoveDirDown();
+                this.MoveDirDown(dt);
                 break
             case Click_FunManage.Left:
-                this.MoveDirLeft();
+                this.MoveDirLeft(dt);
                 break
             case Click_FunManage.Right:
-                this.MoveDirRight();
+                this.MoveDirRight(dt);
                 break
             case Click_FunManage.Clockwise:
                 this.RotateClockwise();
+                GameManager.Instance.Click_FunManage = null;
                 break
             case Click_FunManage.Anticlockwise:
                 this.RotateAnticlockwise();
+                GameManager.Instance.Click_FunManage = null;
                 break
             default:
                 break;
         }
 
-        GameManager.Instance.Click_FunManage = null;
-
         this.ListenterContinuous();
+        this.ListenterCurrentMaxTier();
     }
 
     /**
@@ -126,6 +157,35 @@ export default class Group extends cc.Component {
     }
 
     /**
+     * 监听当前最高层数
+     */
+    private ListenterCurrentMaxTier() {
+        for (let y = GameManager.Instance.Game_Grid.length - 1; y >= 0; y--) {
+            let isHave = this.IsHaveCube(y);
+            if (isHave) {
+                GameManager.Instance.Current_MaxTier = y;
+                return;
+            }
+        }
+    }
+
+    /**
+     * 是否存在方块
+     * @param y Y轴
+     * @returns 是否存在方块
+     */
+    private IsHaveCube(y: number): boolean {
+        for (let x = 0; x < GameManager.Instance.Game_Grid[y].length; x++) {
+            let grid = GameManager.Instance.Game_Grid[y][x];
+            if (grid && grid.parent !== this.node) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * 初始化
      */
     Init() {
@@ -139,8 +199,9 @@ export default class Group extends cc.Component {
             return;
         }
         this.AddListenter();
-        // this.GetCubeForesee();
+        this.GetCubeForesee();
         this.UpdateGameGrid();
+        this.UpdateTargetPos();
     }
 
     /**
@@ -149,10 +210,10 @@ export default class Group extends cc.Component {
      */
     private GameOver(): boolean {
         if (!this.IsValidGridPos()) {
-            console.log("游戏结束");
+            // console.log("游戏结束");
             this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_Value);
             GameManager.Instance.IsGameOver = true;
-            EventCenter.BroadcastOne(EventType.SetPageOver, false);
+            EventCenter.BroadcastOne(EventType.PlayGameOver, false);
             return true;
         }
         return false;
@@ -167,107 +228,10 @@ export default class Group extends cc.Component {
         this.Cube_Foresee.getComponent(Group).enabled = false;
         this.Cube_Foresee.opacity = 150;
         this.node.parent.addChild(this.Cube_Foresee);
-        this.Cube_Foresee.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_Value * 10);
+        this.Cube_Foresee.setPosition(this.node.position);
+        // this.Cube_Foresee.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_Value * 10);
         // console.log("预知方块为空------>3");
         // console.log(this.Cube_Foresee);
-    }
-
-    /**
-     * 通过自身节点获取对应ID的预制体
-     */
-    private GetPreIDBySelf(): cc.Prefab {
-        for (let i = 0; i < this.Pre_Cubes.length; i++) {
-            let pre = this.Pre_Cubes[i];
-            if (pre.name === this.node.name) {
-                return pre;
-            }
-        }
-    }
-
-    /**
-     * 添加事件监听
-     */
-    private AddListenter() {
-        //添加事件监听--->销毁预知位置方块
-        EventCenter.AddListenter(EventType.CubeForeseeDestory, () => {
-            this.CubeForeseeDestory();
-        }, "Group");
-
-        //事件监听--->移除监听
-        EventCenter.AddListenter(EventType.RemoveListenter, () => {
-            this.RemoveListenter();
-        }, "Group");
-    }
-
-    /**
-     * 添加事件监听
-     */
-    private RemoveListenter() {
-        //移除事件监听--->销毁预知位置方块
-        EventCenter.RemoveListenter(EventType.CubeForeseeDestory, "Group");
-
-        //移除监听
-        EventCenter.RemoveListenter(EventType.RemoveListenter, "Group");
-    }
-
-    /**
-     * 销毁预知位置方块
-     */
-    private CubeForeseeDestory() {
-        let arr: cc.Node[] = this.node.children;
-        for (let i = 0; i < arr.length; i++) {
-            this.ResetGameGrid(arr[i]);
-        }
-
-        this.RemoveListenter();
-        return;
-        this.Cube_Foresee.destroy();
-        this.Cube_Foresee = null;
-        // console.log("预知方块为空------>2");
-        // console.log(this.Cube_Foresee);
-    }
-
-    /**
-     * 重置游戏区域格子
-     * @param target 目标节点
-     */
-    private ResetGameGrid(target: cc.Node) {
-        for (let y = 0; y < GameManager.Instance.Game_Grid.length; y++) {
-            for (let x = 0; x < GameManager.Instance.Game_Grid[y].length; x++) {
-                let grid = GameManager.Instance.Game_Grid[y][x];
-                if (grid !== null && grid.parent === this.node) {
-                    GameManager.Instance.Game_Grid[y][x] = null;
-                }
-            }
-        }
-    }
-
-
-    /**
-     * 更新向下移动
-     * @param dt 更新时间
-     */
-    private UpdateMoveDown(dt: number) {
-        this.Time += dt;
-        if (this.Time - this.Time_Current >= GameManager.Instance.Time_Interval) {
-            this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_Value);
-            if (this.IsValidGridPos()) {
-                this.UpdateGameGrid();
-            } else {
-                this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_Value);
-                this.ForbiddenScript();
-            }
-
-            this.Time_Current = this.Time;
-        }
-    }
-
-    /**
-     * 移动--->上：瞬间移动到底部
-     */
-    private MoveDirUp() {
-        GameManager.Instance.SetTimeInterval(0.000001);
-        this.IsSpeedUp = true;
     }
 
     /**
@@ -292,11 +256,13 @@ export default class Group extends cc.Component {
         //     this.Cube_Foresee.setPosition(this.node.position.x, node_pos.y);
         // }
         this.Cube_Foresee.rotation = this.node.rotation;
-        let y = this.Cube_Foresee.position.y - GameManager.Instance.Interval_Value * 2;
+        let y = this.Cube_Foresee.position.y - GameManager.Instance.Interval_Value;
         this.Cube_Foresee.setPosition(this.node.position.x, y);
         if (!this.IsValidCubeForeseePos()) {
-            this.Cube_Foresee.setPosition(this.node.position.x, this.Cube_Foresee.position.y + GameManager.Instance.Interval_Value * 2);
+            this.Cube_Foresee.setPosition(this.node.position.x, this.Cube_Foresee.position.y + GameManager.Instance.Interval_Value);
+            return;
         }
+        this.UpdateTargetPos();
     }
 
     /**
@@ -325,7 +291,7 @@ export default class Group extends cc.Component {
             if (x <= 0) {
                 x = 0;
             }
-            if (GameManager.Instance.Game_Grid[y][x] !== null && GameManager.Instance.Game_Grid[y][x].parent !== this.Cube_Foresee) {
+            if (GameManager.Instance.Game_Grid[y][x] !== null && GameManager.Instance.Game_Grid[y][x].parent !== this.node) {
                 return false;
             }
         }
@@ -429,15 +395,162 @@ export default class Group extends cc.Component {
     }
 
     /**
-     * 移动--->下
+     * 通过自身节点获取对应ID的预制体
      */
-    private MoveDirDown() {
-        this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_Value);
+    private GetPreIDBySelf(): cc.Prefab {
+        for (let i = 0; i < this.Pre_Cubes.length; i++) {
+            let pre = this.Pre_Cubes[i];
+            if (pre.name === this.node.name) {
+                return pre;
+            }
+        }
+    }
+
+    /**
+     * 添加事件监听
+     */
+    private AddListenter() {
+        //添加事件监听--->销毁预知位置方块
+        EventCenter.AddListenter(EventType.CubeForeseeDestory, () => {
+            this.CubeForeseeDestory();
+        }, "Group");
+
+        //事件监听--->移除监听
+        EventCenter.AddListenter(EventType.RemoveListenter, () => {
+            this.RemoveListenter();
+        }, "Group");
+    }
+
+    /**
+     * 添加事件监听
+     */
+    private RemoveListenter() {
+        //移除事件监听--->销毁预知位置方块
+        EventCenter.RemoveListenter(EventType.CubeForeseeDestory, "Group");
+
+        //移除监听
+        EventCenter.RemoveListenter(EventType.RemoveListenter, "Group");
+    }
+
+    /**
+     * 清理游戏格子
+     */
+    private ClearGameGrid() {
+        //清理游戏格子
+        for (let y = 0; y < GameManager.Instance.Game_Grid.length; y++) {
+            for (let x = 0; x < GameManager.Instance.Game_Grid[y].length; x++) {
+                let grid = GameManager.Instance.Game_Grid[y][x];
+                if (!grid) {
+                    continue;
+                }
+                let node_pos: cc.Vec2 = grid.position;
+                // if (grid.parent === this.node) {
+                //     let world_pos = this.node.convertToWorldSpaceAR(grid.position);
+                //     node_pos = this.node.parent.convertToNodeSpaceAR(world_pos);
+                // } else {
+                //     node_pos = grid.position;
+                // }
+                if (node_pos.y < GameManager.Instance.Star_Over.position.y) {
+                    grid.destroy();
+                    GameManager.Instance.Game_Grid[y][x] = null;
+                }
+            }
+        }
+
+        //清理自身子节点
+        let arr: cc.Node[] = this.node.children;
+        for (let i = 0; i < arr.length; i++) {
+            let child: cc.Node = arr[i];
+            let world_pos = this.node.convertToWorldSpaceAR(child.position);
+            let node_pos = this.node.parent.convertToNodeSpaceAR(world_pos);
+            if (node_pos.y < GameManager.Instance.Star_Over.position.y) {
+                child.destroy();
+            }
+        }
+    }
+
+    /**
+     * 销毁预知位置方块
+     */
+    private CubeForeseeDestory() {
+        let arr: cc.Node[] = this.node.children;
+        for (let i = 0; i < arr.length; i++) {
+            this.ResetGameGrid(arr[i]);
+        }
+
+        this.RemoveListenter();
+        this.Cube_Foresee.destroy();
+        this.Cube_Foresee = null;
+        // console.log("预知方块为空------>2");
+        // console.log(this.Cube_Foresee);
+    }
+
+    /**
+     * 重置游戏区域格子
+     * @param target 目标节点
+     */
+    private ResetGameGrid(target: cc.Node) {
+        for (let y = 0; y < GameManager.Instance.Game_Grid.length; y++) {
+            for (let x = 0; x < GameManager.Instance.Game_Grid[y].length; x++) {
+                let grid = GameManager.Instance.Game_Grid[y][x];
+                if (grid !== null && grid.parent === this.node) {
+                    GameManager.Instance.Game_Grid[y][x] = null;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 更新向下移动
+     * @param dt 更新时间
+     */
+    private UpdateMoveDown(dt: number) {
+        this.Time += dt;
+        if (this.Time - this.Time_Current >= GameManager.Instance.Time_Interval) {
+            this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_Value);
+            if (this.IsValidGridPos()) {
+                this.UpdateGameGrid();
+            } else {
+                this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_Value);
+                this.ForbiddenScript();
+            }
+
+            this.Time_Current = this.Time;
+        }
+    }
+
+    /**
+     * 移动--->上：瞬间移动到底部
+     */
+    private MoveDirUp() {
+        // GameManager.Instance.SetTimeInterval(0.000001);
+        this.node.setPosition(this.Cube_Foresee.position);
         if (this.IsValidGridPos()) {
             this.UpdateGameGrid();
+            // this.ForbiddenScript();
         } else {
             this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_Value);
-            this.ForbiddenScript();
+        }
+        this.IsSpeedUp = true;
+        // this.CreatroDropOut();
+        this.ForbiddenScript();
+    }
+
+    /**
+     * 移动--->下
+     */
+    private MoveDirDown(dt: number) {
+        // dt *= 2;
+        this.Time_Down += dt;
+        if (this.Time_Down - this.Time_Current_Down >= 1) {
+            this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_Value);
+            if (this.IsValidGridPos()) {
+                this.UpdateGameGrid();
+            } else {
+                this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_Value);
+                this.ForbiddenScript();
+            }
         }
     }
 
@@ -445,24 +558,38 @@ export default class Group extends cc.Component {
     /**
     * 移动--->左
     */
-    private MoveDirLeft() {
-        this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_Value, this.node.position.y);
-        if (this.IsValidGridPos()) {
-            this.UpdateGameGrid();
-        } else {
-            this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_Value, this.node.position.y);
+    private MoveDirLeft(dt: number) {
+        dt *= 3;
+        this.Time_Left += dt;
+        if (this.Time_Left - this.Time_Current_Left >= 0.3) {
+            this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_Value, this.node.position.y);
+            if (this.IsValidGridPos()) {
+                this.UpdateGameGrid();
+            } else {
+                this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_Value, this.node.position.y);
+            }
+            this.Cube_Foresee.setPosition(this.node.position);
+            this.UpdateTargetPos();
+            this.Time_Current_Left = this.Time_Left;
         }
     }
 
     /**
     * 移动--->右
     */
-    private MoveDirRight() {
-        this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_Value, this.node.position.y);
-        if (this.IsValidGridPos()) {
-            this.UpdateGameGrid();
-        } else {
-            this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_Value, this.node.position.y);
+    private MoveDirRight(dt: number) {
+        dt *= 3;
+        this.Time_Right += dt;
+        if (this.Time_Right - this.Time_Current_Right >= 0.3) {
+            this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_Value, this.node.position.y);
+            if (this.IsValidGridPos()) {
+                this.UpdateGameGrid();
+            } else {
+                this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_Value, this.node.position.y);
+            }
+            this.Cube_Foresee.setPosition(this.node.position);
+            this.UpdateTargetPos();
+            this.Time_Current_Right = this.Time_Right;
         }
     }
 
@@ -479,8 +606,18 @@ export default class Group extends cc.Component {
         if (this.IsValidGridPos()) {
             this.UpdateGameGrid();
         } else {
-            this.node.rotation -= 90;
+            let dir_left = this.GetDir_Left();
+            if (dir_left) {
+                this.node.setPosition(this.node.position.x + dir_left, this.node.position.y);
+            }
+            let dir_right = this.GetDir_Right();
+            if (dir_right) {
+                this.node.setPosition(this.node.position.x - dir_right, this.node.position.y);
+            }
+            // this.node.rotation -= 90;
         }
+        this.Cube_Foresee.setPosition(this.node.position);
+        this.UpdateTargetPos();
     }
 
     /**
@@ -496,8 +633,89 @@ export default class Group extends cc.Component {
         if (this.IsValidGridPos()) {
             this.UpdateGameGrid();
         } else {
-            this.node.rotation += 90;
+            let dir_left = this.GetDir_Left();
+            if (dir_left) {
+                this.node.setPosition(this.node.position.x + dir_left, this.node.position.y);
+            }
+            let dir_right = this.GetDir_Right();
+            if (dir_right) {
+                this.node.setPosition(this.node.position.x - dir_right, this.node.position.y);
+            }
+            // this.node.rotation += 90;
         }
+        this.Cube_Foresee.setPosition(this.node.position);
+        this.UpdateTargetPos();
+    }
+
+    /**
+     * 获取左边越界距离
+     * @returns 距离
+     */
+    private GetDir_Left(): number {
+        let arr: cc.Node[] = this.node.children;
+        let arr_x: number[] = [];
+        for (let i = 0; i < arr.length; i++) {
+            let child = arr[i];
+            let world_pos = this.node.convertToWorldSpaceAR(child.position);
+            let node_pos = this.node.parent.convertToNodeSpaceAR(world_pos);
+            if (node_pos.x <= 0) {
+                let ind = arr_x.indexOf(node_pos.x);
+                if (ind !== -1) {
+                    continue;
+                }
+                let x = Math.abs(node_pos.x);
+                arr_x.push(x);
+            }
+        }
+
+        if (arr_x.length <= 0) {
+            return null;
+        }
+
+        let max_x: number = arr_x[0];
+        for (let i = 0; i < arr_x.length; i++) {
+            if (max_x < arr_x[i]) {
+                max_x = arr_x[i];
+            }
+        }
+
+        let dir = max_x + GameManager.Instance.Interval_Value / 2;
+        return dir;
+    }
+
+    /**
+     * 获取右边越界距离
+     * @returns 距离
+     */
+    private GetDir_Right(): number {
+        let arr: cc.Node[] = this.node.children;
+        let arr_x: number[] = [];
+        for (let i = 0; i < arr.length; i++) {
+            let child = arr[i];
+            let world_pos = this.node.convertToWorldSpaceAR(child.position);
+            let node_pos = this.node.parent.convertToNodeSpaceAR(world_pos);
+            if (node_pos.x >= 390) {
+                let ind = arr_x.indexOf(node_pos.x);
+                if (ind !== -1) {
+                    continue;
+                }
+                arr_x.push(node_pos.x);
+            }
+        }
+
+        if (arr_x.length <= 0) {
+            return null;
+        }
+
+        let max_x: number = arr_x[0];
+        for (let i = 0; i < arr_x.length; i++) {
+            if (max_x < arr_x[i]) {
+                max_x = arr_x[i];
+            }
+        }
+
+        let dir = max_x - 390 + GameManager.Instance.Interval_Value / 2;
+        return dir;
     }
 
     /**
@@ -608,7 +826,7 @@ export default class Group extends cc.Component {
 
         this.getComponent(Group).enabled = false;
         if (this.IsSpeedUp) {
-            GameManager.Instance.SetTimeInterval(1);
+            // GameManager.Instance.SetTimeInterval(1);
             this.CreatroDropOut();
             this.IsSpeedUp = false;
         }
@@ -625,7 +843,7 @@ export default class Group extends cc.Component {
         this.Cube_Foresee.destroy();
         // console.log("预知方块为空------>4");
         // console.log(this.Cube_Foresee);
-        console.log(GameManager.Instance.Game_Grid);
+        // console.log(GameManager.Instance.Game_Grid);
     }
 
     /**
@@ -633,19 +851,64 @@ export default class Group extends cc.Component {
      * @param y 通过Y轴计算高度
      */
     private CreatroDropOut() {
-        let drop_Out = cc.instantiate(this.Pre_DropOut);
         let parent = this.node.parent;
+        let star = cc.instantiate(this.Pre_DropOut_Star);
+        parent.addChild(star);
+        star.zIndex = -1;
+
+        let drop_Out = cc.instantiate(this.Pre_DropOut);
         parent.addChild(drop_Out);
-        drop_Out.scale = 2;
-        let pos = cc.v2(this.node.position.x, this.node.position.y + 168);
+        // let width = this.GetCubeWidth();
+        let scale_value: number = 2;
+        // if (width) {
+        //     let drop_width = drop_Out.getContentSize().width;
+        //     scale_value = width / drop_width;
+        // }
+        drop_Out.scaleX = scale_value;
+        drop_Out.zIndex = -1;
+        let pos = cc.v2(this.node.position.x, this.node.position.y + 100);
         if (this.node.name === "4") {
-            pos = cc.v2(this.node.position.x + GameManager.Instance.Interval_Value / 2 + 10, this.node.position.y + 168);
+            pos = cc.v2(this.node.position.x + GameManager.Instance.Interval_Value / 2 + 10, this.node.position.y + 100);
         }
         drop_Out.setPosition(pos);
+        star.setPosition(pos);
         let callback = () => {
             drop_Out.destroy();
         }
         this.scheduleOnce(callback, 0.1);
+    }
+
+    /**
+     * 获取方块宽度
+     * @returns 宽度
+     */
+    private GetCubeWidth(): number {
+        let arr: cc.Node[] = this.node.children;
+        let min_x: number = arr[0].position.x;
+        for (let i = 0; i < arr.length; i++) {
+            let child: cc.Node = arr[i];
+            let world_pos = this.node.convertToWorldSpaceAR(child.position);
+            let node_pos = this.node.parent.convertToNodeSpaceAR(world_pos);
+            if (min_x > node_pos.x) {
+                min_x = node_pos.x;
+            }
+        }
+
+        let max_x: number = arr[0].position.x;
+        for (let i = 0; i < arr.length; i++) {
+            let child: cc.Node = arr[i];
+            let world_pos = this.node.convertToWorldSpaceAR(child.position);
+            let node_pos = this.node.parent.convertToNodeSpaceAR(world_pos);
+            if (max_x < node_pos.x) {
+                max_x = node_pos.x;
+            }
+        }
+
+        let dir: number = Math.abs(max_x - min_x);
+        if (dir <= 0) {
+            return null;
+        }
+        return dir;
     }
 
     /**
