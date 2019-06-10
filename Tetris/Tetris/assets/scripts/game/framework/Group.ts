@@ -145,7 +145,7 @@ export default class Group extends cc.Component {
      * 监听连消数
      */
     private ListenterContinuous() {
-        if (this.Continuous_Count >= 1) {
+        if (this.Continuous_Count >= 2) {
             EventCenter.Broadcast(EventType.UpdateMaxDoubleHitCount);
             EventCenter.Broadcast(EventType.CreatorStarMove);
             EventCenter.BroadcastOne(EventType.SetAIActtackCube, this.Continuous_Count);
@@ -450,6 +450,9 @@ export default class Group extends cc.Component {
                 // } else {
                 //     node_pos = grid.position;
                 // }
+                if(!GameManager.Instance.Star_Over){
+                    return;
+                }
                 if (node_pos.y < GameManager.Instance.Star_Over.position.y) {
                     grid.destroy();
                     GameManager.Instance.Game_Grid[y][x] = null;
@@ -541,7 +544,7 @@ export default class Group extends cc.Component {
      * 移动--->下
      */
     private MoveDirDown(dt: number) {
-        // dt *= 2;
+        dt *=10;
         this.Time_Down += dt;
         if (this.Time_Down - this.Time_Current_Down >= 1) {
             this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_Value);
@@ -559,7 +562,7 @@ export default class Group extends cc.Component {
     * 移动--->左
     */
     private MoveDirLeft(dt: number) {
-        dt *= 3;
+        dt *= 5;
         this.Time_Left += dt;
         if (this.Time_Left - this.Time_Current_Left >= 0.3) {
             this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_Value, this.node.position.y);
@@ -578,7 +581,7 @@ export default class Group extends cc.Component {
     * 移动--->右
     */
     private MoveDirRight(dt: number) {
-        dt *= 3;
+        dt *= 5;
         this.Time_Right += dt;
         if (this.Time_Right - this.Time_Current_Right >= 0.3) {
             this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_Value, this.node.position.y);
@@ -820,6 +823,9 @@ export default class Group extends cc.Component {
             GameManager.Instance.IsSave = true;
             // EventCenter.Broadcast(EventType.UpdateSaveCubeStatus);
         }
+
+        this.SetCubeColor();
+
         this.RemoveListenter();
         EventCenter.BroadcastOne(EventType.UpdatePointBegin, GameManager.Instance.Standby_FirstID);
         EventCenter.Broadcast(EventType.UpdateStandby);
@@ -844,6 +850,17 @@ export default class Group extends cc.Component {
         // console.log("预知方块为空------>4");
         // console.log(this.Cube_Foresee);
         // console.log(GameManager.Instance.Game_Grid);
+    }
+
+    /**
+     * 设置方块颜色
+     */
+    private SetCubeColor() {
+        let arr: cc.Node[] = this.node.children;
+        for (let i = 0; i < arr.length; i++) {
+            let child: cc.Node = arr[i];
+            child.color = cc.color(200, 200, 200);
+        }
     }
 
     /**

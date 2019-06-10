@@ -72,9 +72,13 @@ export default class Group extends cc.Component {
      */
     private Childers: cc.Node[] = [];
     /**
+     * @property 路线预设开始点--->X轴
+     */
+    private Path_Start_X: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    /**
      * @property [Array]旋转度数
      */
-    private Rotate_Value: number[] = [90, 180, 270, 360];
+    private Rotate_Value: number[] = [0, 90, 180, 270, 360];
     /**
      * @property [Array]路线
      */
@@ -123,13 +127,17 @@ export default class Group extends cc.Component {
         this.UpdateMoveDown(dt);
         this.ListenterContinuous();
         this.ListenterCurrentMaxTier();
+        // if (GameManager.Instance.AICurrent_MaxTier >= 19 && !GameManager.Instance.IsAIGameOver) {
+        //     this.GameOver();
+        //     GameManager.Instance.IsGameOver = true;
+        // }
     }
 
     /**
     * 监听连消数
     */
     private ListenterContinuous() {
-        if (this.Continuous_Count >= 1) {
+        if (this.Continuous_Count >= 2) {
             EventCenter.Broadcast(EventType.CreatorAIStarMove);
             EventCenter.BroadcastOne(EventType.SetActtackCube, this.Continuous_Count);
             EventCenter.BroadcastOne(EventType.UpdateAIBarAttack, this.Continuous_Count);
@@ -182,11 +190,14 @@ export default class Group extends cc.Component {
             return;
         }
         this.AddListenter();
-        this.UpdateGameGrid();
         this.AI(GameManager.Instance.Interval_AIValue / 2, 0);
         console.log(GameManager.Instance.AIGame_Grid);
         this.Move_RandomValue = this.GetRandom();
         this.TheBestRoute = this.GetTheBestRoute();
+        this.UpdateGameGrid();
+
+        // this.node.setPosition(this.TheBestRoute.x, this.TheBestRoute.y);
+        // this.node.rotation = this.TheBestRoute.rotation;
     }
 
     /**
@@ -209,12 +220,15 @@ export default class Group extends cc.Component {
      * @returns 最佳路线
      */
     private GetTheBestRoute() {
-        let best_Path = this.AI_Path[0];
+        let ran: number = Math.floor(Math.random() * this.AI_Path.length);
+        let best_Path = this.AI_Path[ran];
         for (let i = 0; i < this.AI_Path.length; i++) {
-            if (best_Path.weight < this.AI_Path[i].weight) {
-                best_Path = this.AI_Path[i];
+            let obj = this.AI_Path[i];
+            if (best_Path.weight < obj.weight) {
+                best_Path = obj;
             }
         }
+        this.AI_Path = [];
         return best_Path;
     }
 
@@ -223,7 +237,7 @@ export default class Group extends cc.Component {
      * @returns 随机值
      */
     private GetRandom(): number {
-        let ran = Math.floor(Math.random() * 100);
+        let ran = Math.floor(Math.random() * 5 + 15);
         return ran;
     }
 
@@ -272,30 +286,50 @@ export default class Group extends cc.Component {
      * @param dt 更新时间
      */
     private UpdateMoveDown(dt: number) {
+        if (this.IsSpeedUp) {
+            this.MoveDirUp();
+            return;
+        }
         this.Time += dt;
         if (this.Time - this.Time_Current >= GameManager.Instance.Time_AIInterval) {
-            // if (this.IsSpeedUp) {
-            //     return;
-            // }
-            this.Move_RandomValue = this.GetRandom();
-            this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
-            if (this.IsValidGridPos()) {
-                this.UpdateGameGrid();
-            } else {
-                this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
-                this.ForbiddenScript();
-            }
-            if (this.Move_RandomValue <= 50) {
+            let y: number = Math.floor(this.node.position.y / GameManager.Instance.Interval_AIValue);
+            move:
+            if (y < this.Move_RandomValue) {
                 this.node.rotation = this.TheBestRoute.rotation;
-                this.MoveDirLeft();
+                let isLeft = this.MoveDirLeft();
+                if (isLeft) {
+                    let dis_x: number = Math.abs(this.node.position.x - this.TheBestRoute.x);
+                    if (dis_x <= 1) {
+                        this.Move_RandomValue = 0;
+                        let ran = this.GetRandom();
+                        if (ran <= 20) {
+                            this.MoveDirUp();
+                        }
+                    }
+                    break move;
+                }
+                let isRight = this.MoveDirRight();
+                if (isRight) {
+                    let dis_x: number = Math.abs(this.node.position.x - this.TheBestRoute.x);
+                    if (dis_x <= 1) {
+                        this.Move_RandomValue = 0;
+                        let ran = this.GetRandom();
+                        if (ran <= 20) {
+                            this.MoveDirUp();
+                        }
+                    }
+                    break move;
+                }
 
-                this.MoveDirRight();
-
+            } else {
+                this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
+                if (this.IsValidGridPos()) {
+                    this.UpdateGameGrid();
+                } else {
+                    this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
+                    this.ForbiddenScript();
+                }
             }
-            // let ran = this.GetRandom();
-            // if (ran <= 5) {
-            //     this.MoveDirUp();
-            // }
 
             this.Time_Current = this.Time;
         }
@@ -305,6 +339,92 @@ export default class Group extends cc.Component {
      * AI
      */
     private AI(pos_x: number, rotation: number) {
+        for (let i = 0; i < this.Path_Start_X.length; i++) {
+            let x: number = this.Path_Start_X[i];
+            for (let j = 0; j < this.Rotate_Value.length; j++) {
+                //路径对象
+                let Path = {
+                    /**X轴 */
+                    x: null,
+                    /**Y轴 */
+                    y: null,
+                    /**目标点位置 */
+                    target_pos: null,
+                    /**高度 */
+                    height: null,
+                    /**旋转 */
+                    rotation: null,
+                    /**消除层数 */
+                    eliminate_tier: null,
+                    /**贡献方块数 */
+                    contribution_Num: null,
+                    /**行变换数 */
+                    conversion_Row: null,
+                    /**列变换数 */
+                    conversion_Line: null,
+                    /**空洞数 */
+                    cavity_Num: null,
+                    /**井数 */
+                    well_Num: null,
+                    /**权重值 */
+                    weight: null,
+                };
+                this.node.setPosition(x * GameManager.Instance.Interval_AIValue + GameManager.Instance.Interval_AIValue / 2, 18 * GameManager.Instance.Interval_AIValue + GameManager.Instance.Interval_AIValue / 2);
+                let dir_left = this.GetDir_Left();
+                if (dir_left) {
+                    this.node.setPosition(this.node.x + dir_left, this.node.position.y);
+                }
+                let dir_right = this.GetDir_Right();
+                if (dir_right) {
+                    this.node.setPosition(this.node.x - dir_right, this.node.position.y);
+                }
+                let rotation_value: number = this.Rotate_Value[j];
+                this.node.rotation = rotation_value;
+                Path.x = this.node.position.x;
+                Path.y = this.node.position.y;
+                Path.rotation = this.node.rotation;
+
+                while (true) {
+                    this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
+                    if (this.IsValidGridPos()) {
+                        this.UpdateGameGrid();
+                        console.log(GameManager.Instance.AIGame_Grid);
+                    } else {
+                        console.log(GameManager.Instance.AIGame_Grid);
+                        this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
+                        Path.target_pos = this.node.position;
+                        Path.height = this.GetCurrentYToDownYHeight();
+                        Path.eliminate_tier = this.GetFullRowNum();
+                        Path.contribution_Num = this.GetContributionCount();
+                        Path.conversion_Row = this.GetConversion_Row();
+                        Path.conversion_Line = this.GetConversion_Line();
+                        Path.cavity_Num = this.GetCavity();
+                        Path.well_Num = this.GetWellNum();
+                        // Path.weight = 10 * Path.eliminate_tier * Path.contribution_Num - 1 * Path.conversion_Row - 0.6 * Path.conversion_Line - 1 * Path.height - 0.3 * Path.cavity_Num - 0.5 * Path.well_Num;
+                        Path.weight = -45 * Path.height + 34 * Path.eliminate_tier * Path.contribution_Num - 32 * Path.conversion_Row - 93 * Path.conversion_Line - 79 * Path.cavity_Num - 34 * Path.well_Num;
+                        // let isHave: boolean = false;
+                        // for (let i = 0; i < this.AI_Path.length; i++) {
+                        //     let obj = this.AI_Path[i];
+                        //     if (Path.weight === obj.weight) {
+                        //         isHave = true;
+                        //         break;
+                        //     }
+                        // }
+                        // if (!isHave) {
+                        //     this.AI_Path.push(Path);
+                        // }
+                        this.AI_Path.push(Path);
+                        break;
+                    }
+                }
+                this.Record_Cavity_XandY = [];
+                this.NotCavity_XandY = [];
+            }
+        }
+        this.RemoveGameGrid();
+        this.node.setPosition(this.Cube_Init_Pos);
+        this.IsStartGame = true;
+        return
         while (true) {
             //路径对象
             let Path = {
@@ -344,7 +464,7 @@ export default class Group extends cc.Component {
                 this.IsStartGame = true;
                 return;
             }
-            let dir = this.GetDirX();
+            let dir = this.GetDir_Left();
             if (dir) {
                 this.node.setPosition(this.node.x + dir, this.node.position.y);
             }
@@ -456,7 +576,7 @@ export default class Group extends cc.Component {
         //     rotation += 90;
         // }
 
-        this.AI(this.node.position.x + GameManager.Instance.Interval_AIValue*2, 0);
+        this.AI(this.node.position.x + GameManager.Instance.Interval_AIValue * 2, 0);
     }
 
     /**
@@ -566,6 +686,13 @@ export default class Group extends cc.Component {
      * @returns 空洞数
      */
     private GetCavity(): number {
+        let sum: number = 0;
+        for (let x = 0; x < GameManager.Instance.Grid_Width; x++) {
+            let num = this.GetCavityNum(x);
+            sum += num;
+        }
+
+        return sum;
         //获取非空洞和空洞的X轴和Y轴
         for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
             for (let x = 0; x < GameManager.Instance.AIGame_Grid[y].length; x++) {
@@ -623,6 +750,44 @@ export default class Group extends cc.Component {
 
         let count: number = this.Record_Cavity_XandY.length;
         return count;
+    }
+
+    /**
+     * 获取空洞数
+     * @param x X轴
+     * @returns 空洞数
+     */
+    private GetCavityNum(x: number): number {
+        let count: number = 0;
+        for (let y = 0; y < GameManager.Instance.AIGame_Grid.length; y++) {
+            let grid = GameManager.Instance.AIGame_Grid[y][x]
+            if (!grid) {
+                continue;
+            }
+            let isNull: boolean = this.IsNullByY(y, x);
+            if (isNull) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * 通过Y轴判断坐标Y轴下放是否为空格
+     * @param y Y轴
+     * @param x X轴
+     * @returns 是否为空格
+     */
+    private IsNullByY(y: number, x: number): boolean {
+        if (y - 1 < 0) {
+            return false;
+        }
+        let grid = GameManager.Instance.AIGame_Grid[y - 1][x]
+        if (!grid) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -1097,7 +1262,7 @@ export default class Group extends cc.Component {
     /**
      * 获取越界距离--->左
      */
-    private GetDirX(): number {
+    private GetDir_Left(): number {
         let arr_childs = this.node.children;
         let arr_x: number[] = [];
         for (let i = 0; i < arr_childs.length; i++) {
@@ -1125,6 +1290,36 @@ export default class Group extends cc.Component {
     }
 
     /**
+     * 获取越界距离--->左
+     */
+    private GetDir_Right(): number {
+        let arr_childs = this.node.children;
+        let arr_x: number[] = [];
+        for (let i = 0; i < arr_childs.length; i++) {
+            let grid = arr_childs[i];
+            let world_pos = this.node.convertToWorldSpaceAR(grid.position);
+            let node_pos = this.node.parent.convertToNodeSpaceAR(world_pos);
+            if (node_pos.x >= GameManager.Instance.Interval_AIValue * GameManager.Instance.Grid_Width) {
+                let x = Math.abs(node_pos.x);
+                arr_x.push(x);
+            }
+        }
+
+        if (arr_x.length <= 0) {
+            return null;
+        }
+
+        let max_dir: number = arr_x[0];
+        for (let i = 0; i < arr_x.length; i++) {
+            if (max_dir < arr_x[i]) {
+                max_dir = arr_x[i];
+            }
+        }
+
+        return (max_dir - GameManager.Instance.Interval_AIValue * GameManager.Instance.Grid_Width) + GameManager.Instance.Interval_AIValue / 2;
+    }
+
+    /**
      * 下移
      */
     private MoveDown() {
@@ -1140,7 +1335,14 @@ export default class Group extends cc.Component {
      * 移动--->上：瞬间移动到底部
      */
     private MoveDirUp() {
-        GameManager.Instance.Time_AIInterval = 0.00001;
+        // GameManager.Instance.Time_AIInterval = 0.000000001;
+        this.node.setPosition(this.node.position.x, this.node.position.y - GameManager.Instance.Interval_AIValue);
+        if (this.IsValidGridPos()) {
+            this.UpdateGameGrid();
+        } else {
+            this.node.setPosition(this.node.position.x, this.node.position.y + GameManager.Instance.Interval_AIValue);
+            this.ForbiddenScript();
+        }
         this.IsSpeedUp = true;
     }
 
@@ -1161,35 +1363,39 @@ export default class Group extends cc.Component {
     /**
     * 移动--->左
     * @returns 是否移动完成
+    * @returns 向左移动是否可行
     */
     private MoveDirLeft(): boolean {
         if (this.TheBestRoute.x < this.node.position.x) {
             this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_AIValue, this.node.position.y);
+            // this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_AIValue, this.node.position.y);
+            if (this.IsValidGridPos()) {
+                this.UpdateGameGrid();
+            } else {
+                this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_AIValue, this.node.position.y);
+            }
+            return true
         }
-        // this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_AIValue, this.node.position.y);
-        if (this.IsValidGridPos()) {
-            this.UpdateGameGrid();
-        } else {
-            this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_AIValue, this.node.position.y);
-        }
-        return
+        return false;
     }
 
     /**
     * 移动--->右
     * @returns 是否移动完成
+    * @returns 向右移动是否可行
     */
     private MoveDirRight(): boolean {
         if (this.TheBestRoute.x > this.node.position.x) {
             this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_AIValue, this.node.position.y);
+            // this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_AIValue, this.node.position.y);
+            if (this.IsValidGridPos()) {
+                this.UpdateGameGrid();
+            } else {
+                this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_AIValue, this.node.position.y);
+            }
+            return true;
         }
-        // this.node.setPosition(this.node.position.x + GameManager.Instance.Interval_AIValue, this.node.position.y);
-        if (this.IsValidGridPos()) {
-            this.UpdateGameGrid();
-        } else {
-            this.node.setPosition(this.node.position.x - GameManager.Instance.Interval_AIValue, this.node.position.y);
-        }
-        return;
+        return false
     }
 
     /**
@@ -1343,7 +1549,6 @@ export default class Group extends cc.Component {
         GameManager.Instance.IsAISave = true;
 
         if (this.IsSpeedUp) {
-            GameManager.Instance.Time_AIInterval = 0.2;
             this.IsSpeedUp = false;
         }
         this.RemoveParnet();

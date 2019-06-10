@@ -56,7 +56,7 @@ export class GameManager {
     /**
      * @property 游戏加速线
      */
-    public GameSpeed_Value: number = 20;
+    public GameSpeed_Value: number = 40;
     /**
      * @property 当前最高层数
      */
@@ -68,7 +68,7 @@ export class GameManager {
     /**
      * @property AI游戏加速线
      */
-    public AIGameSpeed_Value: number = 20;
+    public AIGameSpeed_Value: number = 40;
     /**
      * @property AI当前最高层数
      */
