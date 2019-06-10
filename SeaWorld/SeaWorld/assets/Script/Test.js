@@ -16,7 +16,7 @@ cc.Class({
         lable: cc.Label,
     },
 
-
+   
 
     // LIFE-CYCLE CALLBACKS:
 
