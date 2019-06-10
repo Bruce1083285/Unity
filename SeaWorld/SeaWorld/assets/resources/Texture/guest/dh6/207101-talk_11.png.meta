@@ -1,0 +1,31 @@
+{
+  "ver": "2.2.0",
+  "uuid": "9192b629-a531-415e-b6bd-2145cb388daa",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "subMetas": {
+    "207101-talk_11": {
+      "ver": "1.0.3",
+      "uuid": "58ab4dcb-d7ef-4e2e-9911-2107c9cba947",
+      "rawTextureUuid": "9192b629-a531-415e-b6bd-2145cb388daa",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -9.5,
+      "trimX": 24,
+      "trimY": 19,
+      "width": 170,
+      "height": 239,
+      "rawWidth": 217,
+      "rawHeight": 258,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

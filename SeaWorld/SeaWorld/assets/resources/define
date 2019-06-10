@@ -1,0 +1,15 @@
+"fishbowls":[
+                {
+                    "floor":1,
+                    "level":1,
+                    "nextPrice":0,
+                    "income":1,
+                }
+            ] 
+"submarine": {
+                "level": 0,
+                "count":0,
+                "nextCount":0,
+                "speed":0,
+                "nextSpeed":0,
+            },

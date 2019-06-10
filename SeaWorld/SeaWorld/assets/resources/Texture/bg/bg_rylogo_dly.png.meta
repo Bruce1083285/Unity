@@ -1,0 +1,31 @@
+{
+  "ver": "2.2.0",
+  "uuid": "ce6153c5-0973-48f3-9696-2d785a0601e3",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "subMetas": {
+    "bg_rylogo_dly": {
+      "ver": "1.0.3",
+      "uuid": "ba545f17-8581-447a-8dff-13bd8cfcc7c2",
+      "rawTextureUuid": "ce6153c5-0973-48f3-9696-2d785a0601e3",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 720,
+      "height": 1280,
+      "rawWidth": 720,
+      "rawHeight": 1280,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
