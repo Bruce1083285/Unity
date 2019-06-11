@@ -32,11 +32,17 @@ cc.Class({
         Pre_FishBowl: cc.Prefab,
 
         Btn_Open: cc.Node,
+        BT_USER: cc.Node,
 
         _initOpenBtnY: -488,
+        _Sign_Data: null,
     },
 
     // LIFE-CYCLE CALLBACKS:
+
+    update(dt) {
+        this.UpdateSignStatus();
+    },
 
     onLoad() {
         this._initOpenBtnY = -488;
@@ -45,6 +51,27 @@ cc.Class({
     // 更新游戏信息
     updateGameInfo() {
 
+    },
+
+    UpdateSignStatus() {
+        let red = this.BT_USER.getChildByName("dian_red");
+        // if (this._Sign_Data && this._Sign_Data.sign === 1 && !red.active) {
+        //     console.log("签到是否结束-------------------------------------------------------");
+        //     return;
+        // }
+        HTTP.sendRequest('sign/Looksign', (data) => {
+            // console.log("签到-------------------------------------------------------");
+            // console.log(data);
+            this._Sign_Data = data.data;
+            if (this._Sign_Data.sign === 0 && !red.active) {
+                // console.log("是否进入----->1");
+                red.active = true;
+            }
+            if (this._Sign_Data.sign === 1 && red.active) {
+                // console.log("是否进入----->2");
+                red.active = false;
+            }
+        }, { uid: DataHelper.Uid });
     },
 
     // 添加鱼缸
@@ -179,6 +206,16 @@ cc.Class({
             case 'BT_TS':
                 ViewHelper.showNodeWithName('TiShengNode');
                 break;
+            default:
+                break;
+        }
+
+        switch (data) {
+            case "StoreNode":
+            case 'AllSuiPianNode':
+            case 'Page_Achievement':
+                ViewHelper.showNodeWithName(data);
+                break
             default:
                 break;
         }

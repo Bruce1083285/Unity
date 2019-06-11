@@ -55,6 +55,16 @@ cc.Class({
                 var node = children[i];
                 if (i < this.Day) {
                     cc.find('t_qd_yqd', node).active = true;
+                } else if (i === this.Day) {
+                    let guang = cc.find('t_qd_guang', node);
+                    let anima = guang.getComponent(cc.Animation);
+                    if (!guang.active) {
+                        guang.active = true;
+                        anima.play();
+                    } else {
+                        guang.active = false;
+                        anima.stop();
+                    }
                 } else {
                     cc.find('t_qd_yqd', node).active = false;
                 }

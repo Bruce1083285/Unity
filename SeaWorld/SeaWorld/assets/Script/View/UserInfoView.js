@@ -5,6 +5,9 @@ cc.Class({
     properties: {
         Node_Dian_Friend: cc.Node,
         Node_Dian_Email: cc.Node,
+        USER_BT_SIGN: cc.Node,
+
+        _Sign_Data:null,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -63,5 +66,27 @@ cc.Class({
         ViewHelper.showNodeWithName(data);
         // })
     },
-    // update (dt) {},
+    update (dt) {
+        this.UpdateSignStatus();
+    },
+
+    UpdateSignStatus() {
+        let red = this.USER_BT_SIGN.getChildByName("dian_red");
+        // if (this._Sign_Data && this._Sign_Data.sign === 1 && !red.active) {
+        //     console.log("签到是否结束-------------------------------------------------------");
+        //     return;
+        // }
+        HTTP.sendRequest('sign/Looksign', (data) => {
+            // console.log("签到------------------->用户视图");
+            // console.log(data);
+            if (data.data.sign === 0 && !red.active) {
+                // console.log("是否进入----->1");
+                red.active = true;
+            }
+            if (data.data.sign === 1 && red.active) {
+                // console.log("是否进入----->2");
+                red.active = false;
+            }
+        }, { uid: DataHelper.Uid });
+    },
 });
