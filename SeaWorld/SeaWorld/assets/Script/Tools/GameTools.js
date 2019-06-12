@@ -351,7 +351,8 @@ var GameTools = {
                 return num;
             } else {
                 let str = num.slice(0, 3);
-                return str + GameConfig.ZiMu[a - 2];
+                let result=str + GameConfig.ZiMu[a - 2];
+                return ;
             }
         } else {
             if (a <= 0) {

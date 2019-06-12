@@ -176,7 +176,7 @@ cc.Class({
             this.Page_Hint.active = true;
             // console.log("粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果");
             // console.log(this.Fireworks);
-            // this.Fireworks.resetSystem();
+            this.Fireworks.resetSystem();
 
             this.bg_b_rotation.rotation = 0;
             for (let i = 0; i < arr.length; i++) {

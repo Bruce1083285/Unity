@@ -105,6 +105,8 @@ cc.Class({
         this.setSubmarine(this.GameData.submarine);
         this.setFishBowl(this.GameData.fishbowls);
         this.setTransBar(this.GameData.transport);
+        console.log("金币数---------------------------------->");
+        console.log(GameTools.formatGold(DataHelper.Gold_Num));
         this.Lbl_Gold.string = GameTools.formatGold(DataHelper.Gold_Num);
         this.Lbl_Money.string = DataHelper.Money_Num;
         this.Lbl_LevelSB.string = this.GameData.submarine.level;
