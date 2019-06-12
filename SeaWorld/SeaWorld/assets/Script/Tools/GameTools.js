@@ -351,8 +351,14 @@ var GameTools = {
                 return num;
             } else {
                 let str = num.slice(0, 3);
-                let result=str + GameConfig.ZiMu[a - 2];
-                return ;
+                // console.log("测试=========================");
+                // console.log(str);
+                // console.log(GameConfig.ZiMu[a - 2]);
+                // let num = parseInt(str);
+                // if (num <= 0) {
+                //     return "0";
+                // }
+                return str + GameConfig.ZiMu[a - 2];
             }
         } else {
             if (a <= 0) {
@@ -360,6 +366,11 @@ var GameTools = {
             } else {
                 let str1 = num.slice(0, b);
                 let str2 = num.slice(b, 3);
+                // let num_1 = parseInt(str1);
+                // let num_2 = parseInt(str2);
+                // if (num_1 <= 0 && num_2 <= 0) {
+                //     return "0";
+                // }
                 let str = str1 + '.' + str2;
                 return str + GameConfig.ZiMu[a - 1];
             }

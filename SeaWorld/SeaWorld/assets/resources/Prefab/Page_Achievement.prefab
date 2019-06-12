@@ -39,14 +39,14 @@
     "_level": 1,
     "_components": [
       {
-        "__id__": 516
+        "__id__": 515
       },
       {
-        "__id__": 517
+        "__id__": 516
       }
     ],
     "_prefab": {
-      "__id__": 518
+      "__id__": 517
     },
     "_opacity": 255,
     "_color": {
@@ -2484,7 +2484,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 37
+    },
     "_id": ""
   },
   {
@@ -3589,7 +3591,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 69
+    },
     "_id": ""
   },
   {
@@ -4694,7 +4698,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 101
+    },
     "_id": ""
   },
   {
@@ -5799,7 +5805,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 133
+    },
     "_id": ""
   },
   {
@@ -6904,7 +6912,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 165
+    },
     "_id": ""
   },
   {
@@ -8009,7 +8019,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 197
+    },
     "_id": ""
   },
   {
@@ -9114,7 +9126,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 229
+    },
     "_id": ""
   },
   {
@@ -10219,7 +10233,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 261
+    },
     "_id": ""
   },
   {
@@ -11324,7 +11340,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 293
+    },
     "_id": ""
   },
   {
@@ -12429,7 +12447,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 325
+    },
     "_id": ""
   },
   {
@@ -13534,7 +13554,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 357
+    },
     "_id": ""
   },
   {
@@ -14639,7 +14661,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 389
+    },
     "_id": ""
   },
   {
@@ -15744,7 +15768,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 421
+    },
     "_id": ""
   },
   {
@@ -16849,7 +16875,9 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
+    "_N$target": {
+      "__id__": 453
+    },
     "_id": ""
   },
   {
@@ -17193,27 +17221,27 @@
         "__id__": 497
       },
       {
-        "__id__": 501
+        "__id__": 500
       },
       {
-        "__id__": 504
+        "__id__": 503
       },
       {
-        "__id__": 507
+        "__id__": 506
       },
       {
-        "__id__": 510
+        "__id__": 509
       }
     ],
     "_active": false,
     "_level": 2,
     "_components": [
       {
-        "__id__": 513
+        "__id__": 512
       }
     ],
     "_prefab": {
-      "__id__": 515
+      "__id__": 514
     },
     "_opacity": 255,
     "_color": {
@@ -17273,13 +17301,10 @@
     "_components": [
       {
         "__id__": 498
-      },
-      {
-        "__id__": 499
       }
     ],
     "_prefab": {
-      "__id__": 500
+      "__id__": 499
     },
     "_opacity": 100,
     "_color": {
@@ -17355,16 +17380,6 @@
     "_id": ""
   },
   {
-    "__type__": "cc.BlockInputEvents",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 497
-    },
-    "_enabled": true,
-    "_id": ""
-  },
-  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
@@ -17387,11 +17402,11 @@
     "_level": 3,
     "_components": [
       {
-        "__id__": 502
+        "__id__": 501
       }
     ],
     "_prefab": {
-      "__id__": 503
+      "__id__": 502
     },
     "_opacity": 255,
     "_color": {
@@ -17443,7 +17458,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 501
+      "__id__": 500
     },
     "_enabled": true,
     "_srcBlendFactor": 770,
@@ -17489,11 +17504,11 @@
     "_level": 3,
     "_components": [
       {
-        "__id__": 505
+        "__id__": 504
       }
     ],
     "_prefab": {
-      "__id__": 506
+      "__id__": 505
     },
     "_opacity": 255,
     "_color": {
@@ -17545,7 +17560,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 504
+      "__id__": 503
     },
     "_enabled": true,
     "_srcBlendFactor": 770,
@@ -17591,11 +17606,11 @@
     "_level": 3,
     "_components": [
       {
-        "__id__": 508
+        "__id__": 507
       }
     ],
     "_prefab": {
-      "__id__": 509
+      "__id__": 508
     },
     "_opacity": 255,
     "_color": {
@@ -17647,7 +17662,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 507
+      "__id__": 506
     },
     "_enabled": true,
     "_srcBlendFactor": 1,
@@ -17691,11 +17706,11 @@
     "_level": 3,
     "_components": [
       {
-        "__id__": 511
+        "__id__": 510
       }
     ],
     "_prefab": {
-      "__id__": 512
+      "__id__": 511
     },
     "_opacity": 255,
     "_color": {
@@ -17747,7 +17762,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 510
+      "__id__": 509
     },
     "_enabled": true,
     "_srcBlendFactor": 775,
@@ -17859,7 +17874,7 @@
     "zoomScale": 1.2,
     "clickEvents": [
       {
-        "__id__": 514
+        "__id__": 513
       }
     ],
     "_N$interactable": true,
@@ -17953,7 +17968,7 @@
       "__id__": 496
     },
     "Fireworks": {
-      "__id__": 511
+      "__id__": 510
     },
     "_id": ""
   },

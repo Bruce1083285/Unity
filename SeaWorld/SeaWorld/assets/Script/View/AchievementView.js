@@ -216,9 +216,9 @@ cc.Class({
             let label_award = box.getChildByName("Explain").getChildByName("label_award").getComponent(cc.Label);
             label_award.string = obj.award;
         } else {
-            console.log("任务目标数据--------------->1");
-            HTTP.sendRequest('hall/LookAchievement', (data) => {
-                console.log("任务目标数据--------------->2");
+            // console.log("任务目标数据--------------->1");
+            HTTP.sendRequest('Hall/LookAchievement', (data) => {
+                // console.log("任务目标数据--------------->2");
                 console.log(data);
                 this.SetAchievementAward(sum, obj, box, data.data);
             }, { uid: DataHelper.Uid });
@@ -250,12 +250,12 @@ cc.Class({
             default:
                 for (let i = 0; i < data.touristTaskLevel.length; i++) {
                     let object = data.touristTaskLevel[i];
-                    console.log("后台成就数据------------------->1");
-                    console.log(object.touristID);
-                    console.log(obj.id);
+                    // console.log("后台成就数据------------------->1");
+                    // console.log(object.touristID);
+                    // console.log(obj.id);
                     let id = parseInt(obj.id);
                     if (object.touristID === id) {
-                        console.log("后台成就数据------------------->2");
+                        // console.log("后台成就数据------------------->2");
                         console.log(object.touristID);
                         console.log(obj.id);
                         task_Count = object.touristTaskLevel;
@@ -348,14 +348,14 @@ cc.Class({
             case "close":
                 //关闭
                 this.Hide();
-                break
+                return
             case "hint_close":
                 this.Hide_Hint();
-                break
+                return;
             default:
                 break;
         }
-
+        this.GetAward(event.target.name);
     },
 
     /**
@@ -379,19 +379,33 @@ cc.Class({
     GetAward(id) {
         let content = null;
         for (let i = 0; i < this.Contents.length; i++) {
-            conten = this.Contents[i];
-            if (conten.name = id) {
+            content = this.Contents[i];
+            if (content.name = id) {
                 break;
             }
         }
 
         let pro_bar = content.getChildByName("ProgressBar").getComponent(cc.ProgressBar);
+        let award = content.getChildByName("Explain").getChildByName("label_num").getComponent(cc.Label);
+        console.log("进度条值-------------------------------->");
+        console.log(pro_bar);
+        console.log(pro_bar.progress);
+        console.log(content);
+        console.log(id);
+        console.log(award.string);
         if (pro_bar.progress >= 1) {
             this.Page_Hint.active = true;
+            let label_num = this.Page_Hint.getChildByName("label_num").getComponent(cc.Label);
+            let num = parseInt(award.string) * 10;
+            label_num.string = num + "";
             this.Fireworks.resetSystem();
-            //增加金币
+            console.log("任务目标数据--------------->1");
+            HTTP.sendRequest('Hall/GetAchievement', (data) => {
+                console.log("任务目标数据--------------->2");
+                console.log(data);
 
-            this.SetContents();
+            }, { uid: DataHelper.Uid });
+            // this.SetContents();
         }
     }
 });

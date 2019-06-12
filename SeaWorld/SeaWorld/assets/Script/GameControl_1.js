@@ -41,7 +41,7 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     update(dt) {
-        
+
     },
 
     onLoad() {
@@ -182,6 +182,8 @@ cc.Class({
                         return;
                     }
                     DataHelper.setMoneyNum(parseInt(res.data.money));
+                    HandleMgr.sendHandle('ValueChanged_Money', null);
+
                     this.addFishBowl(res.data);
                 }, { uid: DataHelper.Uid, type: GameConfig.Game_Type, cost: event.target.price });
                 break;
@@ -237,6 +239,7 @@ cc.Class({
                 + ' 得到门票：' + price);
             console.log('当前金币：' + BigNumber(DataHelper.Gold_Num).plus(price).toString());
             DataHelper.setGoldNum(BigNumber(DataHelper.Gold_Num).plus(price).toString());
+            this.Lbl_Gold.string = GameTools.formatGold(DataHelper.Gold_Num);
             this.Lbl_OnTimes.string = GameTools.formatGold(DataHelper.getOnTimeGold()) + '/s';
             cc.log('即时收益------->' + GameTools.formatGold(DataHelper.getOnTimeGold()));
             cc.log('离线收益------->' + GameTools.formatGold(DataHelper.getOffLineGold()));
@@ -308,6 +311,10 @@ cc.Class({
         if (nowTime - lastTime > 30000) {
             let time = ((nowTime - lastTime) / 1000).toFixed(0);
             let gold = BigNumber(DataHelper.getOffLineGold()).times(time).toString();
+            // let num_1 = parseInt(gold);
+            // let num_2 = parseInt(this.Lbl_Gold.string);
+            // let sum = num_1 + num_2;
+            // this.Lbl_Gold.string = sum + "";
             cc.find('Canvas/OffLineComeNode').getComponent('OffRewardView').show(gold, time);
         }
     }
