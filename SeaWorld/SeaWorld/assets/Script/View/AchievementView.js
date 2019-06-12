@@ -386,12 +386,13 @@ cc.Class({
         }
 
         let pro_bar = content.getChildByName("ProgressBar").getComponent(cc.ProgressBar);
-        let award = content.getChildByName("Explain").getChildByName("label_num").getComponent(cc.Label);
+        let award = content.getChildByName("Explain").getChildByName("label_award").getComponent(cc.Label);
         console.log("进度条值-------------------------------->");
         console.log(pro_bar);
         console.log(pro_bar.progress);
         console.log(content);
         console.log(id);
+        console.log(award);
         console.log(award.string);
         if (pro_bar.progress >= 1) {
             this.Page_Hint.active = true;
