@@ -31,6 +31,7 @@ cc.Class({
     start() {
         initMgr();
 
+        // this.LookAchievement();
         var pregress = (completedCount, totalCount) => {
             if (completedCount == 0 || !this.LBL_Progress) {
                 return;
@@ -45,7 +46,13 @@ cc.Class({
 
     },
 
-
+    LookAchievement() {
+        console.log("任务目标数据--------------->1");
+        HTTP.sendRequest('Hall/LookAchievement', (data) => {
+            console.log("任务目标数据--------------->2");
+            console.log(data);
+        }, { uid: 66664169 });
+    },
 
     testNum() {
         // cc.log('testNum------>' + GameTools.formatGold('621400000000000000000000'));

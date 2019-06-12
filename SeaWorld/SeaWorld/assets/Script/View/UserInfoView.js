@@ -67,7 +67,7 @@ cc.Class({
         // })
     },
     update (dt) {
-        this.UpdateSignStatus();
+        // this.UpdateSignStatus();
     },
 
     UpdateSignStatus() {

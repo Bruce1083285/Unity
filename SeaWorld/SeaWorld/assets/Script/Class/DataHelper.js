@@ -292,6 +292,43 @@ cc.Class({
 
     refreshGold() {
         HTTP.sendRequest('sign/refreshGold', null, { uid: this.Uid, gold: this.Gold_Num });
+
+        this.SetWxUpdateCache();
+    },
+
+    /**
+    * 设置微信存储
+    */
+    SetWxUpdateCache() {
+        // console.log("最大关卡数：" + max_str);
+        //设置用户托管数据
+        wx.setUserCloudStorage({
+            KVDataList: [{ key: 'coin', value: this.Gold_Num }],
+            success: res => {
+                // console.log(res);
+                // console.log(res + "成功");
+                // 让子域更新当前用户的最高分，因为主域无法得到getUserCloadStorage;
+                let openDataContext = wx.getOpenDataContext();
+                openDataContext.postMessage({
+                    update: "update",
+                });
+            },
+            fail: res => {
+                console.log(res);
+            }
+        });
+    },
+
+    LookAchievement() {
+        console.log("任务目标数据--------------->1");
+        HTTP.sendRequest('Hall/LookAchievement', (data) => {
+            console.log("任务目标数据--------------->2");
+            console.log(data);
+        }, { uid: this.Uid });
+    },
+
+    GetAchievement(id) {
+        HTTP.sendRequest('hall/GetAchievement', { uid: this.Uid, fishTaskTarget: this.Gold_Num });
     },
 
     getInComeNum(guestType) {

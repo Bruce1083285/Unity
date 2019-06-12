@@ -8,9 +8,7 @@
     "skipRecord": false
   },
   "encryptJs": true,
-  "excludeScenes": [
-    "b53cfe53-5fad-478e-9c47-02f84463f5ab"
-  ],
+  "excludeScenes": [],
   "fb-instant-games": {},
   "includeSDKBox": false,
   "inlineSpriteFrames": true,
@@ -24,21 +22,21 @@
     "portrait": false,
     "upsideDown": false
   },
-  "packageName": "org.cocos2d.SeaWord",
+  "packageName": "org.cocos2d.SeaWorldRanking",
   "qqplay": {
     "REMOTE_SERVER_ROOT": "",
-    "orientation": "portrait"
-  },
-  "startScene": "afc83470-c03f-4d96-9dc4-c987870b4537",
-  "title": "SeaWord",
-  "webOrientation": "portrait",
-  "wechatgame": {
-    "REMOTE_SERVER_ROOT": "https://www.wepker.com:444/upload/hdsj",
-    "appid": "wxcea6a78a2566a45b",
-    "isSubdomain": false,
     "orientation": "portrait",
-    "subContext": "SeaWorldRanking"
+    "zip": false
   },
-  "xxteaKey": "b417c1be-dbb6-43",
+  "startScene": "efe467e9-6d2e-4625-89ef-0ca1664078f8",
+  "title": "SeaWorldRanking",
+  "webOrientation": "auto",
+  "wechatgame": {
+    "REMOTE_SERVER_ROOT": "",
+    "appid": "wx6ac3f5090a6b99c5",
+    "orientation": "portrait",
+    "subContext": ""
+  },
+  "xxteaKey": "0623534d-9089-46",
   "zipCompressJs": true
 }

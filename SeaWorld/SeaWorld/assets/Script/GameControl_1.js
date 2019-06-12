@@ -41,7 +41,7 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     update(dt) {
-        this.UpdateSignStatus();
+        
     },
 
     onLoad() {
@@ -216,6 +216,7 @@ cc.Class({
             case "StoreNode":
             case 'AllSuiPianNode':
             case 'Page_Achievement':
+            case "Page_Rangking":
                 ViewHelper.showNodeWithName(data);
                 break
             default:
@@ -281,6 +282,7 @@ cc.Class({
 
     beginTimer() {
         var fn = () => {
+            this.UpdateSignStatus();
             HTTP.sendRequest('Hall/Gamesync', (data) => {
                 if (data.status == 0) {
                     return;

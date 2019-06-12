@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.5901187682190528,
-      "y": 0.5901187682190528,
+      "x": 0.4298095703125,
+      "y": 0.4298095703125,
       "z": 1
     },
     "_quat": {
@@ -5729,7 +5729,7 @@
     "component": "",
     "_componentId": "18300bRs7dBIavbNiD6uyPm",
     "handler": "onBtnClicked",
-    "customEventData": ""
+    "customEventData": "Page_Rangking"
   },
   {
     "__type__": "cc.Widget",
