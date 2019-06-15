@@ -37,6 +37,8 @@ cc.Class({
          * @property 提示页
          */
         Page_Hint: cc.Node,
+        //重复领取提示页
+        Page_Hint_1: cc.Node,
         /**
          * @property 礼花粒子效果
          */
@@ -61,98 +63,98 @@ cc.Class({
     Init() {
         this._task_Types = [
             {
-                id: "1",
+                id: "1_1",
                 name: "鱼",
                 task: 10,
                 maxCount: 90,
                 award: 100,
             },
             {
-                id: "2",
+                id: "1_2",
                 name: "潜艇",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "3",
+                id: "1_3",
                 name: "传送带",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "4",
+                id: "1_4",
                 name: "图集",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "5",
+                id: "1",
                 name: "女仆",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "6",
+                id: "2",
                 name: "萝莉",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "7",
+                id: "3",
                 name: "医生",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "8",
+                id: "5",
                 name: "公主",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "9",
+                id: "4",
                 name: "教师",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "10",
+                id: "8",
                 name: "旅行者",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "11",
+                id: "7",
                 name: "老爷爷",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "12",
+                id: "10",
                 name: "探险家",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "13",
+                id: "6",
                 name: "运动员",
                 task: 10,
                 maxCount: 100,
                 award: 100,
             },
             {
-                id: "14",
+                id: "9",
                 name: "艺术家",
                 task: 10,
                 maxCount: 100,
@@ -161,7 +163,16 @@ cc.Class({
         ]
         this.Contents = this.AchievementContent.children;
 
+        this.AddListenter();
         this.SetContents();
+    },
+
+
+    AddListenter() {
+        //更新成就
+        HandleMgr.addHandle('Update_Achievement', (data) => {
+            this.SetContents();
+        }, this);
     },
 
     /**
@@ -189,16 +200,16 @@ cc.Class({
         // console.log(obj);
         let sum = 0;
         switch (obj.id) {
-            case "1":
+            case "1_1":
                 sum = this.GetFishBowlData();
                 break;
-            case "2":
+            case "1_2":
                 sum = this.GetSumbarineData();
                 break;
-            case "3":
+            case "1_3":
                 sum = this.GetTransportData();
                 break;
-            case "4":
+            case "1_4":
                 return;
                 break
             default:
@@ -235,16 +246,16 @@ cc.Class({
         let num = 0
         let task_Count = 0;
         switch (obj.id) {
-            case "1":
+            case "1_1":
                 task_Count = data.fishTaskTarget
                 break;
-            case "2":
+            case "1_2":
                 task_Count = data.submarineTaskLevel
                 break;
-            case "3":
+            case "1_3":
                 task_Count = data.conveyorTaskLevel
                 break;
-            case "4":
+            case "1_4":
                 return;
                 break
             default:
@@ -267,17 +278,29 @@ cc.Class({
         num = (sum - task_Count) / obj.task;
         if (num >= 1) {
             num = 1;
+            box.getChildByName("t_qd_guang1").active = true;
+        } else {
+            box.getChildByName("t_qd_guang1").active = false;
         }
         if (num <= 0) {
             num = 0;
         }
 
-        let pro_bar = box.getChildByName("ProgressBar").getComponent(cc.ProgressBar);
-        pro_bar.progress = num;
 
         let label_num = box.getChildByName("Explain").getChildByName("label_num").getComponent(cc.Label);
-        let task_target = task_Count + obj.task;
-        label_num.string = task_target;
+        let task_target = 0;
+        if (typeof (task_Count) === "string") {
+            task_target = parseInt(task_Count) + obj.task;
+        } else {
+            task_target = task_Count + obj.task;
+        }
+        if (task_target >= 100) {
+            task_target = 100;
+            num = 1;
+        }
+        let pro_bar = box.getChildByName("ProgressBar").getComponent(cc.ProgressBar);
+        pro_bar.progress = num;
+        label_num.string = task_target + "";
         let label_award = box.getChildByName("Explain").getChildByName("label_award").getComponent(cc.Label);
         label_award.string = task_target * 10;
     },
@@ -323,16 +346,16 @@ cc.Class({
      */
     GetGuestData(obj) {
         let arr = DataHelper.getGuestData();
-        // console.log("游客等级-------------------->");
-        // console.log(arr);
-        // console.log(arr.length);
+        console.log("游客等级-------------------->");
+        console.log(arr);
+        console.log(arr.length);
         let num = parseInt(obj.id);
-        // console.log(num);
-        let level = 0;
-        if (num - 5 < arr.length) {
-            level = arr[num - 5];
-        }
-        // console.log(level);
+        console.log(num);
+        let level = arr[num - 1];
+        // if (num - 5 < arr.length) {
+        //     level = arr[num - 5];
+        // }
+        console.log(level);
         return level;
     },
 
@@ -344,6 +367,7 @@ cc.Class({
     ButtonClick(event, click) {
         console.log("点击测试-------------------------------------------------------->");
         console.log(event);
+        HandleMgr.sendHandle('Audio_Click');
         switch (click) {
             case "close":
                 //关闭
@@ -380,33 +404,84 @@ cc.Class({
         let content = null;
         for (let i = 0; i < this.Contents.length; i++) {
             content = this.Contents[i];
-            if (content.name = id) {
+            if (content.name === id) {
                 break;
             }
         }
 
         let pro_bar = content.getChildByName("ProgressBar").getComponent(cc.ProgressBar);
-        let award = content.getChildByName("Explain").getChildByName("label_award").getComponent(cc.Label);
         console.log("进度条值-------------------------------->");
         console.log(pro_bar);
         console.log(pro_bar.progress);
         console.log(content);
         console.log(id);
-        console.log(award);
-        console.log(award.string);
         if (pro_bar.progress >= 1) {
-            this.Page_Hint.active = true;
-            let label_num = this.Page_Hint.getChildByName("label_num").getComponent(cc.Label);
-            let num = parseInt(award.string) * 10;
-            label_num.string = num + "";
+
+
+            //任务目标数
+            let label_task = content.getChildByName("Explain").getChildByName("label_num").getComponent(cc.Label);
+            //奖励
+            let award = content.getChildByName("Explain").getChildByName("label_award").getComponent(cc.Label);
+            console.log(award);
+            console.log(award.string);
             this.Fireworks.resetSystem();
+
+            let fish_num = 0;
+            let sub_level = 0;
+            let con_level = 0;
+            let tourist_level = 0;
+            let money_num = parseInt(award.string);
+            switch (id) {
+                case "1_1":
+                    id = "0";
+                    fish_num = parseInt(label_task.string);
+                    break;
+                case "1_2":
+                    id = "0";
+                    sub_level = parseInt(label_task.string);
+                    break;
+                case "1_3":
+                    id = "0";
+                    con_level = parseInt(label_task.string);
+                    break;
+                case "1_4":
+                    break
+                default:
+                    tourist_level = parseInt(label_task.string);
+                    break;
+            }
             console.log("任务目标数据--------------->1");
+            GameTools.loading();
             HTTP.sendRequest('Hall/GetAchievement', (data) => {
+                GameTools.hidLoading();
                 console.log("任务目标数据--------------->2");
                 console.log(data);
 
-            }, { uid: DataHelper.Uid });
-            // this.SetContents();
+                if (data.status === 0) {
+                    //已领取
+                    if (this.Page_Hint_1.active) {
+                        this.Page_Hint_1.stopAllActions();
+                    }
+                    this.Page_Hint_1.active = true;
+                    this.Page_Hint_1.scale = 0;
+                    let act_scale = cc.scaleTo(0.5, 1)
+                    let act_dt = cc.delayTime(0.5);
+                    let act_callback = () => {
+                        this.Page_Hint_1.active = false;
+                    }
+                    let act_seq = cc.sequence(act_scale, act_dt, cc.callFunc(act_callback));
+                    this.Page_Hint_1.runAction(act_seq);
+                    return
+                }
+                HandleMgr.sendHandle('Audio_Award');
+                this.Page_Hint.active = true;
+                //提示页现金数
+                let label_num = this.Page_Hint.getChildByName("label_num").getComponent(cc.Label);
+                label_num.string = award.string;
+                DataHelper.Money_Num += money_num;
+                DataHelper.setMoneyNum(DataHelper.Money_Num);
+                this.SetContents();
+            }, { uid: DataHelper.Uid, fishTaskTarget: fish_num, submarineTaskLevel: sub_level, conveyorTaskLevel: con_level, touristID: id, touristTaskLevel: tourist_level });
         }
     }
 });

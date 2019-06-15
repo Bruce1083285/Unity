@@ -63,6 +63,7 @@ cc.Class({
     },
 
     onBtnClicked() {
+        HandleMgr.sendHandle('Audio_Click');
         // this.add(1000, 2000);
         // this.multiply(this.b, 1000);
         // this.format(12345678.1);

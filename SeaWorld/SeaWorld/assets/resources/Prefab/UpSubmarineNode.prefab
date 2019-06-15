@@ -841,7 +841,7 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -226.5,
+      "x": -227,
       "y": 296,
       "z": 0
     },
@@ -905,7 +905,7 @@
     "alignMode": 0,
     "_target": null,
     "_alignFlags": 9,
-    "_left": 57,
+    "_left": 56.5,
     "_right": 0,
     "_top": 95.5,
     "_bottom": 0,
@@ -944,7 +944,7 @@
         "__id__": 27
       }
     ],
-    "_active": true,
+    "_active": false,
     "_level": 0,
     "_components": [
       {
@@ -1371,7 +1371,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 255,
+      "y": 296,
       "z": 0
     },
     "_scale": {

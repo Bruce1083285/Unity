@@ -7,6 +7,7 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+var BigNumber = require('bignumber');
 
 cc.Class({
     extends: cc.Component,
@@ -27,18 +28,22 @@ cc.Class({
         //         this._bar = value;
         //     }
         // },
-        /**
-         * @property 世界排行榜
-         */
-        Ranking_World: cc.Node,
-        /**
-         * @property 好友排行榜
-         */
-        Ranking_Friend: cc.Node,
+        // /**
+        //  * @property 世界排行榜
+        //  */
+        // Ranking_World: cc.Node,
+        // /**
+        //  * @property 好友排行榜
+        //  */
+        // Ranking_Friend: cc.Node,
         /**
          * @property 排行榜内容节点
          */
         RankContent_Friend: cc.Node,
+        //用户名次label
+        User_Ranking: cc.Label,
+        //用户金币数label
+        User_GoldNum: cc.Label,
         /**
          * @property 名次框
          */
@@ -59,6 +64,10 @@ cc.Class({
          * @property 名次框对象池
          */
         _Pool_RankingBox: cc.NodePool,
+        //用户微信数据
+        _UserWX_Data: null,
+        //用户OpenID
+        _User_OpenID: null,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -68,7 +77,6 @@ cc.Class({
     },
 
     start() {
-
     },
 
     // update (dt) {},
@@ -81,7 +89,8 @@ cc.Class({
         this._Pool_RankingBox = new cc.NodePool();
         this.SetPool();
 
-        this.ShowWorld();
+        this.ZiMu = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
         this.GetMessage();
     },
 
@@ -92,59 +101,58 @@ cc.Class({
         wx.onMessage((data) => {
             console.log("接受主域消息--------------------------------->");
             console.log(data);
-            //显示榜单
-            if (data.Ranking) {
-                let ranking_Type = data.Ranking;
-                if (ranking_Type === "world") {
-                    this.ShowWorld();
-                }
-                if (ranking_Type === "friends") {
-                    this.ShowFriends();
-                }
-            }
+            // //显示榜单
+            // if (data.Ranking) {
+            //     let ranking_Type = data.Ranking;
+            //     if (ranking_Type === "world") {
+            //         this.ShowWorld();
+            //     }
+            //     if (ranking_Type === "friends") {
+            //         this.ShowFriends();
+            //     }
+            // }
 
             //上下页
             if (data.Direction) {
                 if (data.Direction === "right") {
-                    if (this.Ranking_Friend.active) {
-                        // if (this._Wx_Cache.length < this.Show_Num) {
-                        //     return;
-                        // }
-                        // this.WxCacheSort();
-                        if (this._RankBeginIndex >= this._Wx_Cache.length) {
-                            return;
-                        }
-                        this.ReversionPool();
-                        this.SetNextPage();
+                    // if (this._Wx_Cache.length < this.Show_Num) {
+                    //     return;
+                    // }
+                    // this.WxCacheSort();
+                    if (this._RankBeginIndex >= this._Wx_Cache.length) {
+                        return;
                     }
+                    this.ReversionPool();
+                    this.SetNextPage();
                 }
                 if (data.Direction === "left") {
-                    if (this.Ranking_Friend.active) {
-                        // if (this._Wx_Cache.length < this.Show_Num) {
-                        //     return;
-                        // }
-                        // this.WxCacheSort();
-                        this.ReversionPool();
-                        this.SetPreviousPage();
-                    }
+                    // if (this._Wx_Cache.length < this.Show_Num) {
+                    //     return;
+                    // }
+                    // this.WxCacheSort();
+                    this.ReversionPool();
+                    this.SetPreviousPage();
                 }
                 console.log(data.Direction + "方向");
             }
 
             //更新数据
             if (data.update === "update") {
-                console.log("是否更新");
+                this._User_OpenID = data.openid;
+                console.log("是否更新------------------------------------>");
                 //获取好友托管数据（包括用户自己）
                 wx.getFriendCloudStorage({
                     keyList: ['coin'], // 你要获取的、托管在微信后台都key
                     success: res => {
                         console.log(JSON.stringify(res.data[0]) + "||层数");
                         this._Wx_Cache = res.data;
-                        this.test();
+                        // this.test();
+                        //获取用户微信数据
+                        this.GetUserWXData();
+
                         this.WxCacheSort();
                         this.ReversionPool();
                         this.UpdateRank();
-
                     }
                 });// 开放数据域顺利拿到shareTicket
             }
@@ -258,8 +266,16 @@ cc.Class({
             //名次
             rankingbox.getChildByName("label_ranking").getComponent(cc.Label).string = i + 1 + "";
 
+            // //性别
+            // let isBoy = false;
+            // if (this._Wx_Cache[i].sex === "1") {
+            //     isBoy = true;
+            // }
+            // rankingbox.getChildByName("Sex").getChildByName("boy").active = isBoy;
+            // rankingbox.getChildByName("Sex").getChildByName("girl").active = !isBoy;
+
             //层数
-            rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = this._Wx_Cache[i].KVDataList[0].value;
+            rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = this.formatGold(this._Wx_Cache[i].KVDataList[0].value);
 
             this.RankContent_Friend.addChild(rankingbox);
         }
@@ -360,8 +376,89 @@ cc.Class({
         rankingbox.getChildByName("label_ranking").getComponent(cc.Label).string = wx_ind + 1 + "";
         console.log("名次" + (wx_ind + 1));
 
+        // //性别
+        // let isBoy = false;
+        // if (this._Wx_Cache[i].sex === "1") {
+        //     isBoy = true;
+        // }
+        // rankingbox.getChildByName("Sex").getChildByName("boy").active = isBoy;
+        // rankingbox.getChildByName("Sex").getChildByName("girl").active = !isBoy;
+
         //层数
-        rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = this._Wx_Cache[wx_ind].KVDataList[0].value;
+        rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = this.formatGold(this._Wx_Cache[wx_ind].KVDataList[0].value);
         this.RankContent_Friend.addChild(rankingbox);
+    },
+
+    //获取用户微信数据
+    GetUserWXData() {
+        // console.log("用户微信数据------------------------------------------->1");
+        // wx.getUserInfo({
+        //     openIdList: this._User_OpenID,
+        //     success: res => {
+        //         console.log("用户微信数据------------------------------------------->3");
+        //         console.log(res);
+        //     }
+        // });
+
+        let user_info = null;
+        let ranking_num = 0;
+        for (let i = 0; i < this._Wx_Cache.length; i++) {
+            user_info = this._Wx_Cache[i];
+            ranking_num = i + 1;
+            if (user_info.openid === this._User_OpenID) {
+                break;
+            }
+        }
+        console.log("用户微信数据------------------------------------------->1");
+        console.log(user_info);
+
+        this.User_Ranking.string = ranking_num;
+        this.User_GoldNum.string = this.formatGold(user_info.KVDataList[0].value);
+    },
+
+    toNonExponential(num) {
+        var m = num.toExponential().match(/\d(?:\.(\d*))?e([+-]\d+)/);
+        return num.toFixed(Math.max(0, (m[1] || '').length - m[2]));
+    },
+
+    formatGold(num) {
+        num = this.toNonExponential(BigNumber(num));
+        num = num + '';
+        console.log("测试=========================" + num);
+        var price_arr = num.split('.');
+        num = price_arr[0];
+        // num = num.spr
+        let length = num.length;
+        let a = parseInt(length / 3);
+        let b = length % 3;
+        if (b == 0) {
+            if (a <= 1) {
+                return num;
+            } else {
+                let str = num.slice(0, 3);
+                // console.log("测试=========================");
+                // console.log(str);
+                // console.log(this.ZiMu[a - 2]);
+                // let num = parseInt(str);
+                // if (num <= 0) {
+                //     return "0";
+                // }
+                return str + this.ZiMu[a - 2];
+            }
+        } else {
+            if (a <= 0) {
+                return num;
+            } else {
+                let str1 = num.slice(0, b);
+                let str2 = num.slice(b, 3);
+                // let num_1 = parseInt(str1);
+                // let num_2 = parseInt(str2);
+                // if (num_1 <= 0 && num_2 <= 0) {
+                //     return "0";
+                // }
+                let str = str1 + '.' + str2;
+                return str + this.ZiMu[a - 1];
+            }
+        }
     },
 });

@@ -68,7 +68,9 @@ cc.Class({
 
     setList() {
         this.removeAllChildren();
+        GameTools.loading();
         HTTP.sendRequest('sign/getEmailList', (data) => {
+            GameTools.hidLoading();
             if (data.status == 0) {
                 GameTools.dialog('请求错误', res.msg, null);
                 return;
@@ -165,9 +167,12 @@ cc.Class({
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
         // 删除
         if (event.target.name == 'BT_DEL') {
+            GameTools.loading();
             HTTP.sendRequest('sign/getEmail', (data) => {
+                GameTools.hidLoading();
                 if (data.status == 0) {
                     GameTools.dialog('请求错误', res.msg, null);
                     return;
@@ -177,7 +182,9 @@ cc.Class({
             }, { uid: DataHelper.Uid, type: 2, id: this.emailId });
         } else {
             // 领取
+        GameTools.loading();
             HTTP.sendRequest('sign/getEmail', (data) => {
+                GameTools.hidLoading();
                 if (data.status == 0) {
                     GameTools.dialog('请求错误', res.msg, null);
                     return;

@@ -29,6 +29,10 @@ cc.Class({
     },
 
     start() {
+
+        let Loading = cc.find('Loading');
+        cc.game.addPersistRootNode(Loading);
+
         initMgr();
 
         // this.LookAchievement();
@@ -116,7 +120,10 @@ cc.Class({
                             GameTools.dialog('请求错误:Authorize', data.msg, null);
                             return;
                         }
+                        // DataHelper.isHave=false;
                         data = data.data;
+                        console.log("获取是否是新用户------------------------------->");
+                        console.log(data);
                         this.sendToServer(data);
                     }, { code: res.code });
                 }
@@ -130,8 +137,11 @@ cc.Class({
     sendToServer(openid) {
         var self = this;
         var fn = (data) => {
+            console.log("获取是否是新用户------------------------------->");
             console.log('data------>' + JSON.stringify(data));
+            GameTools.loading();
             HTTP.sendRequest('weixin/Login', (res) => {
+                GameTools.hidLoading();
                 console.log('wxdl------>' + JSON.stringify(res));
                 if (res.status != 1) {
                     GameTools.dialog('请求错误:Login', res.msg, null);
@@ -140,6 +150,7 @@ cc.Class({
                 DataHelper.initData(res.data);
                 cc.director.loadScene('GameScene_1');
                 button.hide();
+                // openid
             }, { openid: openid, userInfo: encodeURI(JSON.stringify(data)), time: GameTools.getItemByLocalStorage('LastTime') })
         }
 
@@ -183,8 +194,9 @@ cc.Class({
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
         let openid = data;
-        HTTP.sendRequest('weixin/login', (data) => {
+        HTTP.sendRequest('weixin/login1', (data) => {
             if (data.status == 0) {
                 GameTools.dialog('请求错误', data.msg, null);
                 return;
@@ -193,6 +205,7 @@ cc.Class({
             cc.director.preloadScene("GameScene_1", function () {
                 cc.director.loadScene("GameScene_1");
             });
+            // openid
         }, { openid: openid });
     },
     // update (dt) {},

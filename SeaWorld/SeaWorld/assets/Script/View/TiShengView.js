@@ -65,7 +65,7 @@ cc.Class({
                 num++;
             }
         }
-        num = 5;
+        // num = 5;
         if (num == 5) {
             cc.find('content/BT_HC', this.node).active = true;
         } else {
@@ -89,6 +89,7 @@ cc.Class({
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
         switch (event.target.name) {
             case 'dj_1':
             case 'dj_2':

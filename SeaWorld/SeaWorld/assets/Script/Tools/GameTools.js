@@ -125,23 +125,30 @@ var GameTools = {
 
     // 显示加载框
     loading(str) {
+        cc.log('loading-show');
         if (!window.wx) {
+            cc.find('Loading').active = true;
             return;
         }
         if (!str || str.isEmpty) {
-            wx.showLoading();
+            wx.showLoading({ mask: true });
         } else {
-            wx.showLoading({ title: str });
+            wx.showLoading({ title: str, mask: true });
         }
     },
 
 
     // 隐藏加载框
     hidLoading() {
-        if (!window.wx) {
-            return;
-        }
-        wx.hideLoading();
+        setTimeout(() => {
+            cc.log('loading-hide');
+            if (!window.wx) {
+                cc.find('Loading').active = false;
+                return;
+            }
+            wx.hideLoading();
+        }, 50);
+
     },
 
     // 获取网络状态
@@ -245,7 +252,7 @@ var GameTools = {
         var zimu = '';
         var result = '';
         if (price1 < 1000) {
-            return price1;
+            return parseInt(price1);
         }
         var fn = (price) => {
             if (price > 1000) {
@@ -265,7 +272,7 @@ var GameTools = {
             }
         }
         fn(price1);
-        return result;
+        return result.fixed(0);
     },
 
     addClickEvent: function (node, target, component, handler, data) {

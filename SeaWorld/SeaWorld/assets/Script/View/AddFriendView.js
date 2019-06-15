@@ -45,6 +45,7 @@ cc.Class({
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
         switch (event.target.name) {
             case 'BT_YQ':
 
@@ -59,7 +60,9 @@ cc.Class({
                 if (edit.string.isEmpty()) {
                     return;
                 }
+                GameTools.loading();
                 HTTP.sendRequest('sign/SearchFriends', (res) => {
+                    GameTools.hidLoading();
                     if (res.status != 1) {
                         GameTools.dialog('请求错误', res.msg, null);
                         return;
@@ -74,7 +77,9 @@ cc.Class({
                 }, { uid: DataHelper.Uid, fuid: edit.string });
                 break;
             case 'BT_ADD':
+                GameTools.loading();
                 HTTP.sendRequest('sign/addFriend', (res) => {
+                    GameTools.hidLoading();
                     ViewHelper.showDialog(res.msg, () => {
                         this.node.active = false;
                     }, 46);

@@ -59,6 +59,8 @@ cc.Class({
         },
         Gold_Offline: 0,
         Uid: 0,
+        // //是否是老人
+        // IsHave = true,
 
         GameData: null,
         GameData_Shallow: null,
@@ -287,22 +289,26 @@ cc.Class({
     setMoneyNum(num) {
         this.Money_Num = num;
         HandleMgr.sendHandle('refresh_money');
-        HTTP.sendRequest('sign/refreshMoney', null, { uid: this.Uid, money: this.Money_Num });
+        HTTP.sendRequest('sign/refreshMoney', null, { uid: this.Uid, money: this.Money_Num },false);
     },
 
     refreshGold() {
-        HTTP.sendRequest('sign/refreshGold', null, { uid: this.Uid, gold: this.Gold_Num });
+        HTTP.sendRequest('sign/refreshGold', null, { uid: this.Uid, gold: this.Gold_Num },false);
 
-        this.SetWxUpdateCache();
+        // this.SetWxUpdateCache();
     },
 
     /**
     * 设置微信存储
     */
     SetWxUpdateCache() {
+        if (!window.wx) {
+            return;
+        }
         // console.log("最大关卡数：" + max_str);
         //设置用户托管数据
         wx.setUserCloudStorage({
+            // KVDataList: [{ key: 'coin', value: this.Gold_Num  },{ key: 'user_id', value: DataHelper.Uid }],
             KVDataList: [{ key: 'coin', value: this.Gold_Num }],
             success: res => {
                 // console.log(res);
@@ -324,11 +330,11 @@ cc.Class({
         HTTP.sendRequest('Hall/LookAchievement', (data) => {
             console.log("任务目标数据--------------->2");
             console.log(data);
-        }, { uid: this.Uid });
+        }, { uid: this.Uid },false);
     },
 
     GetAchievement(id) {
-        HTTP.sendRequest('hall/GetAchievement', { uid: this.Uid, fishTaskTarget: this.Gold_Num });
+        HTTP.sendRequest('hall/GetAchievement', { uid: this.Uid, fishTaskTarget: this.Gold_Num },false);
     },
 
     getInComeNum(guestType) {

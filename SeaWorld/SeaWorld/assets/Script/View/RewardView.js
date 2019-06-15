@@ -24,6 +24,7 @@ cc.Class({
 
 
     showWith(type, num, callback) {
+        HandleMgr.sendHandle('Audio_Award');
         this._Type = type;
         this._Num = num;
         this.callback = callback;
@@ -31,7 +32,7 @@ cc.Class({
             case GameConfig.Reward_Type.Gold:
                 this.Spr_JiangLi.spriteFrame = this.SprF_JiangLi[0];
                 this.Spr_JiangLi.node.scale = 1;
-                this.LBL_Num.string = '金币 + ' + GameTools.formatPrice(num);
+                this.LBL_Num.string = '金币 + ' + GameTools.formatGold(num);
                 break;
             case GameConfig.Reward_Type.Money:
                 this.Spr_JiangLi.spriteFrame = this.SprF_JiangLi[1];
@@ -90,7 +91,7 @@ cc.Class({
     },
 
     onClicked() {
-
+        HandleMgr.sendHandle('Audio_Click');
         switch (this._Type) {
             case GameConfig.Reward_Type.Gold:
                 DataHelper.setGoldNum(BigNumber(DataHelper.Gold_Num).plus(this._Num).toString());

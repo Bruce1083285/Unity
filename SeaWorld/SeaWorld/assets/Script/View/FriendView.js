@@ -45,6 +45,7 @@ cc.Class({
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
         switch (event.target.name) {
             case 'BT_ADD':
                 ViewHelper.showNodeWithName('AddFriendNode');
@@ -67,7 +68,9 @@ cc.Class({
     },
 
     friendOptions(uid, type, node) {
+        GameTools.loading();
         HTTP.sendRequest('sign/agreeFriend', (res) => {
+            GameTools.hidLoading();
 
             GameTools.toast(res.msg);
             if (type == 3) {
@@ -97,7 +100,9 @@ cc.Class({
     // 添加好友数据
     bindFriendData() {
         this.clearChildren();
+        GameTools.loading();
         HTTP.sendRequest('sign/Friendslist', (res) => {
+            GameTools.hidLoading();
             if (res.status != 1) {
                 GameTools.dialog('请求错误', res.msg, null);
                 return;

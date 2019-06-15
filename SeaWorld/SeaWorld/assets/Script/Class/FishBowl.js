@@ -28,12 +28,15 @@ cc.Class({
     },
 
     onBtnClicked() {
+        HandleMgr.sendHandle('Audio_Click');
         ViewHelper.showNodeWithName('UpFishBowlNode', { floor: this._FloorNum, level: this._Level, nextPrice: this._NextLevelPrice, target: this });
     },
 
     onBaoXiangClicked() {
         cc.log('点击宝箱!');
+        GameTools.loading();
         HTTP.sendRequest('Hall/getbox', (data) => {
+            GameTools.hidLoading();
             if (data.status == 0) {
                 return;
             }

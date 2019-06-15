@@ -30,17 +30,17 @@
     "_level": 1,
     "_components": [
       {
-        "__id__": 163
-      },
-      {
-        "__id__": 164
-      },
-      {
         "__id__": 165
+      },
+      {
+        "__id__": 166
+      },
+      {
+        "__id__": 167
       }
     ],
     "_prefab": {
-      "__id__": 166
+      "__id__": 168
     },
     "_opacity": 255,
     "_color": {
@@ -5237,24 +5237,27 @@
         "__id__": 148
       },
       {
-        "__id__": 151
+        "__id__": 152
       },
       {
-        "__id__": 154
+        "__id__": 155
       },
       {
-        "__id__": 157
+        "__id__": 158
       }
     ],
     "_active": false,
     "_level": 2,
     "_components": [
       {
-        "__id__": 160
+        "__id__": 161
+      },
+      {
+        "__id__": 163
       }
     ],
     "_prefab": {
-      "__id__": 162
+      "__id__": 164
     },
     "_opacity": 255,
     "_color": {
@@ -5314,10 +5317,13 @@
     "_components": [
       {
         "__id__": 149
+      },
+      {
+        "__id__": 150
       }
     ],
     "_prefab": {
-      "__id__": 150
+      "__id__": 151
     },
     "_opacity": 100,
     "_color": {
@@ -5393,6 +5399,33 @@
     "_id": ""
   },
   {
+    "__type__": "cc.Widget",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 148
+    },
+    "_enabled": true,
+    "alignMode": 1,
+    "_target": null,
+    "_alignFlags": 45,
+    "_left": 0,
+    "_right": 0,
+    "_top": 0,
+    "_bottom": 0,
+    "_verticalCenter": 0,
+    "_horizontalCenter": 0,
+    "_isAbsLeft": true,
+    "_isAbsRight": true,
+    "_isAbsTop": true,
+    "_isAbsBottom": true,
+    "_isAbsHorizontalCenter": true,
+    "_isAbsVerticalCenter": true,
+    "_originalWidth": 720,
+    "_originalHeight": 1280,
+    "_id": ""
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
@@ -5415,11 +5448,11 @@
     "_level": 3,
     "_components": [
       {
-        "__id__": 152
+        "__id__": 153
       }
     ],
     "_prefab": {
-      "__id__": 153
+      "__id__": 154
     },
     "_opacity": 255,
     "_color": {
@@ -5471,7 +5504,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 151
+      "__id__": 152
     },
     "_enabled": true,
     "_srcBlendFactor": 1,
@@ -5515,11 +5548,11 @@
     "_level": 3,
     "_components": [
       {
-        "__id__": 155
+        "__id__": 156
       }
     ],
     "_prefab": {
-      "__id__": 156
+      "__id__": 157
     },
     "_opacity": 255,
     "_color": {
@@ -5571,7 +5604,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 154
+      "__id__": 155
     },
     "_enabled": true,
     "_srcBlendFactor": 1,
@@ -5615,11 +5648,11 @@
     "_level": 3,
     "_components": [
       {
-        "__id__": 158
+        "__id__": 159
       }
     ],
     "_prefab": {
-      "__id__": 159
+      "__id__": 160
     },
     "_opacity": 255,
     "_color": {
@@ -5671,7 +5704,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 157
+      "__id__": 158
     },
     "_enabled": true,
     "_srcBlendFactor": 775,
@@ -5681,7 +5714,7 @@
       "__uuid__": "d1b16633-fac1-4385-b690-daf8a08981e8"
     },
     "_spriteFrame": null,
-    "_stopped": false,
+    "_stopped": true,
     "playOnLoad": false,
     "autoRemoveOnFinish": false,
     "totalParticles": 55,
@@ -5783,7 +5816,7 @@
     "zoomScale": 1.2,
     "clickEvents": [
       {
-        "__id__": 161
+        "__id__": 162
       }
     ],
     "_N$interactable": true,
@@ -5852,6 +5885,33 @@
     "customEventData": ""
   },
   {
+    "__type__": "cc.Widget",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 147
+    },
+    "_enabled": true,
+    "alignMode": 1,
+    "_target": null,
+    "_alignFlags": 45,
+    "_left": 0,
+    "_right": 0,
+    "_top": 0,
+    "_bottom": 0,
+    "_verticalCenter": 0,
+    "_horizontalCenter": 0,
+    "_isAbsLeft": true,
+    "_isAbsRight": true,
+    "_isAbsTop": true,
+    "_isAbsBottom": true,
+    "_isAbsHorizontalCenter": true,
+    "_isAbsVerticalCenter": true,
+    "_originalWidth": 720,
+    "_originalHeight": 1280,
+    "_id": ""
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
@@ -5914,7 +5974,7 @@
       "__id__": 147
     },
     "Fireworks": {
-      "__id__": 158
+      "__id__": 159
     },
     "_id": ""
   },

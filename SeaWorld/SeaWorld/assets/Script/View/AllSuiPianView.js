@@ -77,7 +77,9 @@ cc.Class({
     },
 
     loadData() {
+        GameTools.loading();
         HTTP.sendRequest('Hall/LookBone', (data) => {
+            GameTools.hidLoading();
             if (data.status == 0) {
                 return;
             }
@@ -103,7 +105,9 @@ cc.Class({
             GameTools.removeEvent(itemNode);
             if (count == 4 && data.award[i - 1] == 0) {
                 GameTools.addEvent(itemNode, () => {
+                    GameTools.loading();
                     HTTP.sendRequest('Hall/getAward', (data) => {
+                        GameTools.hidLoading();
                         if (data.status == 0) {
                             return;
                         }
@@ -135,6 +139,7 @@ cc.Class({
      * @param {string} click 点击参数
      */
     ButtonClick(lv, click) {
+        HandleMgr.sendHandle('Audio_Click');
         switch (click) {
             case "award":
                 this.GetAward(this.Page_Award);
@@ -155,6 +160,7 @@ cc.Class({
         for (let i = 0; i < this.AccomplishStatus.length; i++) {
             let obj = this.AccomplishStatus[i];
             if (obj.isAccomplish) {
+                HandleMgr.sendHandle('Audio_Award');
                 this.Current_SuiPianID = obj.id;
                 console.log("完成对象属性------------------------------------------------------------------------------------------------------");
                 console.log(this.Current_SuiPianID);
@@ -179,6 +185,9 @@ cc.Class({
         label_explain.string = "现金+";
         label_Num.string = obj.award;
         spr_award.SpriteFrame = this.Award_Cash;
+
+        let money = parseInt(obj.award);
+        DataHelper.setMoneyNum(money);
     },
 
     /**
@@ -240,7 +249,7 @@ cc.Class({
             } else {
                 status.isAccomplish = false;
             }
-            status.isAccomplish = true;
+            // status.isAccomplish = true;
             this.AccomplishStatus.push(status);
         }
         // console.log("完成对象属性------------------------------------------------------------------------------------------------------");

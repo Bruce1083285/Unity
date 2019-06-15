@@ -27,6 +27,14 @@ cc.Class({
         //         this._bar = value;
         //     }
         // },
+        //引导页
+        Page_Guide: cc.Node,
+        // //提示页
+        // Page_Hint: cc.Node,
+        // //提示说明
+        // Hint_Explain: cc.Node,
+        // //礼花粒子效果
+        // Hint_Fireworks: cc.ParticleSystem,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -34,7 +42,7 @@ cc.Class({
     // onLoad () {},
 
     start() {
-
+        this.SetGuide();
     },
 
     onEnable() {
@@ -71,9 +79,32 @@ cc.Class({
             }
 
         }, { uid: DataHelper.Uid });
+
+    },
+
+    SetGuide() {
+        let isNovice = cc.sys.localStorage.getItem("isNovice");
+        if (!isNovice) {
+            this.Page_Guide.active = true;
+        }
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
+        if (this.Page_Guide.active) {
+            this.Page_Guide.active = false;
+            // this.Page_Hint.active = true;
+
+            // this.Hint_Explain.scale = 0;
+            // let act_scale = cc.scaleTo(0.5, 1);
+            // this.Hint_Explain.runAction(act_scale);
+
+            // this.Hint_Fireworks.resetSystem();
+        }
+        if (data === "hint_close") {
+            this.Page_Hint.active = false;
+        }
+        cc.sys.localStorage.setItem("isNovice", "true");
         HTTP.sendRequest('sign/Getsign', (data) => {
             if (data.status != 1) {
                 Dialog.show(data.msg, () => {
@@ -102,6 +133,8 @@ cc.Class({
                 this.initWithData();
             }
         }, { uid: DataHelper.Uid, day: this.Day + 1 });
+        HandleMgr.sendHandle('Update_Red');
+        HandleMgr.sendHandle('Update_Red_1');
     },
     // update (dt) {},
 });

@@ -7,7 +7,12 @@ cc.Class({
         Node_Dian_Email: cc.Node,
         USER_BT_SIGN: cc.Node,
 
-        _Sign_Data:null,
+        //引导页
+        Page_Guide: cc.Node,
+        // //新手指引--->1
+        // Guide_1: cc.Node,
+
+        _Sign_Data: null,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -43,10 +48,26 @@ cc.Class({
             this.Node_Dian_Friend.active = DataHelper.Data_Sync.friend > 0;
             this.Node_Dian_Email.active = DataHelper.Data_Sync.mail > 0;
         });
+
+        HandleMgr.addHandle('Update_Red_1', (data) => {
+            this.UpdateSignStatus();
+        }, this);
+
+        this.SetGuide();
+        this.UpdateSignStatus();
+    },
+
+    //设置新手引导
+    SetGuide() {
+        let isNovice = cc.sys.localStorage.getItem("isNovice");
+        if (!isNovice) {
+            this.Page_Guide.active = true;
+        }
     },
 
     onBtnClicked(event, data) {
-
+        HandleMgr.sendHandle('Audio_Click');
+        HandleMgr.sendHandle('Audio_Click');
         switch (event.target.name) {
             case 'USER_BT_COPY':
                 // 复制id
@@ -62,11 +83,14 @@ cc.Class({
                 break;
         }
 
+        if (this.Page_Guide.active) {
+            this.Page_Guide.active = false;
+        }
         // this.hide(() => {
         ViewHelper.showNodeWithName(data);
         // })
     },
-    update (dt) {
+    update(dt) {
         // this.UpdateSignStatus();
     },
 
@@ -87,6 +111,14 @@ cc.Class({
                 // console.log("是否进入----->2");
                 red.active = false;
             }
+            // if (data.data.sign === 0) {
+            //     // console.log("是否进入----->1");
+            //     red.active = true;
+            // }
+            // if (data.data.sign === 1) {
+            //     // console.log("是否进入----->2");
+            //     red.active = false;
+            // }
         }, { uid: DataHelper.Uid });
     },
 });

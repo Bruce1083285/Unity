@@ -49,13 +49,32 @@ cc.Class({
         cc.find('on', this.Tog_Switch.node).active = this.Tog_Switch.isChecked;
     },
 
-    onBtnClicked(){
+    onBtnClicked() {
+        HandleMgr.sendHandle('Audio_Click');
         ViewHelper.showNodeWithName('KeFuNode');
     },
 
     onClicked() {
-        cc.find('off', this.Tog_Switch.node).active = !this.Tog_Switch.isChecked;
-        cc.find('on', this.Tog_Switch.node).active = this.Tog_Switch.isChecked;
+        let off = cc.find('off', this.Tog_Switch.node);
+        let on = cc.find('on', this.Tog_Switch.node)
+        off.active = !this.Tog_Switch.isChecked;
+        on.active = this.Tog_Switch.isChecked;
+
+        if (off.active) {
+            HandleMgr.sendHandle('Audio_Close');
+            cc.sys.localStorage.setItem("Sound", "false")
+        }
+
+        if (on.active) {
+            let isPlay = cc.sys.localStorage.getItem("Sound")
+            if (isPlay === "false") {
+                HandleMgr.sendHandle('Audio_Open');
+            }
+            cc.sys.localStorage.setItem("Sound", "true")
+        }
+
+
+
         let num = this.Tog_Switch.isChecked ? 1 : 0;
         AudioMgr.setSFXVolume(num);
         AudioMgr.setBGMVolume(num);

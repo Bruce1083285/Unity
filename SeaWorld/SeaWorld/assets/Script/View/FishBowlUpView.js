@@ -67,7 +67,10 @@ cc.Class({
     },
 
     onBtnClicked() {
+        HandleMgr.sendHandle('Audio_Click');
+        GameTools.loading();
         HTTP.sendRequest('sign/UpdateFishtank', (res) => {
+            GameTools.hidLoading();
             if (res.status == 0) {
                 GameTools.dialog('请求错误', res.msg, null);
                 return;
@@ -75,18 +78,17 @@ cc.Class({
             var data = this.target.toUpLevel(parseInt(res.data.level));
             let tempLevel = 9 * (data.floor - 1) + data.level;
 
-            if (tempLevel % 10 == 0) {
-                let nextPrice = BigNumber(data.nextPrice).times(0.8).toString();
-                ViewHelper.showRewardNode(GameConfig.Reward_Type.Gold, nextPrice);
-            }
-
+            // if (tempLevel % 10 == 0) {
+            //     let nextPrice = BigNumber(data.nextPrice).times(0.8).toString();
+            //     ViewHelper.showRewardNode(GameConfig.Reward_Type.Gold, nextPrice);
+            // }
             if (data.level == 9) {
                 this.node.active = false;
                 ViewHelper.setOpenPrice(GameControl.GameData.fishbowls);
                 return;
             }
-
             this.initFn(data);
+            HandleMgr.sendHandle('Update_Achievement');
         }, { uid: DataHelper.Uid, type: GameConfig.Game_Type, level: ++this.Level, floor: this.Floor });
     },
 

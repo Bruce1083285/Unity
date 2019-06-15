@@ -31,6 +31,7 @@ cc.Class({
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
         switch (event.target.name) {
             case 'BT_CLOSE':
                 this.node.active = false;

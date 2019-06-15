@@ -34,6 +34,7 @@ cc.Class({
     },
 
     onBtnClicked: function (event,data) {
+        HandleMgr.sendHandle('Audio_Click');
         AudioMgr.playWithUrl("button");
         if (this._callBack)
             this._callBack(data);

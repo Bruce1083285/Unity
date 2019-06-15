@@ -7,6 +7,7 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
+// var audio = require('AudioView');
 
 cc.Class({
     extends: cc.Component,
@@ -34,6 +35,20 @@ cc.Class({
         Btn_Open: cc.Node,
         BT_USER: cc.Node,
 
+        //新手引导
+        //新手引导页
+        Page_Guide: cc.Node,
+        //引导--->1
+        Guide_1: cc.Node,
+        //引导--->2
+        Guide_2: cc.Node,
+        //引导--->3
+        Guide_3: cc.Node,
+        //引导--->4
+        Guide_4: cc.Node,
+        //引导--->5
+        Guide_5: cc.Node,
+
         _initOpenBtnY: -488,
         _Sign_Data: null,
     },
@@ -60,6 +75,9 @@ cc.Class({
         //     return;
         // }
         HTTP.sendRequest('sign/Looksign', (data) => {
+            if (!data || data.status != 1) {
+                return;
+            }
             // console.log("签到-------------------------------------------------------");
             // console.log(data);
             this._Sign_Data = data.data;
@@ -71,6 +89,14 @@ cc.Class({
                 // console.log("是否进入----->2");
                 red.active = false;
             }
+            // if (this._Sign_Data.sign === 0 ) {
+            //     // console.log("是否进入----->1");
+            //     red.active = true;
+            // }
+            // if (this._Sign_Data.sign === 1) {
+            //     // console.log("是否进入----->2");
+            //     red.active = false;
+            // }
         }, { uid: DataHelper.Uid });
     },
 
@@ -127,6 +153,10 @@ cc.Class({
             this.LBL_PriceTimes.string = 'x' + data;
         }, this);
 
+        HandleMgr.addHandle('Update_Red', (data) => {
+            this.UpdateSignStatus();
+        }, this);
+
         ViewHelper.setOpenPrice(this.GameData.fishbowls);
         // if (this.Node_FishBowls.childrenCount <= 0) {
         //     return;
@@ -141,6 +171,10 @@ cc.Class({
             GameTools.setItemByLocalStorage('LastTime', (new Date()).getTime());
         });
 
+        this.GetSound();
+
+        this.UpdateSignStatus();
+
         this.beginGame();
 
         // DataHelper.getOffLineGold();
@@ -150,6 +184,32 @@ cc.Class({
 
         this.beginTimer();
 
+        this.SetGuide();
+    },
+
+    //获取音效
+    GetSound() {
+        let isPlay = cc.sys.localStorage.getItem("Sound")
+        if (!isPlay || isPlay === "true") {
+            HandleMgr.sendHandle('Audio_Open');
+        }
+        if (isPlay === "false") {
+            HandleMgr.sendHandle('Audio_Close');
+        }
+    },
+
+    SetGuide() {
+        // console.log("是否是老用户------------------>");
+        // console.log(DataHelper.isHave);
+        // if (DataHelper.isHave) {
+
+        // }
+        // cc.sys.localStorage.removeItem("isNovice")
+        let isNovice = cc.sys.localStorage.getItem("isNovice");
+        if (!isNovice) {
+            this.Page_Guide.active = true;
+            this.Guide_1.active = true;
+        }
     },
 
     onScroll(scrollview, eventType, customEventData) {
@@ -173,10 +233,13 @@ cc.Class({
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
         switch (event.target.name) {
             case 'BT_OPEN':
                 // 开启按钮
+
                 HTTP.sendRequest('sign/openfishtank', (res) => {
+
                     if (res.status == 0) {
                         GameTools.dialog('请求错误', res.msg, null);
                         return;
@@ -189,6 +252,15 @@ cc.Class({
                 break;
             case 'BT_USER':
                 // 用户页面
+                if (this.Page_Guide.active) {
+                    this.GuideNext.active = true;
+                    this.Guide_1.active = false;
+                    this.Guide_2.active = false;
+                    this.Guide_3.active = false;
+                    this.Guide_4.active = false;
+                    this.Guide_5.active = false;
+                    this.Page_Guide.active = false;
+                }
                 ViewHelper.showNodeWithName('UserInfoNode');
                 break;
             case 'BT_UP_SB':
@@ -210,6 +282,9 @@ cc.Class({
             case 'BT_TS':
                 ViewHelper.showNodeWithName('TiShengNode');
                 break;
+            case 'but_Next':
+                this.GuideNext();
+                break;
             default:
                 break;
         }
@@ -223,6 +298,35 @@ cc.Class({
                 break
             default:
                 break;
+        }
+    },
+
+    /**
+     * 新手引导下一页
+     */
+    GuideNext() {
+        if (this.Guide_1.active) {
+            this.Guide_1.active = false;
+            this.Guide_2.active = true;
+            return;
+        }
+
+        if (this.Guide_2.active) {
+            this.Guide_2.active = false;
+            this.Guide_3.active = true;
+            return;
+        }
+
+        if (this.Guide_3.active) {
+            this.Guide_3.active = false;
+            this.Guide_4.active = true;
+            return;
+        }
+
+        if (this.Guide_4.active) {
+            this.Guide_4.active = false;
+            this.Guide_5.active = true;
+            return
         }
     },
 
@@ -285,7 +389,7 @@ cc.Class({
 
     beginTimer() {
         var fn = () => {
-            this.UpdateSignStatus();
+            // this.UpdateSignStatus();
             HTTP.sendRequest('Hall/Gamesync', (data) => {
                 if (data.status == 0) {
                     return;
@@ -293,7 +397,7 @@ cc.Class({
                 data = data.data;
                 DataHelper.Data_Sync = data;
 
-            }, { uid: DataHelper.Uid });
+            }, { uid: DataHelper.Uid },false);
             GameTools.setItemByLocalStorage('LastTime', (new Date()).getTime());
         }
         fn();

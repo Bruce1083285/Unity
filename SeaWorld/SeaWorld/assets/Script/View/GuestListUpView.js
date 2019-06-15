@@ -34,10 +34,11 @@ cc.Class({
     // onLoad () {},
 
     start() {
-
+        this.UpLen = 1;
     },
 
     onEnable() {
+        this.UpLen = 1;
         this.initFn(Global.GameData.guest);
     },
 
@@ -73,69 +74,78 @@ cc.Class({
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
         switch (event.target.name) {
             case 'GUEST_BT_UP':
                 this.showUpDetail(event.target.parent.level, event.target.parent.type)
                 break;
             case 'BT_UP_1':
                 this.toUpLevel = this.DetailNode.level + 1;
+                this.UpLen = 1;
                 cc.find('bg_tytk_bai/level', this.DetailNode).getComponent(cc.Label).string = '等级+1';
                 let nextMenPiao1 = DataHelper.getGuestPrice_MenPiao(this.toUpLevel, this.DetailNode.type);
-                cc.find('bg_tytk_bai/next', this.DetailNode).getComponent(cc.Label).string = '提升后门票:' + GameTools.formatPrice(nextMenPiao1.toString());
+                cc.find('bg_tytk_bai/next', this.DetailNode).getComponent(cc.Label).string = '提升后门票:' + GameTools.formatGold(nextMenPiao1.toString());
 
                 this.userPrice = this.getLevelPrice(0, this.DetailNode.level, this.DetailNode.type, this.toUpLevel - 1);
-                cc.find('price/New Label', this.DetailNode).getComponent(cc.Label).string = GameTools.formatPrice(this.userPrice.toString());
+                cc.find('price/New Label', this.DetailNode).getComponent(cc.Label).string = GameTools.formatGold(this.userPrice.toString());
                 cc.find('BT_UP', this.DetailNode).setStatus(BigNumber(DataHelper.Gold_Num).gte(this.userPrice));
                 break;
             case 'BT_UP_10':
                 this.toUpLevel = this.DetailNode.level + 10;
+                this.UpLen = 10;
                 cc.find('bg_tytk_bai/level', this.DetailNode).getComponent(cc.Label).string = '等级+10';
                 let nextMenPiao10 = DataHelper.getGuestPrice_MenPiao(this.toUpLevel, this.DetailNode.type);
-                cc.find('bg_tytk_bai/next', this.DetailNode).getComponent(cc.Label).string = '提升后门票:' + GameTools.formatPrice(nextMenPiao10.toString());
+                cc.find('bg_tytk_bai/next', this.DetailNode).getComponent(cc.Label).string = '提升后门票:' + GameTools.formatGold(nextMenPiao10.toString());
 
                 this.userPrice = this.getLevelPrice(0, this.DetailNode.level, this.DetailNode.type, this.toUpLevel - 1);
-                cc.find('price/New Label', this.DetailNode).getComponent(cc.Label).string = GameTools.formatPrice(this.userPrice.toString());
+                cc.find('price/New Label', this.DetailNode).getComponent(cc.Label).string = GameTools.formatGold(this.userPrice.toString());
                 cc.find('BT_UP', this.DetailNode).setStatus(BigNumber(DataHelper.Gold_Num).gte(this.userPrice));
                 break;
             case 'BT_UP_50':
                 this.toUpLevel = this.DetailNode.level + 50;
-
+                this.UpLen = 50;
                 cc.find('bg_tytk_bai/level', this.DetailNode).getComponent(cc.Label).string = '等级+50';
 
                 let nextMenPiao50 = DataHelper.getGuestPrice_MenPiao(this.toUpLevel, this.DetailNode.type);
-                cc.find('bg_tytk_bai/next', this.DetailNode).getComponent(cc.Label).string = '提升后门票:' + GameTools.formatPrice(nextMenPiao50.toString());
+                cc.find('bg_tytk_bai/next', this.DetailNode).getComponent(cc.Label).string = '提升后门票:' + GameTools.formatGold(nextMenPiao50.toString());
 
                 this.userPrice = this.getLevelPrice(0, this.DetailNode.level, this.DetailNode.type, this.toUpLevel - 1);
-                cc.find('price/New Label', this.DetailNode).getComponent(cc.Label).string = GameTools.formatPrice(this.userPrice.toString());
+                cc.find('price/New Label', this.DetailNode).getComponent(cc.Label).string = GameTools.formatGold(this.userPrice.toString());
                 cc.find('BT_UP', this.DetailNode).setStatus(BigNumber(DataHelper.Gold_Num).gte(this.userPrice));
                 break;
             case 'BT_UP':
                 let levels = Global.GameData.guest;
-                let curLevel = levels[parseInt(this.DetailNode.type - 1)];
                 levels[parseInt(this.DetailNode.type - 1)] = this.toUpLevel;
-                let reward = this.getRewardPrice(this.DetailNode.level, this.toUpLevel);
+
+                GameTools.loading();
                 HTTP.sendRequest('sign/Updateguest', (res) => {
                     if (res.satus == 0) {
                         GameTools.dialog('请求错误', res.msg, null);
                         return;
                     }
+                    
+                   
+                    let reward = this.getRewardPrice(this.DetailNode.level, this.toUpLevel);
+
                     DataHelper.setGuestData(JSON.parse(res.data.guest));
                     DataHelper.setGoldNum(BigNumber(DataHelper.Gold_Num).minus(this.userPrice).toString());
                     HandleMgr.sendHandle('refresh_gold');
                     if (reward.length == 2) {
-                        ViewHelper.showRewardNode(reward[0].type, reward[0].num, () => {
-                            ViewHelper.showRewardNode(reward[1].type, reward[1].num);
-                        });
+                        ViewHelper.showRewardNode(reward[1].type, reward[1].num);
+                        // ViewHelper.showRewardNode(reward[0].type, reward[0].num, () => {
+                        // });
                     } else if (reward.length == 1) {
                         ViewHelper.showRewardNode(reward[0].type, reward[0].num);
                     }
                     this.initFn(JSON.parse(res.data.guest));
-                    this.showUpDetail(this.toUpLevel, this.DetailNode.type, this.toUpLevel - curLevel);
+                    this.showUpDetail(this.toUpLevel, this.DetailNode.type, this.UpLen);
+                    GameTools.hidLoading();
                 }, { uid: DataHelper.Uid, type: GameConfig.Game_Type, content: JSON.stringify(levels) });
                 break;
             default:
                 break;
         }
+        HandleMgr.sendHandle('Update_Achievement');
     },
 
     showUpDetail(level, type, levelLength) {
@@ -151,9 +161,9 @@ cc.Class({
         cc.find('bg_tytk_bai/level', this.DetailNode).getComponent(cc.Label).string = '等级+' + levelLength;
         cc.find('title/level', this.DetailNode).getComponent(cc.Label).string = level;
         cc.find('title/title/type', this.DetailNode).getComponent(cc.Label).string = type - 1;
-        cc.find('bg_tytk_bai/curren', this.DetailNode).getComponent(cc.Label).string = '当前门票:' + GameTools.formatPrice(DataHelper.getGuestPrice_MenPiao(level, type));
-        cc.find('bg_tytk_bai/next', this.DetailNode).getComponent(cc.Label).string = '提升后门票:' + GameTools.formatPrice(DataHelper.getGuestPrice_MenPiao(level + levelLength, type));
-        cc.find('price/New Label', this.DetailNode).getComponent(cc.Label).string = GameTools.formatPrice(price);
+        cc.find('bg_tytk_bai/curren', this.DetailNode).getComponent(cc.Label).string = '当前门票:' + GameTools.formatGold(DataHelper.getGuestPrice_MenPiao(level, type));
+        cc.find('bg_tytk_bai/next', this.DetailNode).getComponent(cc.Label).string = '提升后门票:' + GameTools.formatGold(DataHelper.getGuestPrice_MenPiao(level + levelLength, type));
+        cc.find('price/New Label', this.DetailNode).getComponent(cc.Label).string = GameTools.formatGold(price);
         cc.find('BT_UP', this.DetailNode).setStatus(BigNumber(DataHelper.Gold_Num).gte(price));
         this.DetailNode.parent.active = true;
     },

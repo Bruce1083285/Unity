@@ -1946,17 +1946,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 102.68,
+      "width": 56,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -1992,8 +1992,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "A类游客",
-    "_N$string": "A类游客",
+    "_string": "女仆",
+    "_N$string": "女仆",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -2640,17 +2640,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 102.68,
+      "width": 56,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -2686,8 +2686,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "B类游客",
-    "_N$string": "B类游客",
+    "_string": "萝莉",
+    "_N$string": "萝莉",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -3334,17 +3334,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 104.22,
+      "width": 56,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -3380,8 +3380,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "C类游客",
-    "_N$string": "C类游客",
+    "_string": "医生",
+    "_N$string": "医生",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -4028,17 +4028,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 104.22,
+      "width": 56,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -4074,8 +4074,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "D类游客",
-    "_N$string": "D类游客",
+    "_string": "教师",
+    "_N$string": "教师",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -4722,17 +4722,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 102.68,
+      "width": 56,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -4768,8 +4768,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "E类游客",
-    "_N$string": "E类游客",
+    "_string": "公主",
+    "_N$string": "公主",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -5416,17 +5416,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 101.1,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -5462,8 +5462,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "F类游客",
-    "_N$string": "F类游客",
+    "_string": "运动员",
+    "_N$string": "运动员",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -6110,17 +6110,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 105.78,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -6156,8 +6156,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "G类游客",
-    "_N$string": "G类游客",
+    "_string": "老爷爷",
+    "_N$string": "老爷爷",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -6804,17 +6804,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 104.22,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -6850,8 +6850,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "H类游客",
-    "_N$string": "H类游客",
+    "_string": "旅行者",
+    "_N$string": "旅行者",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -7498,17 +7498,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 99.56,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -7544,8 +7544,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": " I类游客",
-    "_N$string": " I类游客",
+    "_string": "艺术家",
+    "_N$string": "艺术家",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -8192,17 +8192,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 98,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 1,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -98,
+      "x": -182,
       "y": 0,
       "z": 0
     },
@@ -8238,8 +8238,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "J类游客",
-    "_N$string": "J类游客",
+    "_string": "探险家",
+    "_N$string": "探险家",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,

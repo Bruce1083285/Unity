@@ -5,7 +5,7 @@ window.NETWORK_STATE = cc.Enum({
     TIMEOUT: 2,         // 请求超时
 })
 
-// var baseUrl = 'http://192.168.31.6:8119/userapi/';
+// var baseUrl = 'http://192.168.31.12:8202/userapi/';
 
 var baseUrl = 'https://www.wepker.com/userapi/';
 
@@ -38,11 +38,13 @@ var HTTP = cc.Class({
             return hex_md5(newUrl);
         },
 
-        sendRequest: function (url, callback, data) {
+        sendRequest: function (url, callback, data, isShow = true) {
             // if (url != 'refreshGold') {
             //     GameTools.loading();
             // }
-
+            // if (isShow) {
+            //     GameTools.loading();
+            // }
             var xhr = cc.loader.getXMLHttpRequest();
 
             xhr.timeout = 5000;
@@ -59,13 +61,12 @@ var HTTP = cc.Class({
             }
             var requestURL = '';
             requestURL = baseUrl + url + encodeURI(str);
-            console.log("RequestURL:" + requestURL);
+            // console.log("RequestURL:" + requestURL);
             xhr.open('GET', requestURL, true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status >= 200 && xhr.status < 300) {
-                        // GameTools.hidLoading();
-                        console.log(requestURL + '\n' + xhr.responseText + '\n');
+                        // console.log(requestURL + '\n' + xhr.responseText + '\n');
                         var ret = null;
                         try {
                             ret = JSON.parse(xhr.responseText);
@@ -81,6 +82,7 @@ var HTTP = cc.Class({
                         }
                     }
                 }
+                // GameTools.hidLoading();
             }
             xhr.onerror = function (e) {
                 console.log("onerror");

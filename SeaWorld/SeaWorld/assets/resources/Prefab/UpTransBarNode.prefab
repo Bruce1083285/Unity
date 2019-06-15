@@ -889,7 +889,7 @@
         "__id__": 25
       }
     ],
-    "_active": true,
+    "_active": false,
     "_level": 0,
     "_components": [
       {
@@ -1664,7 +1664,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 124,
+      "y": 166,
       "z": 0
     },
     "_scale": {

@@ -38,10 +38,11 @@ cc.Class({
         if (!this[name]) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/' + name, cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
+                
                 this[name] = cc.instantiate(fab);
                 if (data) {
                     this[name].CustomData = data;
@@ -69,10 +70,10 @@ cc.Class({
         if (!this.RewardNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/LingJiangNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.RewardNode = cc.instantiate(fab);
                 this.RewardNode.parent = cc.director.getScene();
                 this.RewardNode.active = true;
@@ -98,6 +99,7 @@ cc.Class({
     },
 
     onBtnClicked(event, data) {
+        HandleMgr.sendHandle('Audio_Click');
         switch (event.target.name) {
 
             case 'GUEST_BT_TRANS':
@@ -142,10 +144,10 @@ cc.Class({
         if (!this.UpGuestNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/UpGuestNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.UpGuestNode = cc.instantiate(fab);
                 this.UpGuestNode.parent = this.SubView;
                 this.UpGuestNode.active = true;
@@ -161,10 +163,10 @@ cc.Class({
         if (!this.EmailDetailNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/EmailDetailNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.EmailDetailNode = cc.instantiate(fab);
                 this.EmailDetailNode.parent = this.node;
                 this.EmailDetailNode.active = true;
@@ -179,10 +181,10 @@ cc.Class({
         if (!this.UpTransBarNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/RankListNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.RankListNode = cc.instantiate(fab);
                 this.RankListNode.parent = this.node;
                 this.RankListNode.active = true;
@@ -197,10 +199,10 @@ cc.Class({
         if (!this.ShuoMingNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/ShuoMingNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.ShuoMingNode = cc.instantiate(fab);
                 this.ShuoMingNode.parent = this.node;
                 this.ShuoMingNode.active = true;
@@ -215,10 +217,10 @@ cc.Class({
         if (!this.SuiPianNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/SuiPianNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.SuiPianNode = cc.instantiate(fab);
                 this.SuiPianNode.parent = this.node;
                 this.SuiPianNode.active = true;
@@ -233,10 +235,10 @@ cc.Class({
         if (!this.AllSuiPianNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/AllSuiPianNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.AllSuiPianNode = cc.instantiate(fab);
                 this.AllSuiPianNode.parent = this.node;
                 this.AllSuiPianNode.active = true;
@@ -253,10 +255,10 @@ cc.Class({
         if (!this.TiShengNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/TiShengNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.TiShengNode = cc.instantiate(fab);
                 this.TiShengNode.parent = this.node;
                 this.TiShengNode.active = true;
@@ -271,10 +273,10 @@ cc.Class({
         if (!this.BuyNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/BuyNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.BuyNode = cc.instantiate(fab);
                 this.BuyNode.parent = this.node;
                 this.BuyNode.active = true;
@@ -303,10 +305,10 @@ cc.Class({
         if (!this.LingJiangNode) {
             GameTools.loading('加载中');
             cc.loader.loadRes('Prefab/LingJiangNode', cc.Prefab, (err, fab) => {
+                GameTools.hidLoading();
                 if (err) {
                     return;
                 }
-                GameTools.hidLoading();
                 this.LingJiangNode = cc.instantiate(fab);
                 this.LingJiangNode.parent = this.node;
                 this.LingJiangNode.active = true;

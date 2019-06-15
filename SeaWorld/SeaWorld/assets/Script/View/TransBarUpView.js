@@ -49,7 +49,10 @@ cc.Class({
     },
 
     onBtnClicked() {
+        HandleMgr.sendHandle('Audio_Click');
+        GameTools.loading();
         HTTP.sendRequest('sign/UpdateTransportlevel', (data) => {
+            GameTools.hidLoading();
             if (data.satus == 0) {
                 GameTools.dialog('请求错误', data.msg, null);
                 return;
@@ -60,13 +63,14 @@ cc.Class({
             if (this.Level < 6) {
                 ViewHelper.showRewardNode(GameConfig.Reward_Type.Gold, (this.NextPrice * 0.9).toFixed(0));
             }
-            if (this.Level % 10 == 0) {
-                let nextPrice = BigNumber(data.nextPrice).times(0.8).toString();
-                ViewHelper.showRewardNode(GameConfig.Reward_Type.Money, this.NextRewardLevel * 10,()=>{
-                    ViewHelper.showRewardNode(GameConfig.Reward_Type.Gold, nextPrice);
-                });
-            }
+            // if (this.Level % 10 == 0) {
+            //     let nextPrice = BigNumber(data.nextPrice).times(0.8).toString();
+            //     ViewHelper.showRewardNode(GameConfig.Reward_Type.Money, this.NextRewardLevel * 10, () => {
+            //         ViewHelper.showRewardNode(GameConfig.Reward_Type.Gold, nextPrice);
+            //     });
+            // }
             this.initFn(data);
+            HandleMgr.sendHandle('Update_Achievement');
         }, { uid: DataHelper.Uid, type: GameConfig.Game_Type, transportlevel: ++this.Level });
     },
     // update (dt) {},

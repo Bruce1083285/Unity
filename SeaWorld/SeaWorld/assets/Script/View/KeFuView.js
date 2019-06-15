@@ -48,6 +48,7 @@ cc.Class({
     },
 
     onBtnClicked() {
+        HandleMgr.sendHandle('Audio_Click');
         GameTools.copy(this.Lbl_KeFu.string);
     },
     // update (dt) {},
