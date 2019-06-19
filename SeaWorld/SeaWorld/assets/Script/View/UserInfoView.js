@@ -67,7 +67,6 @@ cc.Class({
 
     onBtnClicked(event, data) {
         HandleMgr.sendHandle('Audio_Click');
-        HandleMgr.sendHandle('Audio_Click');
         switch (event.target.name) {
             case 'USER_BT_COPY':
                 // 复制id
@@ -95,12 +94,12 @@ cc.Class({
     },
 
     UpdateSignStatus() {
-        let red = this.USER_BT_SIGN.getChildByName("dian_red");
         // if (this._Sign_Data && this._Sign_Data.sign === 1 && !red.active) {
         //     console.log("签到是否结束-------------------------------------------------------");
         //     return;
         // }
         HTTP.sendRequest('sign/Looksign', (data) => {
+            let red = this.USER_BT_SIGN.getChildByName("dian_red");
             // console.log("签到------------------->用户视图");
             // console.log(data);
             if (data.data.sign === 0 && !red.active) {

@@ -174,6 +174,7 @@ cc.Class({
 
         let act_rotation = cc.rotateBy(1, 360);
         let act_callback = () => {
+            HandleMgr.sendHandle('Audio_Award');
             this.Page_Hint.active = true;
             // console.log("粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果粒子效果");
             // console.log(this.Fireworks);

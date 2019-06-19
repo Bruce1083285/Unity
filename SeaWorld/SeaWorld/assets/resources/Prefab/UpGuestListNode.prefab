@@ -1946,7 +1946,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 56,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
@@ -1992,8 +1992,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "女仆",
-    "_N$string": "女仆",
+    "_string": "女　仆",
+    "_N$string": "女　仆",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -2640,7 +2640,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 56,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
@@ -2686,8 +2686,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "萝莉",
-    "_N$string": "萝莉",
+    "_string": "萝　莉",
+    "_N$string": "萝　莉",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -3334,7 +3334,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 56,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
@@ -3380,8 +3380,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "医生",
-    "_N$string": "医生",
+    "_string": "医　生",
+    "_N$string": "医　生",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -4028,7 +4028,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 56,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
@@ -4074,8 +4074,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "教师",
-    "_N$string": "教师",
+    "_string": "教　师",
+    "_N$string": "教　师",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -4722,7 +4722,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 56,
+      "width": 84,
       "height": 40
     },
     "_anchorPoint": {
@@ -4768,8 +4768,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "公主",
-    "_N$string": "公主",
+    "_string": "公　主",
+    "_N$string": "公　主",
     "_fontSize": 28,
     "_lineHeight": 40,
     "_enableWrapText": true,

@@ -74,6 +74,22 @@ cc.Class({
          * @property 当前碎片图鉴ID
          */
         this.Current_SuiPianID = null;
+        /**
+         * @property 领取次数
+         */
+        this.Get_Num = 0;
+    },
+
+    /**
+     * 设置领取次数
+     */
+    SetGetNum() {
+        let get = cc.sys.localStorage.getItem("GET");
+        let num = 0;
+        if (get) {
+            num = parseInt(get);
+        }
+        this.Get_Num = num;
     },
 
     loadData() {
@@ -91,7 +107,7 @@ cc.Class({
             let key = 'bone' + i;
             let value = data[key];
             let array = JSON.parse(value);
-            let itemNode = cc.find('content/suipian_' + i, this.node);
+            let itemNode = cc.find('New ScrollView/content/suipian_' + i, this.node);
             let count = 0;
             for (let j = 0; j < array.length; j++) {
                 const element = array[j];
@@ -117,11 +133,15 @@ cc.Class({
                 });
             }
         }
+        this.SetGetNum();
+        console.log("领取次数----------------------------->");
+        console.log(this.Get_Num);
         this.GetGetStatus();
         this.UpDateTreasureBoxStatus();
     },
 
     close() {
+        HandleMgr.sendHandle('Audio_Click');
         this.node.active = false;
     },
     start() {
@@ -160,12 +180,14 @@ cc.Class({
         for (let i = 0; i < this.AccomplishStatus.length; i++) {
             let obj = this.AccomplishStatus[i];
             if (obj.isAccomplish) {
+                this.Get_Num++;
+                cc.sys.localStorage.setItem("GET", this.Get_Num + "");
                 HandleMgr.sendHandle('Audio_Award');
                 this.Current_SuiPianID = obj.id;
                 console.log("完成对象属性------------------------------------------------------------------------------------------------------");
                 console.log(this.Current_SuiPianID);
                 this.SetCommonAward(obj, page_Award);
-                this.AccomplishStatus[i].isAccomplish = false;
+                // this.AccomplishStatus[i].isAccomplish = false;
                 return;
             }
         }
@@ -183,11 +205,12 @@ cc.Class({
         let spr_award = page_Award.getChildByName("Award").getChildByName("Award").getChildByName("award").getComponent(cc.Sprite);
 
         label_explain.string = "现金+";
-        label_Num.string = obj.award;
-        spr_award.SpriteFrame = this.Award_Cash;
+        label_Num.string = (this.Get_Num * 100) + "";
+        let money_num = this.Get_Num * 100;
+        DataHelper.Money_Num += money_num;
+        DataHelper.setMoneyNum(DataHelper.Money_Num);
 
-        let money = parseInt(obj.award);
-        DataHelper.setMoneyNum(money);
+        spr_award.SpriteFrame = this.Award_Cash;
     },
 
     /**
@@ -212,7 +235,9 @@ cc.Class({
     ClosePageAward(page_Award) {
         page_Award.active = false;
 
-        if (this.Current_SuiPianID === "10") {
+        if (this.Get_Num === 10) {
+            this.Get_Num++;
+            cc.sys.localStorage.setItem("GET", this.Get_Num + "");
             //设置大奖
             this.SetBigAward(this.Page_Award);
             this.Current_SuiPianID = null;
@@ -288,6 +313,23 @@ cc.Class({
      * 更新宝箱状态
      */
     UpDateTreasureBoxStatus() {
+        let count = 0;
+        for (let i = 0; i < this.AccomplishStatus.length; i++) {
+            let obj = this.AccomplishStatus[i];
+            if (obj.isAccomplish) {
+                count++;
+            }
+        }
+        let anima = this.Lighting.getComponent(cc.Animation);
+        let button = this.Box.getComponent(cc.Button);
+        if (count <= this.Get_Num) {
+            this.Box.color = cc.color(160, 160, 160);
+            button.interactable = false;
+            this.Lighting.active = false;
+            anima.stop();
+            return;
+        }
+
         let isAccomplish = false;
         //是否有图集收集完成
         for (let i = 0; i < this.AccomplishStatus.length; i++) {
@@ -297,9 +339,6 @@ cc.Class({
                 break;
             }
         }
-
-        let anima = this.Lighting.getComponent(cc.Animation);
-        let button = this.Box.getComponent(cc.Button);
         if (!isAccomplish) {
             this.Box.color = cc.color(160, 160, 160);
             button.interactable = false;

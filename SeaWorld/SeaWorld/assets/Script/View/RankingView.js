@@ -107,23 +107,36 @@ cc.Class({
     * 设置微信存储
     */
     SetWxUpdateCache() {
+        console.log("是否进入===========================================1");
         if (!window.wx) {
             return;
         }
+        console.log("是否进入===========================================2");
+        console.log(DataHelper.Uid + "Uid");
+        console.log(this._World_Data);
         HTTP.sendRequest('Weixin/Getopenid', (data) => {
             console.log("用户OpenID--------------------------->");
             console.log(data);
             // console.log("最大关卡数：" + max_str);
             console.log("金币金币金币金币金币金币金币金币金币金币金币金币");
             console.log(DataHelper.Gold_Num);
-            let gold_num = 0;
+            let gold_num = "0";
             for (let i = 0; i < this._World_Data.length; i++) {
                 let obj = this._World_Data[i];
                 if (obj.uid === DataHelper.Uid) {
-                    gold_num = obj.income;
+                    console.log("收入====================================");
+                    console.log(obj);
+                    console.log(obj.income);
+                    console.log(typeof (obj.income));
+                    let num = 0;
+                    if (!this.IsNull(obj.income)) {
+                        // num = parseInt(obj.income);
+                        gold_num = obj.income;
+                    }
                     break;
                 }
             }
+            console.log(gold_num);
             //设置用户托管数据
             wx.setUserCloudStorage({
                 KVDataList: [{ key: 'coin', value: gold_num }],
@@ -330,8 +343,30 @@ cc.Class({
             // rankingbox.getChildByName("Sex").getChildByName("girl").active = !isBoy;
 
             //金币
-
-            rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = GameTools.formatGold(this._World_Data[i].income);
+            let income = 0;
+            console.log("世界排行收入数据------------------------------->");
+            console.log(this._World_Data[i].income);
+            if (!this.IsNull(this._World_Data[i].income)) {
+                let cha = this._World_Data[i].income.charAt(1);
+                if (cha === "." || cha === "e") {
+                    let arr_str = [];
+                    for (let j = 0; j < this._World_Data[i].income.length; j++) {
+                        let char = this._World_Data[i].income.charAt(j);
+                        arr_str.push(char);
+                    }
+                    arr_str.splice(-3);
+                    let str = "";
+                    for (let j = 0; j < arr_str.length; j++) {
+                        str += arr_str[j];
+                    }
+                    let num = parseFloat(str)
+                    let beishu = Math.pow(10, 18)
+                    income = num * beishu;
+                } else {
+                    income = parseInt(this._World_Data[i].income);
+                }
+            }
+            rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = GameTools.formatGold(income);
 
             this.RankContent_World.addChild(rankingbox);
         }
@@ -444,7 +479,28 @@ cc.Class({
         // rankingbox.getChildByName("Sex").getChildByName("girl").active = !isBoy;
 
         //层数
-        rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = GameTools.formatGold(this._World_Data[wx_ind].income);
+        let income = 0;
+        if (!this.IsNull(this._World_Data[wx_ind].income)) {
+            let cha = this._World_Data[wx_ind].income.charAt(1);
+            if (cha === "." || cha === "e") {
+                let arr_str = [];
+                for (let j = 0; j < this._World_Data[wx_ind].income.length; j++) {
+                    let char = this._World_Data[wx_ind].income.charAt(j);
+                    arr_str.push(char);
+                }
+                arr_str.splice(-3);
+                let str = "";
+                for (let j = 0; j < arr_str.length; j++) {
+                    str += arr_str[j];
+                }
+                let num = parseFloat(str)
+                let beishu = Math.pow(10, 18)
+                income = num * beishu;
+            } else {
+                income = parseInt(this._World_Data[wx_ind].income);
+            }
+        }
+        rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = GameTools.formatGold(income);
         this.RankContent_World.addChild(rankingbox);
     },
 
@@ -461,13 +517,22 @@ cc.Class({
                 break;
             }
         }
-        console.log("世界排行用户排名信息-------------------------------------->")
+        console.log("世界排行用户排名信息-------------------------------------->1")
         console.log(user_info);
         console.log(DataHelper.Uid);
         console.log(ranking);
 
+        console.log("世界排行用户排名信息-------------------------------------->2")
         this.User_Ranking.string = ranking + "";
-        this.User_GoldNum.string = GameTools.formatGold(user_info.income);;
+        console.log("世界排行用户排名信息-------------------------------------->3")
+        let num = 0;
+        if (!this.IsNull(user_info.income)) {
+            num = user_info.income
+        }
+        console.log(this.User_GoldNum.string);
+        console.log(GameTools.formatGold(num));
+        this.User_GoldNum.string = GameTools.formatGold(num);
+        console.log("世界排行用户排名信息-------------------------------------->4")
     },
 
     IsNull(str) {

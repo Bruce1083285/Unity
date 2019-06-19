@@ -93,70 +93,70 @@ cc.Class({
             {
                 id: "1",
                 name: "女仆",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
             {
                 id: "2",
                 name: "萝莉",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
             {
                 id: "3",
                 name: "医生",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
             {
                 id: "5",
                 name: "公主",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
             {
                 id: "4",
                 name: "教师",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
             {
                 id: "8",
                 name: "旅行者",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
             {
                 id: "7",
                 name: "老爷爷",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
             {
                 id: "10",
                 name: "探险家",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
             {
                 id: "6",
                 name: "运动员",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
             {
                 id: "9",
                 name: "艺术家",
-                task: 10,
+                task: 100,
                 maxCount: 100,
                 award: 100,
             },
@@ -188,6 +188,11 @@ cc.Class({
                 }
             }
         }
+        let callback = () => {
+            this.UpdateRedStatus();
+        }
+        this.scheduleOnce(callback, 0.5);
+        // this.UpdateRedStatus();
     },
 
     /**
@@ -236,8 +241,13 @@ cc.Class({
         }
     },
 
+    //更新红点状态
+    UpdateRedStatus() {
+        HandleMgr.sendHandle('Update_AchievementRed');
+    },
+
     /**
-     * 
+     * 设置成就奖励
      * @param {*} obj 
      * @param {cc.Node} box 
      * @param {*} data 
@@ -287,22 +297,40 @@ cc.Class({
         }
 
 
-        let label_num = box.getChildByName("Explain").getChildByName("label_num").getComponent(cc.Label);
         let task_target = 0;
         if (typeof (task_Count) === "string") {
             task_target = parseInt(task_Count) + obj.task;
         } else {
             task_target = task_Count + obj.task;
         }
-        if (task_target >= 100) {
-            task_target = 100;
-            num = 1;
+        console.log(task_target + "<--------------------------任务目标 " + obj.id);
+        switch (obj.id) {
+            case "1_1":
+            case "1_2":
+            case "1_3":
+                if (task_target > 100) {
+                    task_target = 100;
+                    box.getChildByName("t_qd_guang1").active = false;
+                    num = 1;
+                }
+                break;
+            case "1_4":
+                return;
+                break
+            default:
+                if (task_target > 1000) {
+                    task_target = 1000;
+                    box.getChildByName("t_qd_guang1").active = false;
+                    num = 1;
+                }
+                break;
         }
         let pro_bar = box.getChildByName("ProgressBar").getComponent(cc.ProgressBar);
         pro_bar.progress = num;
+        let label_num = box.getChildByName("Explain").getChildByName("label_num").getComponent(cc.Label);
         label_num.string = task_target + "";
         let label_award = box.getChildByName("Explain").getChildByName("label_award").getComponent(cc.Label);
-        label_award.string = task_target * 10;
+        label_award.string = obj.award * (task_target / obj.task);
     },
 
     /**
@@ -416,8 +444,6 @@ cc.Class({
         console.log(content);
         console.log(id);
         if (pro_bar.progress >= 1) {
-
-
             //任务目标数
             let label_task = content.getChildByName("Explain").getChildByName("label_num").getComponent(cc.Label);
             //奖励

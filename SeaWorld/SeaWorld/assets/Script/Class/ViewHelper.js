@@ -34,6 +34,14 @@ cc.Class({
         }, this);
     },
 
+    update(dt) {
+        let num = cc.find('Canvas/GameScene/content/BT_OPEN/New Layout/New Label').getComponent(cc.Label).string;
+        let price = parseInt(num);
+        if (DataHelper.Money_Num >= price) {
+            cc.find('Canvas/GameScene/content/BT_OPEN').setStatus(DataHelper.Money_Num >= price);
+        }
+    },
+
     showNodeWithName(name, data) {
         if (!this[name]) {
             GameTools.loading('加载中');
@@ -42,7 +50,7 @@ cc.Class({
                 if (err) {
                     return;
                 }
-                
+
                 this[name] = cc.instantiate(fab);
                 if (data) {
                     this[name].CustomData = data;

@@ -148,11 +148,15 @@ cc.Class({
                         this._Wx_Cache = res.data;
                         // this.test();
                         //获取用户微信数据
-                        this.GetUserWXData();
-
+                        
                         this.WxCacheSort();
+                        this.GetUserWXData();
                         this.ReversionPool();
                         this.UpdateRank();
+                    },
+                    fail: res => {
+                        console.log("更新失败------------------->");
+                        console.log(res);
                     }
                 });// 开放数据域顺利拿到shareTicket
             }
@@ -237,6 +241,7 @@ cc.Class({
      * 更新排行榜数据
      */
     UpdateRank() {
+        console.log("微信信息------------------>1");
         console.log(this._Wx_Cache);
         let length = 0;
         if (this._Wx_Cache.length <= this.Show_Num) {
@@ -257,11 +262,13 @@ cc.Class({
             rankingbox.getChildByName("name").getComponent(cc.Label).string = this._Wx_Cache[i].nickname;
 
             //头像，通过图片路径加载图片
-            cc.loader.load({ url: this._Wx_Cache[i].avatarUrl, type: 'png' }, (err, texture) => {
-                if (err) console.error(err);
-                let userIcon = rankingbox.getChildByName('Head').getChildByName("icon").getComponent(cc.Sprite);
-                userIcon.spriteFrame = new cc.SpriteFrame(texture);
-            });
+            if (!this.IsNull(this._Wx_Cache[i].avatarUrl)) {
+                cc.loader.load({ url: this._Wx_Cache[i].avatarUrl, type: 'png' }, (err, texture) => {
+                    if (err) console.error(err);
+                    let userIcon = rankingbox.getChildByName('Head').getChildByName("icon").getComponent(cc.Sprite);
+                    userIcon.spriteFrame = new cc.SpriteFrame(texture);
+                });
+            }
 
             //名次
             rankingbox.getChildByName("label_ranking").getComponent(cc.Label).string = i + 1 + "";
@@ -275,7 +282,30 @@ cc.Class({
             // rankingbox.getChildByName("Sex").getChildByName("girl").active = !isBoy;
 
             //层数
-            rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = this.formatGold(this._Wx_Cache[i].KVDataList[0].value);
+            let income = 0;
+            console.log("托管数据------------------------------->");
+            console.log(this._Wx_Cache[i].KVDataList[0].value);
+            let cha = this._Wx_Cache[i].KVDataList[0].value.charAt(1);
+            if (cha === "." || cha === "e") {
+                let arr_str = [];
+                for (let j = 0; j < this._Wx_Cache[i].KVDataList[0].value.length; j++) {
+                    let char = this._Wx_Cache[i].KVDataList[0].value.charAt(j);
+                    arr_str.push(char);
+                }
+                arr_str.splice(-3);
+                let str = "";
+                for (let j = 0; j < arr_str.length; j++) {
+                    str += arr_str[j];
+                }
+                let num = parseFloat(str)
+                let beishu = Math.pow(10, 18)
+                income = num * beishu;
+            } else {
+                if (!this.IsNull(this._Wx_Cache[i].KVDataList[0].value)) {
+                    income = parseInt(this._Wx_Cache[i].KVDataList[0].value);
+                }
+            }
+            rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = this.formatGold(income);
 
             this.RankContent_Friend.addChild(rankingbox);
         }
@@ -353,6 +383,8 @@ cc.Class({
      * @param wx_ind 微信数据下标索引
      */
     SetRankBox(box_ind, wx_ind) {
+        console.log("微信信息------------------>2");
+        console.log(this._Wx_Cache[wx_ind]);
         console.log("设置数据盒子" + this._Wx_Cache[wx_ind].nickname);
         let rankingbox = this._Pool_RankingBox.get();
         if (!rankingbox) {
@@ -364,13 +396,15 @@ cc.Class({
         rankingbox.getChildByName("name").getComponent(cc.Label).string = this._Wx_Cache[wx_ind].nickname;
 
         //头像
-        let patch_node = rankingbox;
-        cc.loader.load({ url: this._Wx_Cache[wx_ind].avatarUrl, type: 'png' }, (err, texture) => {
-            if (err) console.error(err);
-            let userIcon = rankingbox.getChildByName('Head').getChildByName("icon").getComponent(cc.Sprite);
-            userIcon.spriteFrame = new cc.SpriteFrame(texture);
-            console.log(patch_node);
-        });
+        if (!this.IsNull(this._Wx_Cache[wx_ind].avatarUrl)) {
+            let patch_node = rankingbox;
+            cc.loader.load({ url: this._Wx_Cache[wx_ind].avatarUrl, type: 'png' }, (err, texture) => {
+                if (err) console.error(err);
+                let userIcon = rankingbox.getChildByName('Head').getChildByName("icon").getComponent(cc.Sprite);
+                userIcon.spriteFrame = new cc.SpriteFrame(texture);
+                console.log(patch_node);
+            });
+        }
 
         //名次
         rankingbox.getChildByName("label_ranking").getComponent(cc.Label).string = wx_ind + 1 + "";
@@ -385,7 +419,28 @@ cc.Class({
         // rankingbox.getChildByName("Sex").getChildByName("girl").active = !isBoy;
 
         //层数
-        rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = this.formatGold(this._Wx_Cache[wx_ind].KVDataList[0].value);
+        let income = 0;
+        let cha = this._Wx_Cache[wx_ind].KVDataList[0].value.charAt(1);
+        if (cha === "." || cha === "e") {
+            let arr_str = [];
+            for (let j = 0; j < this._Wx_Cache[wx_ind].KVDataList[0].value.length; j++) {
+                let char = this._Wx_Cache[wx_ind].KVDataList[0].value.charAt(j);
+                arr_str.push(char);
+            }
+            arr_str.splice(-3);
+            let str = "";
+            for (let j = 0; j < arr_str.length; j++) {
+                str += arr_str[j];
+            }
+            let num = parseFloat(str)
+            let beishu = Math.pow(10, 18)
+            income = num * beishu;
+        } else {
+            if (!this.IsNull(this._Wx_Cache[wx_ind].KVDataList[0].value)) {
+                income = parseInt(this._Wx_Cache[wx_ind].KVDataList[0].value);
+            }
+        }
+        rankingbox.getChildByName("Coin").getChildByName("label").getComponent(cc.Label).string = this.formatGold(income);
         this.RankContent_Friend.addChild(rankingbox);
     },
 
@@ -405,14 +460,19 @@ cc.Class({
         for (let i = 0; i < this._Wx_Cache.length; i++) {
             user_info = this._Wx_Cache[i];
             ranking_num = i + 1;
+            console.log("用户微信数据------------------------------------------->1");
+            console.log(user_info);
+            console.log(ranking_num + "<-----------名次");
             if (user_info.openid === this._User_OpenID) {
                 break;
             }
         }
-        console.log("用户微信数据------------------------------------------->1");
-        console.log(user_info);
+        // console.log("用户微信数据------------------------------------------->1");
+        // console.log(user_info);
+        // console.log(ranking_num + "<-----------名次");
+        console.log(this._Wx_Cache);
 
-        this.User_Ranking.string = ranking_num;
+        this.User_Ranking.string = ranking_num + "";
         this.User_GoldNum.string = this.formatGold(user_info.KVDataList[0].value);
     },
 
@@ -460,5 +520,12 @@ cc.Class({
                 return str + this.ZiMu[a - 1];
             }
         }
+    },
+
+    IsNull(str) {
+        if (str === "" || str === null) {
+            return true;
+        }
+        return false;
     },
 });

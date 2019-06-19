@@ -34,6 +34,7 @@ cc.Class({
 
         Btn_Open: cc.Node,
         BT_USER: cc.Node,
+        Achievement_Red: cc.Node,
 
         //新手引导
         //新手引导页
@@ -69,7 +70,6 @@ cc.Class({
     },
 
     UpdateSignStatus() {
-        let red = this.BT_USER.getChildByName("dian_red");
         // if (this._Sign_Data && this._Sign_Data.sign === 1 && !red.active) {
         //     console.log("签到是否结束-------------------------------------------------------");
         //     return;
@@ -80,6 +80,7 @@ cc.Class({
             }
             // console.log("签到-------------------------------------------------------");
             // console.log(data);
+            let red = this.BT_USER.getChildByName("dian_red");
             this._Sign_Data = data.data;
             if (this._Sign_Data.sign === 0 && !red.active) {
                 // console.log("是否进入----->1");
@@ -97,6 +98,20 @@ cc.Class({
             //     // console.log("是否进入----->2");
             //     red.active = false;
             // }
+        }, { uid: DataHelper.Uid });
+    },
+
+    //更新成就状态
+    UpdateAchievementStatus() {
+        HTTP.sendRequest('Hall/AchievementNotice', (data) => {
+            console.log("任务目标数据--------------->");
+            console.log(data);
+            if (data.status === 1) {
+                this.Achievement_Red.active = true;
+            }
+            if (data.status === 0) {
+                this.Achievement_Red.active = false;
+            }
         }, { uid: DataHelper.Uid });
     },
 
@@ -157,6 +172,10 @@ cc.Class({
             this.UpdateSignStatus();
         }, this);
 
+        HandleMgr.addHandle('Update_AchievementRed', (data) => {
+            this.UpdateAchievementStatus();
+        }, this);
+
         ViewHelper.setOpenPrice(this.GameData.fishbowls);
         // if (this.Node_FishBowls.childrenCount <= 0) {
         //     return;
@@ -174,6 +193,7 @@ cc.Class({
         this.GetSound();
 
         this.UpdateSignStatus();
+        this.UpdateAchievementStatus();
 
         this.beginGame();
 
@@ -204,7 +224,7 @@ cc.Class({
         // if (DataHelper.isHave) {
 
         // }
-        // cc.sys.localStorage.removeItem("isNovice")
+        // cc.sys.localStorage.removeItem("isNovice");
         let isNovice = cc.sys.localStorage.getItem("isNovice");
         if (!isNovice) {
             this.Page_Guide.active = true;
@@ -397,7 +417,7 @@ cc.Class({
                 data = data.data;
                 DataHelper.Data_Sync = data;
 
-            }, { uid: DataHelper.Uid },false);
+            }, { uid: DataHelper.Uid }, false);
             GameTools.setItemByLocalStorage('LastTime', (new Date()).getTime());
         }
         fn();

@@ -29,6 +29,7 @@ cc.Class({
         // },
         //引导页
         Page_Guide: cc.Node,
+        _Current_Sin: cc.Node,
         // //提示页
         // Page_Hint: cc.Node,
         // //提示说明
@@ -54,6 +55,7 @@ cc.Class({
                 GameTools.dialog('请求错误', res.msg, null);
                 return;
             }
+            console.log("签到-------------------------------------------->");
             data = data.data;
             cc.find('content/BT_LQ', this.node).active = (data.sign == 0);
             cc.find('content/Lbl_State', this.node).active = (data.sign != 0);
@@ -61,17 +63,20 @@ cc.Class({
             let children = cc.find('content/bg_tytk_bai/New Layout', this.node).children;
             for (let i = 0; i < 6; i++) {
                 var node = children[i];
-                if (i < this.Day) {
+                this._Current_Sin = node;
+                let day = parseInt(this.Day);
+                if (i < day) {
                     cc.find('t_qd_yqd', node).active = true;
-                } else if (i === this.Day) {
                     let guang = cc.find('t_qd_guang', node);
                     let anima = guang.getComponent(cc.Animation);
-                    if (!guang.active) {
+                    guang.active = false;
+                    anima.stop();
+                } else if (i === day) {
+                    if (data.sign === 0) {
+                        let guang = cc.find('t_qd_guang', node);
+                        let anima = guang.getComponent(cc.Animation);
                         guang.active = true;
                         anima.play();
-                    } else {
-                        guang.active = false;
-                        anima.stop();
                     }
                 } else {
                     cc.find('t_qd_yqd', node).active = false;
@@ -93,6 +98,10 @@ cc.Class({
         HandleMgr.sendHandle('Audio_Click');
         if (this.Page_Guide.active) {
             this.Page_Guide.active = false;
+            // let guang = cc.find('t_qd_guang', this._Current_Sin);
+            // let anima = guang.getComponent(cc.Animation);
+            // guang.active = false;
+            // anima.stop();
             // this.Page_Hint.active = true;
 
             // this.Hint_Explain.scale = 0;

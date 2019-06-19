@@ -1619,8 +1619,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 37.2,
-      "y": 63.4,
+      "x": 32.4,
+      "y": 55.5,
       "z": 0
     },
     "_scale": {
@@ -4236,8 +4236,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "6.签到",
-    "_N$string": "6.签到",
+    "_string": "签到",
+    "_N$string": "签到",
     "_fontSize": 20,
     "_lineHeight": 20,
     "_enableWrapText": true,

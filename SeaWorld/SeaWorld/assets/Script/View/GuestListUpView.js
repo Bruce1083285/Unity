@@ -123,8 +123,7 @@ cc.Class({
                         GameTools.dialog('请求错误', res.msg, null);
                         return;
                     }
-                    
-                   
+
                     let reward = this.getRewardPrice(this.DetailNode.level, this.toUpLevel);
 
                     DataHelper.setGuestData(JSON.parse(res.data.guest));

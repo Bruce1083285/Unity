@@ -87,7 +87,7 @@ var HTTP = cc.Class({
             xhr.onerror = function (e) {
                 console.log("onerror");
                 GameTools.hidLoading();
-                GameTools.dialog('提示', '请求错误', null);
+                // GameTools.dialog('提示', '请求错误', null);
                 // if (callback !== null) {
                 //     callback(null, NETWORK_STATE.ERROR);
                 // }
@@ -95,7 +95,7 @@ var HTTP = cc.Class({
             xhr.ontimeout = function (e) {
                 console.log("ontimeout");
                 GameTools.hidLoading();
-                GameTools.dialog('提示', '请求超时', null);
+                // GameTools.dialog('提示', '请求超时', null);
                 // if (handler !== null) {
                 //     callback(null, NETWORK_STATE.TIMEOUT);
                 // }

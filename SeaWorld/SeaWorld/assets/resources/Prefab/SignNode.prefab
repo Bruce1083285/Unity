@@ -6405,8 +6405,8 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "7.领取签到奖励",
-    "_N$string": "7.领取签到奖励",
+    "_string": "领取签到奖励",
+    "_N$string": "领取签到奖励",
     "_fontSize": 20,
     "_lineHeight": 20,
     "_enableWrapText": true,
@@ -8355,6 +8355,7 @@
     "Page_Guide": {
       "__id__": 178
     },
+    "_Current_Sin": null,
     "_id": ""
   },
   {
