@@ -815,11 +815,6 @@ export default class WX {
      */
     public static shareApp(tit, imageurl, callback_yes: Function, callback_no: Function) {
         if (WX.WX_Swtich) {
-            // console.log("是否进入");
-            // console.log(tit);
-            // console.log(imageurl);
-            //shareAppMessage
-            //aldShareAppMessage
             //转发
             console.log("share_id是否为空");
             console.log(WX.Uid);
@@ -827,7 +822,6 @@ export default class WX {
                 title: tit,
                 imageUrl: imageurl,
                 query: "shareid=" + WX.Uid,
-                // imageUrlId: "DPwCrjKwQsiuXe7gi5n7Jw",
             })
             wx.onHide(() => {
                 console.log('开始分享')
