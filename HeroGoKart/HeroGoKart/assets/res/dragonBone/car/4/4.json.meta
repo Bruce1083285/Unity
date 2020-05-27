@@ -1,7 +1,0 @@
-{
-  "ver": "1.0.0",
-  "uuid": "2d7278e6-ffcb-4f69-8c37-773f532abec2",
-  "atlasJson": "{\"SubTexture\":[{\"width\":348,\"y\":1,\"height\":312,\"name\":\"kadingchehanbaochediying\",\"x\":1},{\"width\":232,\"y\":597,\"height\":20,\"name\":\"重复项目文件夹/kadingchehanbaochechelungan\",\"x\":1},{\"width\":66,\"y\":1,\"height\":88,\"name\":\"kadingchehanbaocheluntai\",\"x\":351},{\"width\":56,\"y\":121,\"height\":28,\"name\":\"kadingchehanbaochelunwen\",\"x\":351},{\"width\":56,\"y\":91,\"height\":28,\"name\":\"kadingchehanbaochechelun2\",\"x\":351},{\"width\":282,\"y\":315,\"height\":280,\"name\":\"kadingchehanbaochecheshen\",\"x\":1},{\"width\":68,\"y\":315,\"height\":88,\"name\":\"kadingchehanbaochepaiqiguqan\",\"x\":285}],\"name\":\"skeleton_42\",\"imagePath\":\"texture.png\"}",
-  "texture": "415b7acb-b3fd-4dc2-9bc8-ce1eb60dc181",
-  "subMetas": {}
-}

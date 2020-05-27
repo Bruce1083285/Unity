@@ -1,7 +1,0 @@
-{
-  "ver": "1.0.0",
-  "uuid": "72ae1c85-e044-45af-b41c-13d38674a61a",
-  "atlasJson": "{\"SubTexture\":[{\"width\":516,\"y\":1,\"height\":570,\"name\":\"kadingcheshuinijiaobanchediying\",\"x\":1},{\"width\":274,\"y\":873,\"height\":28,\"name\":\"kadingcheshuinijiaobanchechelungan\",\"x\":1},{\"width\":144,\"y\":1,\"height\":170,\"name\":\"kadingcheshuinijiaobancheluntai\",\"x\":867},{\"width\":110,\"y\":173,\"height\":164,\"name\":\"kadingcheshuinijiaobanchechelun2\",\"x\":867},{\"width\":110,\"y\":339,\"height\":156,\"name\":\"kadingcheshuinijiaobanchelunwen\",\"x\":867},{\"width\":52,\"y\":497,\"height\":64,\"name\":\"kadingcheshuinijiaobanchepaiqiguqan\",\"x\":963},{\"width\":346,\"y\":1,\"height\":504,\"name\":\"kadingcheshuinijiaobanchecheshen\",\"x\":519},{\"width\":70,\"y\":497,\"height\":116,\"name\":\"kadingcheshuinijiaobancheweiqiguan\",\"x\":891},{\"width\":370,\"y\":507,\"height\":364,\"name\":\"kadingcheshuinijiaobanchechebeitong\",\"x\":519}],\"name\":\"skeleton_50\",\"imagePath\":\"texture.png\"}",
-  "texture": "87cb7fce-74d9-4eec-8f21-e23c47888ec7",
-  "subMetas": {}
-}

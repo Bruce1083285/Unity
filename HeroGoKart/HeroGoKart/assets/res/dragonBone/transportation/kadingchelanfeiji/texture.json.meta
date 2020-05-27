@@ -1,7 +1,0 @@
-{
-  "ver": "1.0.0",
-  "uuid": "afbc78f3-e0ab-480b-9890-1365a3c87cc1",
-  "atlasJson": "{\"SubTexture\":[{\"width\":54,\"y\":1,\"height\":58,\"name\":\"kadingchelanfeijijitou\",\"x\":445},{\"width\":228,\"y\":381,\"height\":230,\"name\":\"kadingchelanfeijiluoxuanjiang\",\"x\":1},{\"width\":442,\"y\":1,\"height\":378,\"name\":\"kadingchelanfeijijishen\",\"x\":1}],\"imagePath\":\"texture.png\",\"name\":\"skeleton_31\"}",
-  "texture": "1bf16475-7a99-418d-bf53-27beda5b1c20",
-  "subMetas": {}
-}

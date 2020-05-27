@@ -1,7 +1,0 @@
-{
-  "ver": "1.0.0",
-  "uuid": "0ffb2d1c-529f-408c-88a5-d95aeca82ed9",
-  "atlasJson": "{\"SubTexture\":[{\"width\":332,\"y\":1,\"height\":292,\"name\":\"kadingcheguanjunchediying\",\"x\":1},{\"width\":232,\"y\":295,\"height\":20,\"name\":\"kadingcheguanjunchechelungan\",\"x\":213},{\"width\":66,\"y\":1,\"height\":88,\"name\":\"lkadingcheguanjuncheluntai\",\"x\":335},{\"width\":56,\"y\":1,\"height\":28,\"name\":\"kadingcheguanjunchechelun2\",\"x\":403},{\"width\":56,\"y\":31,\"height\":28,\"name\":\"kadingcheguanjunchelunwen\",\"x\":403},{\"width\":210,\"y\":295,\"height\":248,\"name\":\"kadingcheguanjunchecheshen\",\"x\":1},{\"width\":54,\"y\":61,\"height\":26,\"name\":\"kadingcheguanjuncheweiqiguan\",\"x\":403}],\"name\":\"skeleton_43\",\"imagePath\":\"texture.png\"}",
-  "texture": "bb37ce9c-4c89-43df-a196-e7aeebe16a10",
-  "subMetas": {}
-}

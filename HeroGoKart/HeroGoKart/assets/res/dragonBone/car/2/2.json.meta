@@ -1,7 +1,0 @@
-{
-  "ver": "1.0.0",
-  "uuid": "756fdbc5-6151-412f-8e66-55c01892ab06",
-  "atlasJson": "{\"SubTexture\":[{\"width\":350,\"y\":1,\"height\":290,\"name\":\"kadingchefeidiechediying\",\"x\":1},{\"width\":232,\"y\":293,\"height\":20,\"name\":\"重复项目文件夹/kadingchefeidiechechelungan\",\"x\":241},{\"width\":66,\"y\":1,\"height\":88,\"name\":\"kadingchefeidiecheluntai\",\"x\":437},{\"width\":56,\"y\":91,\"height\":28,\"name\":\"kadingchefeidiechelunwen\",\"x\":437},{\"width\":56,\"y\":95,\"height\":28,\"name\":\"kadingchefeidiechechelun2\",\"x\":353},{\"width\":238,\"y\":293,\"height\":258,\"name\":\"kadingchefeidiechecheshen\",\"x\":1},{\"width\":82,\"y\":1,\"height\":92,\"name\":\"kadingchefeidiechepaiqiguqan\",\"x\":353},{\"width\":36,\"y\":121,\"height\":34,\"name\":\"kadingchefeidiecheweiqiguan\",\"x\":411}],\"name\":\"skeleton_44\",\"imagePath\":\"texture.png\"}",
-  "texture": "abcb3ce7-cf56-4a78-a78d-7298bb96ab74",
-  "subMetas": {}
-}
