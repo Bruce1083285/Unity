@@ -2,288 +2,201 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 对象池
-/// </summary>
 public class ObjectPool : MonoBehaviour
 {
-    /// <summary>
-    /// 单例
-    /// </summary>
     public static ObjectPool Instance;
-    /// <summary>
-    /// 初始生成次数
-    /// </summary>
+
     public int initSpawnCount = 5;
-    /// <summary>
-    /// 普通（单个）平台集合
-    /// </summary>
     private List<GameObject> normalPlatformList = new List<GameObject>();
-    /// <summary>
-    /// 通用组合平台集合
-    /// </summary>
     private List<GameObject> commonPlatformList = new List<GameObject>();
-    /// <summary>
-    /// 草地组合平台集合
-    /// </summary>
     private List<GameObject> grassPlatformList = new List<GameObject>();
-    /// <summary>
-    /// 冬季组合平台集合
-    /// </summary>
     private List<GameObject> winterPlatformList = new List<GameObject>();
-    /// <summary>
-    /// 钉子组合平台集合>>>左
-    /// </summary>
     private List<GameObject> spikePlatformLeftList = new List<GameObject>();
-    /// <summary>
-    /// 钉子组合平台集合>>>右
-    /// </summary>
     private List<GameObject> spikePlatformRightList = new List<GameObject>();
-    /// <summary>
-    /// 死亡特效集合
-    /// </summary>
     private List<GameObject> deathEffectList = new List<GameObject>();
-    /// <summary>
-    /// 钻石集合
-    /// </summary>
     private List<GameObject> diamondList = new List<GameObject>();
-    /// <summary>
-    /// 资源管理器容器
-    /// </summary>
     private ManagerVars vars;
 
     private void Awake()
     {
         Instance = this;
+        vars = ManagerVars.GetManagerVars();
         Init();
     }
-
-    /// <summary>
-    /// 初始化
-    /// </summary>
     private void Init()
     {
-        vars = ManagerVars.GetManagerVars();
-        SetPlatformList();
-    }
-
-    /// <summary>
-    /// 设置平台集合
-    /// </summary>
-    private void SetPlatformList()
-    {
-        //普通（单个）平台
         for (int i = 0; i < initSpawnCount; i++)
         {
-            InstantiateObject(vars.PlatformPre, normalPlatformList);
+            InstantiateObject(vars.normalPlatformPre, ref normalPlatformList);
         }
-
-        //通用组合平台
-        for (int i = 0; i < vars.commonPlatformGroup.Count; i++)
+        for (int i = 0; i < initSpawnCount; i++)
         {
-            for (int j = 0; j < initSpawnCount; j++)
+            for (int j = 0; j < vars.commonPlatformGroup.Count; j++)
             {
-                InstantiateObject(vars.commonPlatformGroup[i], commonPlatformList);
+                InstantiateObject(vars.commonPlatformGroup[j], ref commonPlatformList);
             }
         }
-
-        //草地组合平台
-        for (int i = 0; i < vars.grassPlatformGroup.Count; i++)
+        for (int i = 0; i < initSpawnCount; i++)
         {
-            for (int j = 0; j < initSpawnCount; j++)
+            for (int j = 0; j < vars.grassPlatformGroup.Count; j++)
             {
-                InstantiateObject(vars.grassPlatformGroup[i], grassPlatformList);
+                InstantiateObject(vars.grassPlatformGroup[j], ref grassPlatformList);
             }
         }
-
-        //冬季组合平台
-        for (int i = 0; i < vars.winterPlatformGroup.Count; i++)
+        for (int i = 0; i < initSpawnCount; i++)
         {
-            for (int j = 0; j < initSpawnCount; j++)
+            for (int j = 0; j < vars.winterPlatformGroup.Count; j++)
             {
-                InstantiateObject(vars.winterPlatformGroup[i], winterPlatformList);
+                InstantiateObject(vars.winterPlatformGroup[j], ref winterPlatformList);
             }
         }
-
-        //钉子组合平台>>>左
         for (int i = 0; i < initSpawnCount; i++)
         {
-            InstantiateObject(vars.spikePlatformGroupLeft, spikePlatformLeftList);
+            InstantiateObject(vars.spikePlatformLeft, ref spikePlatformLeftList);
         }
-
-        //钉子组合平台>>>右
         for (int i = 0; i < initSpawnCount; i++)
         {
-            InstantiateObject(vars.spikePlatformGroupRight, spikePlatformRightList);
+            InstantiateObject(vars.spikePlatformRight, ref spikePlatformRightList);
         }
-
-        //死亡特效
         for (int i = 0; i < initSpawnCount; i++)
         {
-            InstantiateObject(vars.deathEffect, deathEffectList);
+            InstantiateObject(vars.deathEffect, ref deathEffectList);
         }
-
-        //钻石
         for (int i = 0; i < initSpawnCount; i++)
         {
-            InstantiateObject(vars.diamond, diamondList);
+            InstantiateObject(vars.diamondPre, ref diamondList);
         }
     }
-
-    /// <summary>
-    /// 实例化对象
-    /// </summary>
-    /// <param name="prefab">预制体</param>
-    /// <param name="list">集合</param>
-    private GameObject InstantiateObject(GameObject prefab, List<GameObject> list)
+    private GameObject InstantiateObject(GameObject prefab, ref List<GameObject> addList)
     {
         GameObject go = Instantiate(prefab, transform);
         go.SetActive(false);
-        list.Add(go);
+        addList.Add(go);
         return go;
     }
 
     /// <summary>
-    /// 获取普通（单个）平台
+    /// 获取单个平台
     /// </summary>
-    /// <returns>普通（单个）平台</returns>
-    public GameObject GetNormalPlatfrom()
+    /// <returns></returns>
+    public GameObject GetNormalPlatform()
     {
-        GameObject go = GetCanUseObject(normalPlatformList);
-        if (go != null)
+        for (int i = 0; i < normalPlatformList.Count; i++)
         {
-            return go;
+            if (normalPlatformList[i].activeInHierarchy == false)
+            {
+                return normalPlatformList[i];
+            }
         }
-
-        return InstantiateObject(vars.PlatformPre, normalPlatformList);
+        return InstantiateObject(vars.normalPlatformPre, ref normalPlatformList);
     }
-
     /// <summary>
     /// 获取通用组合平台
     /// </summary>
-    /// <returns>通用组合平台</returns>
-    public GameObject GetCommonPlatfromGroup()
+    /// <returns></returns>
+    public GameObject GetCommonPlatformGroup()
     {
-        GameObject go = GetCanUseObject(commonPlatformList);
-        if (go != null)
+        for (int i = 0; i < commonPlatformList.Count; i++)
         {
-            return go;
+            if (commonPlatformList[i].activeInHierarchy == false)
+            {
+                return commonPlatformList[i];
+            }
         }
-
         int ran = Random.Range(0, vars.commonPlatformGroup.Count);
-        return InstantiateObject(vars.commonPlatformGroup[ran], commonPlatformList);
+        return InstantiateObject(vars.commonPlatformGroup[ran], ref commonPlatformList);
     }
-
-
     /// <summary>
     /// 获取草地组合平台
     /// </summary>
-    /// <returns>草地组合平台</returns>
-    public GameObject GetGrassPlatfromGroup()
+    /// <returns></returns>
+    public GameObject GetGrassPlatformGroup()
     {
-        GameObject go = GetCanUseObject(grassPlatformList);
-        if (go != null)
+        for (int i = 0; i < grassPlatformList.Count; i++)
         {
-            return go;
+            if (grassPlatformList[i].activeInHierarchy == false)
+            {
+                return grassPlatformList[i];
+            }
         }
-
         int ran = Random.Range(0, vars.grassPlatformGroup.Count);
-        return InstantiateObject(vars.grassPlatformGroup[ran], grassPlatformList);
+        return InstantiateObject(vars.grassPlatformGroup[ran], ref grassPlatformList);
     }
-
     /// <summary>
     /// 获取冬季组合平台
     /// </summary>
-    /// <returns>冬季组合平台</returns>
-    public GameObject GetWinterPlatfromGroup()
+    /// <returns></returns>
+    public GameObject GetWinterPlatformGroup()
     {
-        GameObject go = GetCanUseObject(winterPlatformList);
-        if (go != null)
+        for (int i = 0; i < winterPlatformList.Count; i++)
         {
-            return go;
+            if (winterPlatformList[i].activeInHierarchy == false)
+            {
+                return winterPlatformList[i];
+            }
         }
-
         int ran = Random.Range(0, vars.winterPlatformGroup.Count);
-        return InstantiateObject(vars.winterPlatformGroup[ran], winterPlatformList);
+        return InstantiateObject(vars.winterPlatformGroup[ran], ref winterPlatformList);
     }
 
     /// <summary>
-    /// 获取钉子组合平台>>>左
+    /// 获取左边钉子组合平台
     /// </summary>
-    /// <returns>钉子组合平台>>>左</returns>
-    public GameObject GetSpikePlatfromGroupLeft()
+    /// <returns></returns>
+    public GameObject GetLeftSpikePlatform()
     {
-        GameObject go = GetCanUseObject(spikePlatformLeftList);
-        if (go != null)
+        for (int i = 0; i < spikePlatformLeftList.Count; i++)
         {
-            return go;
+            if (spikePlatformLeftList[i].activeInHierarchy == false)
+            {
+                return spikePlatformLeftList[i];
+            }
         }
-
-        return InstantiateObject(vars.spikePlatformGroupLeft, spikePlatformLeftList);
+        return InstantiateObject(vars.spikePlatformLeft, ref spikePlatformLeftList);
     }
-
     /// <summary>
-    /// 获取钉子组合平台>>>右
+    /// 获取右边钉子组合平台
     /// </summary>
-    /// <returns>钉子组合平台>>>右</returns>
-    public GameObject GetSpikePlatfromGroupRight()
+    /// <returns></returns>
+    public GameObject GetRightSpikePlatform()
     {
-        GameObject go = GetCanUseObject(spikePlatformRightList);
-        if (go != null)
+        for (int i = 0; i < spikePlatformRightList.Count; i++)
         {
-            return go;
+            if (spikePlatformRightList[i].activeInHierarchy == false)
+            {
+                return spikePlatformRightList[i];
+            }
         }
-
-        return InstantiateObject(vars.spikePlatformGroupRight, spikePlatformRightList);
+        return InstantiateObject(vars.spikePlatformRight, ref spikePlatformRightList);
     }
-
     /// <summary>
     /// 获取死亡特效
     /// </summary>
-    /// <returns>死亡特效</returns>
+    /// <returns></returns>
     public GameObject GetDeathEffect()
     {
-        GameObject go = GetCanUseObject(deathEffectList);
-        if (go != null)
+        for (int i = 0; i < deathEffectList.Count; i++)
         {
-            return go;
+            if (deathEffectList[i].activeInHierarchy == false)
+            {
+                return deathEffectList[i];
+            }
         }
-
-        return InstantiateObject(vars.deathEffect, deathEffectList);
+        return InstantiateObject(vars.deathEffect, ref deathEffectList);
     }
-
     /// <summary>
     /// 获取钻石
     /// </summary>
-    /// <returns>死亡特效</returns>
+    /// <returns></returns>
     public GameObject GetDiamond()
     {
-        GameObject go = GetCanUseObject(diamondList);
-        if (go != null)
+        for (int i = 0; i < diamondList.Count; i++)
         {
-            return go;
-        }
-
-        return InstantiateObject(vars.diamond, diamondList);
-    }
-
-    /// <summary>
-    /// 获取可以使用的对象
-    /// </summary>
-    /// <param name="list">集合</param>
-    /// <returns>可以使用的对象，没有则为空</returns>
-    public GameObject GetCanUseObject(List<GameObject> list)
-    {
-        //遍历集合
-        for (int i = 0; i < list.Count; i++)
-        {
-            //判断是否有可以使用的对象
-            if (!list[i].activeInHierarchy)
+            if (diamondList[i].activeInHierarchy == false)
             {
-                return list[i];
+                return diamondList[i];
             }
         }
-
-        return null;
+        return InstantiateObject(vars.diamondPre, ref diamondList);
     }
 }

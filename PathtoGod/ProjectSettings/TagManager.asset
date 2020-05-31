@@ -45,14 +45,14 @@ TagManager:
     uniqueID: 0
     locked: 0
   - name: Platform
-    uniqueID: 3685469717
+    uniqueID: 742487943
     locked: 0
   - name: Pickup
-    uniqueID: 1196905767
+    uniqueID: 2004665473
     locked: 0
   - name: Player
-    uniqueID: 1257181507
+    uniqueID: 4063048425
     locked: 0
   - name: GUI
-    uniqueID: 3913577911
+    uniqueID: 1431374773
     locked: 0

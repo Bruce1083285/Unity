@@ -4,67 +4,67 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class GameoverPanel : MonoBehaviour
+public class GameOverPanel : MonoBehaviour
 {
-    /// <summary>
-    /// 文本--->分数，最高分数,钻石数
-    /// </summary>
-    public Text txt_Score, txt_BestScore, txt_DiamontCount;
-    /// <summary>
-    /// 按钮--->再试一次，排行榜，主页
-    /// </summary>
-    public Button but_Restart, but_Rank, but_Home;
+    public Text txt_Score, txt_BestScore, txt_AddDiamondCount;
+    public Button btn_Restart, btn_Rank, btn_Home;
+    public Image img_New;
 
-    public void Awake()
+    private void Awake()
     {
-        //注册按钮点击监听
-        but_Restart.onClick.AddListener(OnRestartButtonClick);
-        but_Rank.onClick.AddListener(OnRankButtonClick);
-        but_Home.onClick.AddListener(OnHomeButtonClick);
-
+        btn_Restart.onClick.AddListener(OnRestartButtonclick);
+        btn_Rank.onClick.AddListener(OnRankButtonClick);
+        btn_Home.onClick.AddListener(OnHomeButtonClick);
         EventCenter.AddListener(EventDefine.ShowGameOverPanel, Show);
         gameObject.SetActive(false);
     }
-
     private void OnDestroy()
     {
         EventCenter.RemoveListener(EventDefine.ShowGameOverPanel, Show);
     }
-
-    /// <summary>
-    /// 显示
-    /// </summary>
     private void Show()
     {
+        if (GameManager.Instance.GetGameScore() > GameManager.Instance.GetBestScore())
+        {
+            img_New.gameObject.SetActive(true);
+            txt_BestScore.text = "最高分  " + GameManager.Instance.GetGameScore();
+        }
+        else
+        {
+            img_New.gameObject.SetActive(false);
+            txt_BestScore.text = "最高分  " + GameManager.Instance.GetBestScore();
+        }
+        GameManager.Instance.SaveScore(GameManager.Instance.GetGameScore());
         txt_Score.text = GameManager.Instance.GetGameScore().ToString();
-        txt_DiamontCount.text = "+" + GameManager.Instance.GetGameDiamont().ToString();
+        txt_AddDiamondCount.text = "+" + GameManager.Instance.GetGameDiamond().ToString();
+        //更新总的钻石数量
+        GameManager.Instance.UpdateAllDiamond(GameManager.Instance.GetGameDiamond());
         gameObject.SetActive(true);
     }
-
     /// <summary>
-    /// 注册--->再试一次按钮点击
+    /// 再来一局按钮点击
     /// </summary>
-    private void OnRestartButtonClick()
+    private void OnRestartButtonclick()
     {
-        string name = SceneManager.GetActiveScene().name; 
+        EventCenter.Broadcast(EventDefine.PlayClikAudio);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        GameData.IsRestart = true;
+        GameData.IsAgainGame = true;
     }
-
     /// <summary>
-    /// 注册--->排行榜按钮点击
+    /// 排行榜按钮点击
     /// </summary>
     private void OnRankButtonClick()
     {
-
+        EventCenter.Broadcast(EventDefine.PlayClikAudio);
+        EventCenter.Broadcast(EventDefine.ShowRankPanel);
     }
-
     /// <summary>
-    /// 注册--->主页按钮点击
+    /// 主界面按钮点击
     /// </summary>
     private void OnHomeButtonClick()
     {
+        EventCenter.Broadcast(EventDefine.PlayClikAudio);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        GameData.IsRestart = false;
+        GameData.IsAgainGame = false;
     }
 }
